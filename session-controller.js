@@ -1,6 +1,5 @@
 import sessions from "./sessions.js";
 import users from "./users.js";
-import items from "./items.js";
 
 function getSession(req, res) {
     const sid = req.cookies.sid;
@@ -32,12 +31,12 @@ function login(req, res) {
         return;
     }
 
-    const sid = sessions.addSession(username);
-    const existingUserData = users.getUserData(username);
-
-    if (!existingUserData) {
-        users.addUserData(username, items.makeItemsList());
+    if (!users.isRegisteredUser(username)) {
+        res.status(401).json({ error: 'user-not-registered' });
+        return;
     }
+
+    const sid = sessions.addSession(username);
     res.cookie('sid', sid);
     res.json(users.getUserData(username).getItems());
 }
