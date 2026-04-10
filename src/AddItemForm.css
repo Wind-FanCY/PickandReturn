@@ -1,0 +1,172 @@
+.add__form {
+    grid-column: 3 / span 8;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    display: grid;
+    grid-template-areas: "lender borrower"
+                        "lentDate backDate"
+                        "details details"
+                        "tips tips"
+                        "button button";
+    border: 2px dotted #343434;
+    background-color: aliceblue;
+}
+
+.add__lender {
+    grid-area: lender;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.lender__title {
+    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+.lender__input {
+    padding: 0.25rem 0.5rem;    
+}
+
+.add__borrower {
+    grid-area: borrower;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.borrower__title {
+    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+.borrower__input {
+    padding: 0.25rem 0.5rem;
+}
+
+.add__details {
+    grid-area: details;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.details__title {
+    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+.details__input {
+    width: 80%;
+    padding: 0.25rem 0.5rem;
+}
+
+.add__lentDate {
+    grid-area: lentDate;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.lentDate__title {
+    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+.lentDate__input {
+    padding: 0.25rem 0.5rem;
+}
+
+.add__backDate {
+    grid-area: backDate;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.backDate__title {
+    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+.backDate__input {
+    padding: 0.25rem 0.5rem;
+}
+
+.add__tips {
+    grid-area: tips;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.add__button {
+    grid-area: button;
+    display: inline-block;
+    width: 20%;
+    margin: 1.5rem auto;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightblue;
+}
+
+.add__button:hover {
+    transition: background 0.5s ease;
+    background-color: rgb(135, 168, 179);
+}
+
+
+@media (max-width: 54rem) {
+    .add__lender {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .lender__title {
+        margin-bottom: 0.25rem;
+    }
+
+    .add__borrower {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .borrower__title {
+        margin-bottom: 0.25rem;
+    }
+
+    .add__details {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .details__title {
+        margin-bottom: 0.25rem;
+    }
+
+    .add__lentDate {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .lentDate__title {
+        margin-bottom: 0.25rem;
+    }
+
+    .add__backDate {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .backDate__title {
+        margin-bottom: 0.25rem;
+    }
+}

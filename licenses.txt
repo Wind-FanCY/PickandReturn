@@ -1,0 +1,9 @@
+I downloaded all the images from fonts.google.com.
+
+These icons I downloaded from  http://fonts.google.com/icons ( It is used under the Apache License 2.0: https://github.com/google/material-design-icons/blob/master/LICENSE):
+
+* login_icon.png -- I used it for login button.
+* logout_icon.png -- I used it for logout button.
+* delete_icon.png -- I used it for delete button.
+* add_icon.png -- I used it for add button.
+* reminder_icon.png -- I used it for reminder button.

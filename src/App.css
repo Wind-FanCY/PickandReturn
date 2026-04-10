@@ -1,0 +1,19 @@
+.app {
+    height: 100%;
+    background-color: white;
+}
+
+.login__waiting {
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+.main-content {
+    margin-top: 2rem;
+}
+
+.icon {
+    width: 1rem;
+    height: 1rem;
+}

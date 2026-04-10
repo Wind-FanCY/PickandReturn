@@ -1,0 +1,8 @@
+.status {
+    padding-left: 2rem;
+    position: absolute;
+    bottom: 2rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: red;
+}
