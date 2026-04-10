@@ -1,4 +1,4 @@
-import { MESSAGES } from "./constant";
+import { MESSAGES } from "../../store/constant";
 import "./Status.css";
 
 function Status({ error, success }) {

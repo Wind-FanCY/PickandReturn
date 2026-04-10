@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { AppContext } from "./app-context";
-import { LOGIN_STATUS } from "./constant";
+import { AppContext } from "../../store/app-context";
+import { LOGIN_STATUS } from "../../store/constant";
 
-import Controls from "./Controls";
-import Nav from "./Nav";
+import Controls from "../Controls/Controls";
+import Nav from "../Nav/Nav";
 import "./Header.css";
 
 function Header() {

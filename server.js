@@ -1,8 +1,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import sessionControllor from './session-controller.js';
-import itemController from './item-controller.js';
-import userController from './user-controller.js';
+import sessionControllor from './server/controllers/session-controller.js';
+import itemController from './server/controllers/item-controller.js';
+import userController from './server/controllers/user-controller.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

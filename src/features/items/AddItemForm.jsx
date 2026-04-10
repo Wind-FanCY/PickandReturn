@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
-import { AppContext } from "./app-context";
-import { fetchAddItem } from "./services";
+import { AppContext } from "../../store/app-context";
+import { fetchAddItem } from "../../services/services";
 
-import Status from "./Status";
+import Status from "../../components/Status/Status";
 import "./AddItemForm.css";
-import addIcon from "./assets/add_icon.png";
+import addIcon from "../../assets/add_icon.png";
 
 function AddItemForm() {
     const [state, dispatch] = useContext(AppContext);

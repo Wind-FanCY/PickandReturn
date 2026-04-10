@@ -3,18 +3,18 @@ import {
   SERVER,
   CLIENT,
   LOGIN_STATUS
-} from './constant';
+} from './store/constant';
 import {
-  fetchSession,  
+  fetchSession,
   fetchItems
-} from './services';
-import reducer, { initialState } from './reducer';
-import { AppContext } from './app-context';
+} from './services/services';
+import reducer, { initialState } from './store/reducer';
+import { AppContext } from './store/app-context';
 
-import Header from './Header';
-import Loading from './Loading';
-import LoginForm from './LoginForm';
-import MainContent from './MainContent';
+import Header from './components/Header/Header';
+import Loading from './components/Loading/Loading';
+import LoginForm from './features/auth/LoginForm';
+import MainContent from './layout/MainContent';
 import './App.css';
 
 function App() {

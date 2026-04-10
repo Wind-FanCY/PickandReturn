@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { AppContext } from "./app-context";
-import { PAGE_STATUS } from "./constant";
+import { AppContext } from "../../store/app-context";
+import { PAGE_STATUS } from "../../store/constant";
 
 function Nav() {
     const [state, dispatch] = useContext(AppContext);

@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
-import { AppContext } from "./app-context";
-import { fetchLogin, fetchRegister } from "./services";
-import { FORM_MODE } from "./constant";
+import { AppContext } from "../../store/app-context";
+import { fetchLogin, fetchRegister } from "../../services/services";
+import { FORM_MODE } from "../../store/constant";
 
-import Status from './Status';
+import Status from '../../components/Status/Status';
 import './LoginForm.css';
-import loginIcon from './assets/login_icon.png';
+import loginIcon from '../../assets/login_icon.png';
 
 function LoginForm() {
     const [state, dispatch] = useContext(AppContext);

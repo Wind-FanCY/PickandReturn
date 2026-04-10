@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
-import { AppContext } from "./app-context";
+import { AppContext } from "../../store/app-context";
 import {
     fetchDeleteItem,
     fetchUpdateItem,
     fetchSendNotice
-} from "./services";
+} from "../../services/services";
 
-import reminderIcon from "./assets/reminder_icon.png";
-import deleteIcon from "./assets/delete_icon.png";
+import reminderIcon from "../../assets/reminder_icon.png";
+import deleteIcon from "../../assets/delete_icon.png";
 import "./Item.css";
 
 function Item({ item }) {

@@ -1,24 +1,25 @@
 import { useContext, useState } from "react";
-import { AppContext } from "./app-context";
-import { SHOW } from "./constant";
+import { AppContext } from "../../store/app-context";
+import { SHOW } from "../../store/constant";
 
-import Loading from "./Loading";
-import Item from "./Item";
-import "./NoticesPage.css";
+import Loading from "../../components/Loading/Loading";
+import Item from "../../components/Item/Item";
+import AddItemForm from "./AddItemForm";
+import "./ItemsPage.css";
 
-function NoticesPage() {
+function ItemsPage() {
     const [state, dispatch] = useContext(AppContext);
     const [filterStatus, setFilterStatus] = useState('all');
     const [searchText, setSearchText] = useState('');
 
     const filteredItems = Object.values(state.items)
-        .filter(item => item.borrower === state.username)
+        .filter(item => item.lender === state.username)
         .filter(item => {
             if (filterStatus === 'returned') return item.returned;
             if (filterStatus === 'not-returned') return !item.returned;
             return true;
         })
-        .filter(item => item.lender.toLowerCase().includes(searchText.toLowerCase()));
+        .filter(item => item.borrower.toLowerCase().includes(searchText.toLowerCase()));
 
     let show;
     if (state.isItemsPending) {
@@ -30,8 +31,9 @@ function NoticesPage() {
     }
 
     return (
-        <div className="notices">
-            <h1 className="notices__title">Return Notices</h1>
+        <div className="items">
+            <h1 className="items__title">Lent Log</h1>
+            <AddItemForm />
             <div className="items__filters">
                 <div className="items__filter-buttons">
                     <button
@@ -47,26 +49,29 @@ function NoticesPage() {
                         onClick={() => setFilterStatus('returned')}
                     >Returned</button>
                 </div>
-                <label htmlFor="search-lender" className="items__search-label">
-                    <span className="search__title">Search lender:</span>
+                <label htmlFor="search-borrower" className="items__search-label">
+                    <span className="search__title">Search borrower:</span>
                     <input
-                        id="search-lender"
+                        id="search-borrower"
                         className="items__search"
                         type="text"
                         value={searchText}
                         onChange={e => setSearchText(e.target.value)}
-                        placeholder="Lender name..."
+                        placeholder="Borrower name..."
                     />
                 </label>
             </div>
-            {show === SHOW.PENDING && <Loading className="notices__waiting">Loading notices...</Loading>}
+            {show === SHOW.PENDING && <Loading className="items__waiting">Loading items...</Loading>}
             {show === SHOW.EMPTY && (
-                <p className="notices__empty">You have no reminders to return items.</p>
+                <p className="items__empty">Create your first lending reminder!</p>
             )}
             {show === SHOW.EXIST && (
-                <ul className="notices__list">
+                <ul className="items__list">
                     {filteredItems.map(item => (
-                        <li className="notice" key={item.id}>
+                        <li
+                            className={`item${item.id === state.lastAddedItemId ? ' item--new' : ''}`}
+                            key={item.id}
+                        >
                             <Item item={item} />
                         </li>
                     ))}
@@ -76,4 +81,4 @@ function NoticesPage() {
     );
 }
 
-export default NoticesPage;
+export default ItemsPage;

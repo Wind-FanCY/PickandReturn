@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { AppContext } from "./app-context";
-import { PAGE_STATUS } from "./constant";
+import { AppContext } from "../store/app-context";
+import { PAGE_STATUS } from "../store/constant";
 
-import ItemsPage from "./ItemsPage";
-import NoticesPage from "./NoticesPage";
+import ItemsPage from "../features/items/ItemsPage";
+import NoticesPage from "../features/notices/NoticesPage";
 
 function MainContent() {
     const [state, dispatch] = useContext(AppContext);

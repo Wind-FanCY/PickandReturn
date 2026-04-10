@@ -1,5 +1,5 @@
-import users from "./users.js";
-import items from "./items.js";
+import users from "../models/users.js";
+import items from "../models/items.js";
 
 function register(req, res) {
     const { username } = req.body;

@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { fetchLogout } from "./services";
-import { AppContext } from "./app-context";
+import { fetchLogout } from "../../services/services";
+import { AppContext } from "../../store/app-context";
 
-import logoutIcon from "./assets/logout_icon.png";
+import logoutIcon from "../../assets/logout_icon.png";
 
 function Controls() {
     const [state, dispatch] = useContext(AppContext);

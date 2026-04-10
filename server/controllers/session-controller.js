@@ -1,5 +1,5 @@
-import sessions from "./sessions.js";
-import users from "./users.js";
+import sessions from "../models/sessions.js";
+import users from "../models/users.js";
 
 function getSession(req, res) {
     const sid = req.cookies.sid;
