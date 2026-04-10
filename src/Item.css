@@ -115,3 +115,43 @@
         opacity: 1;
     }
 }
+
+.item__content--overdue {
+    border-left: 3px solid red;
+    padding-left: 0.5rem;
+    background-color: #fff5f5;
+}
+
+.item__overdue-tag {
+    display: inline-block;
+    background-color: red;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    margin-bottom: 0.3rem;
+}
+
+.item__confirm-delete {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item__confirm-yes {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.item__confirm-no {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+    border-radius: 3px;
+}

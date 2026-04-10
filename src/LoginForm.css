@@ -49,3 +49,27 @@
     transition: background 0.5s ease;
     background-color: rgb(110, 177, 110);
 }
+
+.login__field-error {
+    color: red;
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+}
+
+.login__switch {
+    margin-top: 1rem;
+}
+
+.login__switch-text {
+    font-size: 0.9rem;
+}
+
+.login__switch-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    text-decoration: underline;
+}

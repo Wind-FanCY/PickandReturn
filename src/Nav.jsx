@@ -4,13 +4,11 @@ import { AppContext } from "./app-context";
 function Nav() {
     const [state, dispatch] = useContext(AppContext);
 
-    function handleItemsPage(e) {
-        e.preventDefault();
+    function handleItemsPage() {
         dispatch({ type: 'checkItems' });
     }
 
-    function handleNoticesPage(e) {
-        e.preventDefault();
+    function handleNoticesPage() {
         dispatch({ type: 'checkNotices' });
     }
 
@@ -18,10 +16,10 @@ function Nav() {
         <div className="nav">
             <ul className="nav__list">
                 <li className="nav__item">
-                    <a className="nav__link" href="/lent" onClick={handleItemsPage}>Items Lent</a>
+                    <button className="nav__button" onClick={handleItemsPage}>Items Lent</button>
                 </li>
                 <li className="nav__item">
-                    <a className="nav__link" href="/borrowed" onClick={handleNoticesPage}>Items Due</a>
+                    <button className="nav__button" onClick={handleNoticesPage}>Items Due</button>
                 </li>
             </ul>
         </div>

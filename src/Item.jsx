@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AppContext } from "./app-context";
 import {
     fetchDeleteItem,
@@ -12,42 +12,48 @@ import "./Item.css";
 
 function Item({ item }) {
     const [state, dispatch] = useContext(AppContext);
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
     const isReturnedClass = item.returned ? "item__text--returned" : "";
+    const isOverdue = !item.returned && new Date(item.backDate) < new Date();
 
     function onDeleteItem(id) {
         dispatch({ type: 'startLoadingItems' });
         fetchDeleteItem(id)
-          .then(() => {
-            dispatch({ type: 'deleteItem', id: id })
-          })
-          .catch(err => {
-            dispatch({ type: 'reportError', error: err?.error });
-          });
-    }
-    
-      function onToggleLendStatus(id) {
-        fetchUpdateItem(id, !state.items[id].returned)
-          .then(item => {
-            dispatch({ type: 'returnItem', item: item });
-          })
-          .catch(err => {
-            dispatch({ type: 'reportError', error: err?.error });
-          });
-    }
-    
-      function onSendNotice(id) {
-          fetchSendNotice(id)
-              .then(item => {
-                dispatch({ type: 'sendNotice', item: item });
+            .then(() => {
+                dispatch({ type: 'deleteItem', id: id });
+                dispatch({ type: 'reportSuccess', message: 'Item deleted.' });
             })
             .catch(err => {
-            dispatch({ type: 'reportError', error: err?.error });
-          })
+                dispatch({ type: 'reportError', error: err?.error });
+            });
+    }
+
+    function onToggleLendStatus(id) {
+        fetchUpdateItem(id, !state.items[id].returned)
+            .then(item => {
+                dispatch({ type: 'returnItem', item: item });
+                dispatch({ type: 'reportSuccess', message: 'Status updated.' });
+            })
+            .catch(err => {
+                dispatch({ type: 'reportError', error: err?.error });
+            });
+    }
+
+    function onSendNotice(id) {
+        fetchSendNotice(id)
+            .then(item => {
+                dispatch({ type: 'sendNotice', item: item });
+                dispatch({ type: 'reportSuccess', message: 'Reminder sent!' });
+            })
+            .catch(err => {
+                dispatch({ type: 'reportError', error: err?.error });
+            });
     }
 
     return (
         item.lender === state.username ? (
-            <>
+            <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}`}>
+                {isOverdue && <span className="item__overdue-tag">Overdue</span>}
                 <label className="item__label">
                     <input
                         className="item__toggle"
@@ -93,17 +99,21 @@ function Item({ item }) {
                         onSendNotice(id);
                     }}
                 ><img className="icon" src={reminderIcon} alt="reminder button" />Remind</button>}
-                <button
-                    data-id={item.id}
-                    className="item__delete"
-                    onClick={(e) => {
-                        const id = e.target.dataset.id;
-                        onDeleteItem(id);
-                    }}
-                ><img className="icon" src={deleteIcon} alt="reminder button" />Delete</button>
-            </>) :
-            (<>
-                
+                {!confirmingDelete ? (
+                    <button
+                        className="item__delete"
+                        onClick={() => setConfirmingDelete(true)}
+                    ><img className="icon" src={deleteIcon} alt="delete button" />Delete</button>
+                ) : (
+                    <div className="item__confirm-delete">
+                        <span>Delete this item?</span>
+                        <button className="item__confirm-yes" onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}>Confirm</button>
+                        <button className="item__confirm-no" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+                    </div>
+                )}
+            </div>
+        ) : (
+            <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}`}>
                 <span
                     data-id={item.id}
                     className="notice__lender"
@@ -128,16 +138,20 @@ function Item({ item }) {
                 >
                     Details: {item.itemDetail}
                 </span>
-                <button
-                    data-id={item.id}
-                    className="notice__delete"
-                    onClick={(e) => {
-                        const id = e.target.dataset.id;
-                        onDeleteItem(id);
-                    }}
-                ><img className="icon" src={deleteIcon} alt="reminder button" />Delete</button>
-            </>)
-        
+                {!confirmingDelete ? (
+                    <button
+                        className="notice__delete"
+                        onClick={() => setConfirmingDelete(true)}
+                    ><img className="icon" src={deleteIcon} alt="delete button" />Delete</button>
+                ) : (
+                    <div className="item__confirm-delete">
+                        <span>Delete this item?</span>
+                        <button className="item__confirm-yes" onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}>Confirm</button>
+                        <button className="item__confirm-no" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+                    </div>
+                )}
+            </div>
+        )
     );
 }
 

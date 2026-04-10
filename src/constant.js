@@ -15,7 +15,9 @@ export const SERVER = {
     REQUIRED_USERNAME: 'required-username',
     REQUIRED_ITEM: 'required-item',
     ITEM_MISSING: 'item-missing',
-    USER_NOT_EXIST: 'userNotExist'
+    USER_NOT_EXIST: 'userNotExist',
+    USER_NOT_REGISTERED: 'user-not-registered',
+    USER_ALREADY_EXISTS: 'user-already-exists'
 };
 
 export const CLIENT = {
@@ -31,7 +33,8 @@ export const ACTIONS = {
     START_LOADING_ITEMS: 'startLoadingItems',
     REPLACE_ITEMS: 'replaceItems',
     REPORT_ERROR: 'reportError',
-    REATURN_ITEM: 'returnItem',
+    REPORT_SUCCESS: 'reportSuccess',
+    RETURN_ITEM: 'returnItem',
     DELETE_ITEM: 'deleteItem',
     ADD_ITEM: 'addItem',
     SEND_NOTICE: 'sendNotice'
@@ -47,8 +50,15 @@ export const MESSAGES = {
     [CLIENT.NETWORK_ERROR]: 'Trouble connecting to the network. Please try again',
     [SERVER.AUTH_INSUFFICIENT]: 'Username "dog" is not allowed',
     [SERVER.REQUIRED_USERNAME]: 'Please enter a valid username (only a-z, A-Z, 0-9 and _)',
-    [SERVER.REQUIRED_ITEM]: 'Plaease offer all information',
+    [SERVER.REQUIRED_ITEM]: 'Please offer all information',
     [SERVER.ITEM_MISSING]: 'Unable to find the relevant information',
     [SERVER.USER_NOT_EXIST]: 'Borrower is not in the system',
+    [SERVER.USER_NOT_REGISTERED]: 'Username not found. Please register first.',
+    [SERVER.USER_ALREADY_EXISTS]: 'Username already taken. Please log in.',
     default: 'Something went wrong. Please try again'
-}
+};
+
+export const FORM_MODE = {
+    LOGIN: 'login',
+    REGISTER: 'register'
+};

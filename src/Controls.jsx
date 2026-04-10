@@ -8,8 +8,10 @@ function Controls() {
     const [state, dispatch] = useContext(AppContext);
 
     function onLogout() {
-        dispatch({ type: 'logOut' });
         fetchLogout()
+            .then(() => {
+                dispatch({ type: 'logOut' });
+            })
             .catch(err => {
                 dispatch({ type: 'reportError', error: err?.error });
             });

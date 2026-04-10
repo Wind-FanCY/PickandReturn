@@ -12,20 +12,39 @@ function AddItemForm() {
     const [borrower, setBorrower] = useState('');
     const [lentDate, setLentDate] = useState('');
     const [backDate, setBackDate] = useState('');
+    const [errors, setErrors] = useState({});
 
     function onAddItem(itemInfo) {
         dispatch({ type: 'startLoadingItems' });
         fetchAddItem(itemInfo)
             .then(item => {
                 dispatch({ type: 'addItem', item: item });
+                dispatch({ type: 'reportSuccess', message: 'Item added successfully!' });
             })
             .catch(err => {
-                dispatch({ type: 'reportError', error: err?.error });
+                if (err?.error === 'userNotExist') {
+                    setErrors({ borrower: 'Borrower is not in the system' });
+                } else {
+                    dispatch({ type: 'reportError', error: err?.error });
+                }
             });
     }
 
     function onSubmit(e) {
         e.preventDefault();
+
+        const newErrors = {};
+        if (!itemDetail) newErrors.itemDetail = 'Item details are required';
+        if (!borrower) newErrors.borrower = 'Borrower is required';
+        if (!lentDate) newErrors.lentDate = 'Lent date is required';
+        if (!backDate) newErrors.backDate = 'Due date is required';
+        if (lentDate && backDate && backDate < lentDate) newErrors.dateRange = 'Due date must be on or after lent date';
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
+
         const itemInfo = {
             itemDetail: itemDetail,
             lender: state.username,
@@ -50,21 +69,26 @@ function AddItemForm() {
                 <span className="borrower__title">Borrower:</span>
                 <input className="borrower__input" type="text" value={borrower} id="borrower" name="borrower" onChange={(e) => setBorrower(e.target.value)} />
             </label>
+            {errors.borrower && <span className="field-error">{errors.borrower}</span>}
             <label htmlFor="lentDate" className="add__lentDate">
                 <span className="lentDate__title">Lent Date:</span>
                 <input className="lentDate__input" type="date" value={lentDate} id="lentDate" name="lentDate" onChange={(e) => setLentDate(e.target.value)} />
             </label>
+            {errors.lentDate && <span className="field-error">{errors.lentDate}</span>}
             <label htmlFor="backDate" className="add__backDate">
                 <span className="backDate__title">Back Date:</span>
                 <input className="backDate__input" type="date" value={backDate} id="backDate" name="backDate" onChange={(e) => setBackDate(e.target.value)} />
             </label>
+            {errors.backDate && <span className="field-error">{errors.backDate}</span>}
+            {errors.dateRange && <span className="field-error">{errors.dateRange}</span>}
             <label htmlFor="details" className="add__details">
                 <span className="details__title">Item Details:</span>
-                <input className="details__input" type="text" value={itemDetail} id="details" name="details" onChange={(e)=> setItemDetail(e.target.value)} />
+                <input className="details__input" type="text" value={itemDetail} id="details" name="details" onChange={(e) => setItemDetail(e.target.value)} />
             </label>
+            {errors.itemDetail && <span className="field-error">{errors.itemDetail}</span>}
             <span className="add__tips">* All information needs to be filled</span>
             <button className="add__button" type="submit"><img className="icon" src={addIcon} alt="add button" />Add</button>
-            {state.error && <Status error={state.error} />}
+            <Status error={state.error} success={state.success} />
         </form>
     );
 }

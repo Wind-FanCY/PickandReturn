@@ -123,6 +123,13 @@
     background-color: rgb(135, 168, 179);
 }
 
+.field-error {
+    color: red;
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 0.2rem;
+}
+
 
 @media (max-width: 54rem) {
     .add__lender {
