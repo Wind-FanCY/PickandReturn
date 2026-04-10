@@ -11,10 +11,12 @@ function Header() {
 
     return (
         <div className="header">
-            <h1 className="header__title">
-                Pick & Return
-            </h1>
-            {state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN && <Controls />}
+            <div className="header__top">
+                <h1 className="header__title">
+                    Pick & Return
+                </h1>
+                {state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN && <Controls />}
+            </div>
             {state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN && <Nav />}
         </div>
     );

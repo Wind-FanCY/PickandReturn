@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AppContext } from "./app-context";
+import { PAGE_STATUS } from "./constant";
 
 function Nav() {
     const [state, dispatch] = useContext(AppContext);
@@ -16,10 +17,10 @@ function Nav() {
         <div className="nav">
             <ul className="nav__list">
                 <li className="nav__item">
-                    <button className="nav__button" onClick={handleItemsPage}>Items Lent</button>
+                    <button className={`nav__button${state.pageStatus === PAGE_STATUS.ITEMS_PAGE ? ' nav__button--active' : ''}`} onClick={handleItemsPage}>Items Lent</button>
                 </li>
                 <li className="nav__item">
-                    <button className="nav__button" onClick={handleNoticesPage}>Items Due</button>
+                    <button className={`nav__button${state.pageStatus === PAGE_STATUS.NOTICES_PAGE ? ' nav__button--active' : ''}`} onClick={handleNoticesPage}>Items Due</button>
                 </li>
             </ul>
         </div>

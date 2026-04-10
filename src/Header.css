@@ -1,26 +1,28 @@
 .header {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    position: relative;
     box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
 }
 
+.header__top {
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+}
+
 .header__title {
+    flex: 1;
     font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 800;
     color: white;
     letter-spacing: -0.02em;
-    padding: 1.25rem;
+    padding: 1.25rem 0;
     text-align: center;
 }
 
 /* ── Controls ── */
 
 .controls {
-    position: absolute;
-    top: 50%;
-    right: 2rem;
-    transform: translateY(-50%);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -82,4 +84,10 @@
 .nav__button:hover {
     color: white;
     border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+.nav__button--active {
+    color: white;
+    border-bottom-color: white;
+    background: rgba(255, 255, 255, 0.12);
 }
