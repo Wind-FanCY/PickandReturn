@@ -1,157 +1,177 @@
+/* ── Core layout fix ── */
+
+.item__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    height: 100%;
+}
+
+/* ── Returned checkbox row ── */
+
 .item__label {
-    grid-column: span 12;
-    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0.25rem;
 }
 
 .item__toggle {
-    margin-right: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-primary);
+    cursor: pointer;
 }
 
 .toggle__title {
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
-.item__text {
-    grid-column: span 12;
-    margin-bottom: 1rem;
+/* ── Field rows ── */
+
+.item__borrower,
+.item__lentDate,
+.item__backDate,
+.item__text,
+.notice__lender,
+.notice__lentDate,
+.notice__backDate,
+.notice__text {
+    display: block;
+    font-size: 0.88rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
 }
 
-.item__borrower {
-    grid-column: span 12;
-    margin-bottom: 1rem;
+.item__text--returned {
+    text-decoration: line-through;
+    color: var(--color-text-muted);
 }
 
-.item__lentDate {
-    grid-column: span 12;
-    margin-bottom: 1rem;
+/* ── Action buttons ── */
+
+.item__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
 }
 
-.item__backDate {
-    grid-column: span 12;
-    margin-bottom: 1rem;
+.item__send,
+.item__delete,
+.notice__delete {
+    flex: 1;
+    padding: 0.45rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
 }
 
 .item__send {
-    grid-column: span 6;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 1s ease;
-    background-color: lightskyblue;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
 }
 
 .item__send:hover {
-    transition: background 0.5s ease;
-    background-color: rgb(90, 140, 172);
-}
-
-.item__delete {
-    grid-column: 7 / span 6;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 1s ease;
-    background-color: lightcoral;
-}
-
-.item__delete:hover {
-    transition: background 0.5s ease;
-    background-color: rgb(149, 81, 81);
-}
-
-.item__text--returned{
-    text-decoration: line-through;
-}
-
-.notice__text {
-    grid-column: span 12;
-    margin-bottom: 1rem;
-}
-
-.notice__lender {
-    grid-column: span 12;
-    margin-bottom: 1rem;
-}
-
-.notice__lentDate {
-    grid-column: span 12;
-    margin-bottom: 1rem;
-}
-
-.notice__backDate {
-    grid-column: span 12;
-    margin-bottom: 1rem;
-}
-
-.notice__delete {
-    grid-column: 7 / span 6;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 1s ease;
-    background-color: lightcoral;
-}
-
-.notice__delete:hover {
-    transition: background 0.5s ease;
-    background-color: rgb(149, 81, 81);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-.item__content--overdue {
-    border-left: 3px solid red;
-    padding-left: 0.5rem;
-    background-color: #fff5f5;
-}
-
-.item__overdue-tag {
-    display: inline-block;
-    background-color: red;
+    background: var(--color-primary);
     color: white;
-    font-size: 0.75rem;
-    padding: 0.1rem 0.4rem;
-    border-radius: 3px;
-    margin-bottom: 0.3rem;
+    transform: translateY(-1px);
 }
+
+.item__delete,
+.notice__delete {
+    background: #fee2e2;
+    color: var(--color-danger);
+}
+
+.item__delete:hover,
+.notice__delete:hover {
+    background: var(--color-danger);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* ── Delete confirmation ── */
 
 .item__confirm-delete {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
 }
 
 .item__confirm-yes {
-    background-color: #dc3545;
+    padding: 0.3rem 0.75rem;
+    background: var(--color-danger);
     color: white;
-    border: none;
-    padding: 0.2rem 0.6rem;
-    cursor: pointer;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.item__confirm-yes:hover {
+    background: var(--color-danger-dark);
 }
 
 .item__confirm-no {
-    background-color: #6c757d;
+    padding: 0.3rem 0.75rem;
+    background: var(--color-border);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.item__confirm-no:hover {
+    background: #cbd5e1;
+}
+
+/* ── Overdue ── */
+
+.item__content--overdue {
+    background: var(--color-overdue-bg);
+    border-left: 3px solid var(--color-danger);
+    padding-left: 0.75rem;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.item__overdue-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-danger);
     color: white;
-    border: none;
-    padding: 0.2rem 0.6rem;
-    cursor: pointer;
-    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    width: fit-content;
+}
+
+/* ── New item highlight ── */
+
+.item--new {
+    border-color: var(--color-new-border) !important;
+    background: var(--color-new-bg) !important;
 }

@@ -36,6 +36,7 @@ function AddItemForm() {
         const newErrors = {};
         if (!itemDetail) newErrors.itemDetail = 'Item details are required';
         if (!borrower) newErrors.borrower = 'Borrower is required';
+        else if (borrower === state.username) newErrors.borrower = 'You cannot lend to yourself';
         if (!lentDate) newErrors.lentDate = 'Lent date is required';
         if (!backDate) newErrors.backDate = 'Due date is required';
         if (lentDate && backDate && backDate < lentDate) newErrors.dateRange = 'Due date must be on or after lent date';

@@ -67,7 +67,7 @@ function LoginForm() {
         setMode(FORM_MODE.REGISTER);
         setUsername('');
         setFormError('');
-        dispatch({ type: 'reportError', error: '' });
+        dispatch({ type: 'reportSuccess', message: '' });
     }
 
     function switchToLogin(e) {
@@ -75,7 +75,7 @@ function LoginForm() {
         setMode(FORM_MODE.LOGIN);
         setUsername('');
         setFormError('');
-        dispatch({ type: 'reportError', error: '' });
+        dispatch({ type: 'reportSuccess', message: '' });
     }
 
     const isLogin = mode === FORM_MODE.LOGIN;
