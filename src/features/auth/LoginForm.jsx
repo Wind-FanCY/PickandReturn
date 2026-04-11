@@ -62,21 +62,15 @@ function LoginForm() {
         setFormError('');
     }
 
-    function switchToRegister(e) {
+    const createModeSwitcher = (newMode) => (e) => {
         e.preventDefault();
-        setMode(FORM_MODE.REGISTER);
+        setMode(newMode);
         setUsername('');
         setFormError('');
         dispatch({ type: 'reportSuccess', message: '' });
-    }
-
-    function switchToLogin(e) {
-        e.preventDefault();
-        setMode(FORM_MODE.LOGIN);
-        setUsername('');
-        setFormError('');
-        dispatch({ type: 'reportSuccess', message: '' });
-    }
+    };
+    const switchToRegister = createModeSwitcher(FORM_MODE.REGISTER);
+    const switchToLogin    = createModeSwitcher(FORM_MODE.LOGIN);
 
     const isLogin = mode === FORM_MODE.LOGIN;
 
