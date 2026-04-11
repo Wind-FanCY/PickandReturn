@@ -50,6 +50,21 @@ function Item({ item }) {
             });
     }
 
+    function DeleteConfirm({ buttonClass }) {
+        return !confirmingDelete ? (
+            <button
+                className={buttonClass}
+                onClick={() => setConfirmingDelete(true)}
+            ><img className="icon" src={deleteIcon} alt="delete button" />Delete</button>
+        ) : (
+            <div className="item__confirm-delete">
+                <span>Delete this item?</span>
+                <button className="item__confirm-yes" onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}>Confirm</button>
+                <button className="item__confirm-no" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+            </div>
+        );
+    }
+
     return (
         item.lender === state.username ? (
             <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}`}>
@@ -99,18 +114,7 @@ function Item({ item }) {
                         onSendNotice(id);
                     }}
                 ><img className="icon" src={reminderIcon} alt="reminder button" />Remind</button>}
-                {!confirmingDelete ? (
-                    <button
-                        className="item__delete"
-                        onClick={() => setConfirmingDelete(true)}
-                    ><img className="icon" src={deleteIcon} alt="delete button" />Delete</button>
-                ) : (
-                    <div className="item__confirm-delete">
-                        <span>Delete this item?</span>
-                        <button className="item__confirm-yes" onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}>Confirm</button>
-                        <button className="item__confirm-no" onClick={() => setConfirmingDelete(false)}>Cancel</button>
-                    </div>
-                )}
+                <DeleteConfirm buttonClass="item__delete" />
             </div>
         ) : (
             <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}`}>
@@ -138,18 +142,7 @@ function Item({ item }) {
                 >
                     Details: {item.itemDetail}
                 </span>
-                {!confirmingDelete ? (
-                    <button
-                        className="notice__delete"
-                        onClick={() => setConfirmingDelete(true)}
-                    ><img className="icon" src={deleteIcon} alt="delete button" />Delete</button>
-                ) : (
-                    <div className="item__confirm-delete">
-                        <span>Delete this item?</span>
-                        <button className="item__confirm-yes" onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}>Confirm</button>
-                        <button className="item__confirm-no" onClick={() => setConfirmingDelete(false)}>Cancel</button>
-                    </div>
-                )}
+                <DeleteConfirm buttonClass="notice__delete" />
             </div>
         )
     );
