@@ -9,6 +9,7 @@
     grid-template-areas:
         "lender borrower"
         "lentDate backDate"
+        "modifyLimit modifyLimit"
         "details details"
         "tips tips"
         "button button";
@@ -49,6 +50,14 @@
     gap: 0.4rem;
 }
 
+.add__modify-limit {
+    grid-area: modifyLimit;
+    padding: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
 .add__details {
     grid-area: details;
     padding: 0.5rem 0;
@@ -63,6 +72,7 @@
 .borrower__title,
 .lentDate__title,
 .backDate__title,
+.modify-limit__title,
 .details__title {
     font-size: 0.78rem;
     font-weight: 600;
@@ -99,6 +109,23 @@
 
 .details__input {
     width: 100%;
+}
+
+.modify-limit__select {
+    padding: 0.45rem 0.8rem;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    outline: none;
+    background: white;
+    color: var(--color-text-primary);
+    transition: border-color 0.2s;
+    cursor: pointer;
+}
+
+.modify-limit__select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
 }
 
 /* ── Validation errors ── */
@@ -153,6 +180,7 @@
             "borrower borrower"
             "lentDate lentDate"
             "backDate backDate"
+            "modifyLimit modifyLimit"
             "details details"
             "tips tips"
             "button button";

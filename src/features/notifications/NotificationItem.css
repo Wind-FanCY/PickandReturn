@@ -1,0 +1,62 @@
+.notification-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    background: white;
+    transition: background 0.15s;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item--unread {
+    background: #eff6ff;
+    border-left: 3px solid var(--color-primary);
+}
+
+.notification-item__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.notification-item__type-tag {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 2rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    letter-spacing: 0.03em;
+}
+
+.notification-item__time {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.notification-item__message {
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    margin: 0 0 0.5rem 0;
+}
+
+.notification-item__delete {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #fee2e2;
+    color: var(--color-danger);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s, color 0.2s;
+}
+
+.notification-item__delete:hover {
+    background: var(--color-danger);
+    color: white;
+}

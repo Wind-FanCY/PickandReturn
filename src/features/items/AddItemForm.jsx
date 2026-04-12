@@ -12,6 +12,7 @@ function AddItemForm() {
     const [borrower, setBorrower] = useState('');
     const [lentDate, setLentDate] = useState('');
     const [backDate, setBackDate] = useState('');
+    const [modifyLimit, setModifyLimit] = useState('3');
     const [errors, setErrors] = useState({});
     const handleInput = (setter) => (e) => setter(e.target.value);
 
@@ -53,11 +54,13 @@ function AddItemForm() {
             borrower: borrower,
             lentDate: lentDate,
             backDate: backDate,
+            modifyLimit: parseInt(modifyLimit, 10)
         };
         setItemDetail('');
         setBorrower('');
         setLentDate('');
         setBackDate('');
+        setModifyLimit('3');
         onAddItem(itemInfo);
     }
 
@@ -83,6 +86,21 @@ function AddItemForm() {
             </label>
             {errors.backDate && <span className="field-error">{errors.backDate}</span>}
             {errors.dateRange && <span className="field-error">{errors.dateRange}</span>}
+            <label htmlFor="modifyLimit" className="add__modify-limit">
+                <span className="modify-limit__title">Modify Limit:</span>
+                <select
+                    id="modifyLimit"
+                    className="modify-limit__select"
+                    value={modifyLimit}
+                    onChange={(e) => setModifyLimit(e.target.value)}
+                >
+                    <option value="-1">无限次</option>
+                    <option value="0">禁止修改</option>
+                    <option value="1">1 次</option>
+                    <option value="3">3 次</option>
+                    <option value="5">5 次</option>
+                </select>
+            </label>
             <label htmlFor="details" className="add__details">
                 <span className="details__title">Item Details:</span>
                 <input className="details__input" type="text" value={itemDetail} id="details" name="details" onChange={handleInput(setItemDetail)} />

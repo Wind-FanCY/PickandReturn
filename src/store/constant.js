@@ -6,7 +6,8 @@ export const LOGIN_STATUS = {
 
 export const PAGE_STATUS = {
     ITEMS_PAGE: 'itemsPage',
-    NOTICES_PAGE: 'noticesPage'
+    NOTICES_PAGE: 'noticesPage',
+    RETURN_PAGE: 'returnPage'
 };
 
 export const SERVER = {
@@ -30,6 +31,7 @@ export const ACTIONS = {
     LOG_OUT: 'logOut',
     CHECK_ITEMS: 'checkItems',
     CHECK_NOTICES: 'checkNotices',
+    CHECK_RETURN: 'checkReturn',
     START_LOADING_ITEMS: 'startLoadingItems',
     REPLACE_ITEMS: 'replaceItems',
     REPORT_ERROR: 'reportError',
@@ -37,7 +39,18 @@ export const ACTIONS = {
     RETURN_ITEM: 'returnItem',
     DELETE_ITEM: 'deleteItem',
     ADD_ITEM: 'addItem',
-    SEND_NOTICE: 'sendNotice'
+    SEND_NOTICE: 'sendNotice',
+    REPLACE_NOTIFICATIONS: 'replaceNotifications',
+    DELETE_NOTIFICATION: 'deleteNotification',
+    MARK_NOTIFICATIONS_READ: 'markNotificationsRead',
+    EDIT_ITEM: 'editItem',
+    MODIFY_DUE_DATE: 'modifyDueDate',
+    UPDATE_MODIFY_LIMIT: 'updateModifyLimit'
+};
+
+export const NOTIFICATION_TYPE = {
+    RETURN_REMINDER: 'return_reminder',
+    DATE_MODIFIED: 'date_modified'
 };
 
 export const SHOW = {
