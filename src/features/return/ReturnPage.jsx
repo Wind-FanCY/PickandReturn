@@ -1,13 +1,12 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../../store/app-context";
 import { SHOW } from "../../store/constant";
-
 import Loading from "../../components/Loading/Loading";
-import Item from "../../components/Item/Item";
-import "./NoticesPage.css";
+import ReturnItem from "./ReturnItem";
+import "./ReturnPage.css";
 
-function NoticesPage() {
-    const [state, dispatch] = useContext(AppContext);
+function ReturnPage() {
+    const [state] = useContext(AppContext);
     const [searchText, setSearchText] = useState('');
 
     const filteredItems = Object.values(state.items)
@@ -24,34 +23,34 @@ function NoticesPage() {
     }
 
     return (
-        <div className="notices">
-            <h1 className="notices__title">Return Notices</h1>
-            <label htmlFor="search-lender" className="items__search-label">
-                <span className="search__title">Search lender:</span>
+        <main className="return-page">
+            <h1 className="return-page__title">To Return</h1>
+            <label htmlFor="search-lender" className="return-page__search-label">
+                <span className="return-page__search-title">Search lender:</span>
                 <input
                     id="search-lender"
-                    className="items__search"
+                    className="return-page__search"
                     type="text"
                     value={searchText}
                     onChange={e => setSearchText(e.target.value)}
                     placeholder="Lender name..."
                 />
             </label>
-            {show === SHOW.PENDING && <Loading className="notices__waiting">Loading notices...</Loading>}
+            {show === SHOW.PENDING && <Loading>Loading items...</Loading>}
             {show === SHOW.EMPTY && (
-                <p className="notices__empty">You have no reminders to return items.</p>
+                <p className="return-page__empty">You have no items to return.</p>
             )}
             {show === SHOW.EXIST && (
-                <ul className="notices__list">
+                <ul className="return-page__list">
                     {filteredItems.map(item => (
-                        <li className="notice" key={item.id}>
-                            <Item item={item} />
+                        <li className="return-page__item" key={item.id}>
+                            <ReturnItem item={item} />
                         </li>
                     ))}
                 </ul>
             )}
-        </div>
+        </main>
     );
 }
 
-export default NoticesPage;
+export default ReturnPage;

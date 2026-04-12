@@ -13,7 +13,9 @@ export const initialState = {
     pageStatus: PAGE_STATUS.ITEMS_PAGE,
     isItemsPending: false,
     items: {},
-    lastAddedItemId: ''
+    lastAddedItemId: '',
+    notifications: [],
+    unreadCount: 0
 };
 
 function reducer(state, action) {
@@ -37,7 +39,9 @@ function reducer(state, action) {
                 pageStatus: PAGE_STATUS.ITEMS_PAGE,
                 isItemsPending: false,
                 items: {},
-                lastAddedItemId: ''
+                lastAddedItemId: '',
+                notifications: [],
+                unreadCount: 0
             };
 
         case ACTIONS.CHECK_ITEMS:
@@ -50,6 +54,12 @@ function reducer(state, action) {
             return {
                 ...state,
                 pageStatus: PAGE_STATUS.NOTICES_PAGE
+            };
+
+        case ACTIONS.CHECK_RETURN:
+            return {
+                ...state,
+                pageStatus: PAGE_STATUS.RETURN_PAGE
             };
 
         case ACTIONS.START_LOADING_ITEMS:
@@ -101,11 +111,7 @@ function reducer(state, action) {
                 ...state,
                 lastAddedItemId: '',
                 error: '',
-                success: '',
-                items: {
-                    ...state.items,
-                    [action.item.id]: action.item
-                }
+                success: ''
             };
 
         case ACTIONS.DELETE_ITEM: {
@@ -134,6 +140,66 @@ function reducer(state, action) {
                     [action.item.id]: action.item
                 }
             };
+
+        case ACTIONS.REPLACE_NOTIFICATIONS: {
+            const notifications = action.payload || [];
+            return {
+                ...state,
+                notifications,
+                unreadCount: notifications.filter(n => n.read === false).length
+            };
+        }
+
+        case ACTIONS.DELETE_NOTIFICATION: {
+            const notifications = state.notifications.filter(n => n.id !== action.payload);
+            return {
+                ...state,
+                notifications,
+                unreadCount: notifications.filter(n => n.read === false).length
+            };
+        }
+
+        case ACTIONS.MARK_NOTIFICATIONS_READ: {
+            const notifications = action.payload || [];
+            return {
+                ...state,
+                notifications,
+                unreadCount: 0
+            };
+        }
+
+        case ACTIONS.EDIT_ITEM: {
+            const item = action.payload;
+            return {
+                ...state,
+                items: {
+                    ...state.items,
+                    [item.id]: item
+                }
+            };
+        }
+
+        case ACTIONS.MODIFY_DUE_DATE: {
+            const item = action.payload;
+            return {
+                ...state,
+                items: {
+                    ...state.items,
+                    [item.id]: item
+                }
+            };
+        }
+
+        case ACTIONS.UPDATE_MODIFY_LIMIT: {
+            const item = action.payload;
+            return {
+                ...state,
+                items: {
+                    ...state.items,
+                    [item.id]: item
+                }
+            };
+        }
 
         default:
             return state;

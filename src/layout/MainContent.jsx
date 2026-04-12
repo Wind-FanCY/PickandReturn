@@ -3,7 +3,7 @@ import { AppContext } from "../store/app-context";
 import { PAGE_STATUS } from "../store/constant";
 
 import ItemsPage from "../features/items/ItemsPage";
-import NoticesPage from "../features/notices/NoticesPage";
+import ReturnPage from "../features/return/ReturnPage";
 
 function MainContent() {
     const [state, dispatch] = useContext(AppContext);
@@ -11,7 +11,7 @@ function MainContent() {
     return (
         <div className="main-content">
             {state.pageStatus === PAGE_STATUS.ITEMS_PAGE && <ItemsPage />}
-            {state.pageStatus === PAGE_STATUS.NOTICES_PAGE && <NoticesPage />}
+            {state.pageStatus === PAGE_STATUS.RETURN_PAGE && <ReturnPage />}
         </div>
     )
 }

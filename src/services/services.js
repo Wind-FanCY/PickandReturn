@@ -148,3 +148,107 @@ export function fetchRegister(username) {
                 .then(err => Promise.reject(err));
         });
 }
+
+export function fetchEditItem(id, updates) {
+    return fetch(`api/v1/items/${id}`, {
+        method: 'PUT',
+        headers: new Headers({
+            'content-type': 'application/json'
+        }),
+        body: JSON.stringify(updates)
+    })
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json()
+                .catch(error => Promise.reject({ error }))
+                .then(err => Promise.reject(err));
+        });
+}
+
+export function fetchModifyDueDate(id, newBackDate) {
+    return fetch(`api/v1/items/${id}/duedate`, {
+        method: 'PATCH',
+        headers: new Headers({
+            'content-type': 'application/json'
+        }),
+        body: JSON.stringify({ backDate: newBackDate })
+    })
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json()
+                .catch(error => Promise.reject({ error }))
+                .then(err => Promise.reject(err));
+        });
+}
+
+export function fetchUpdateModifyLimit(id, modifyLimit) {
+    return fetch(`api/v1/items/${id}/modifylimit`, {
+        method: 'PATCH',
+        headers: new Headers({
+            'content-type': 'application/json'
+        }),
+        body: JSON.stringify({ modifyLimit })
+    })
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json()
+                .catch(error => Promise.reject({ error }))
+                .then(err => Promise.reject(err));
+        });
+}
+
+export function fetchNotifications() {
+    return fetch('api/v1/notifications')
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json()
+                .catch(error => Promise.reject({ error }))
+                .then(err => Promise.reject(err));
+        });
+}
+
+export function fetchMarkNotificationsRead() {
+    return fetch('api/v1/notifications/read', {
+        method: 'PATCH',
+        headers: new Headers({
+            'content-type': 'application/json'
+        }),
+        body: JSON.stringify({})
+    })
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json()
+                .catch(error => Promise.reject({ error }))
+                .then(err => Promise.reject(err));
+        });
+}
+
+export function fetchDeleteNotification(id) {
+    return fetch(`api/v1/notifications/${id}`, {
+        method: 'DELETE'
+    })
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json()
+                .catch(error => Promise.reject({ error }))
+                .then(err => Promise.reject(err));
+        });
+}

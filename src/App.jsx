@@ -2,11 +2,13 @@ import { useReducer, useEffect } from 'react';
 import {
   SERVER,
   CLIENT,
-  LOGIN_STATUS
+  LOGIN_STATUS,
+  ACTIONS
 } from './store/constant';
 import {
   fetchSession,
-  fetchItems
+  fetchItems,
+  fetchNotifications
 } from './services/services';
 import reducer, { initialState } from './store/reducer';
 import { AppContext } from './store/app-context';
@@ -24,7 +26,7 @@ function App() {
   function checkForSession() {
     fetchSession()
       .then(session => {
-        dispatch({ type: 'logIn', username: session.username });
+        dispatch({ type: ACTIONS.LOG_IN, username: session.username });
         return fetchItems();
       })
       .catch(err => {
@@ -34,14 +36,18 @@ function App() {
         return Promise.reject(err);
       })
       .then(items => {
-        dispatch({ type: 'replaceItems', items: items });
+        dispatch({ type: ACTIONS.REPLACE_ITEMS, items: items });
+        return fetchNotifications();
+      })
+      .then(data => {
+        dispatch({ type: ACTIONS.REPLACE_NOTIFICATIONS, payload: data.notifications });
       })
       .catch(err => {
         if (err?.error === CLIENT.NO_SESSION) {
-          dispatch({ type: 'logOut' });
+          dispatch({ type: ACTIONS.LOG_OUT });
           return;
         }
-        dispatch({ type: 'reportError', error: err?.error });
+        dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
       });
   }
 
