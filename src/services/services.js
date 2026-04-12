@@ -1,14 +1,16 @@
+function parseResponse(response) {
+    if (response.ok) {
+        return response.json();
+    }
+    return response.json()
+        .catch(error => Promise.reject({ error }))
+        .then(err => Promise.reject(err));
+}
+
 export function fetchSession() {
     return fetch('api/v1/session')
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchLogout() {
@@ -16,14 +18,7 @@ export function fetchLogout() {
         method: 'DELETE'
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchLogin(username) {
@@ -35,27 +30,13 @@ export function fetchLogin(username) {
         body: JSON.stringify({ username })
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchItems() {
     return fetch('api/v1/items')
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchAddItem(itemInfo) {
@@ -67,14 +48,7 @@ export function fetchAddItem(itemInfo) {
         body: JSON.stringify({ itemInfo })
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchDeleteItem(id) {
@@ -82,14 +56,7 @@ export function fetchDeleteItem(id) {
         method: 'DELETE'
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchUpdateItem(id, itemReturned) {
@@ -101,14 +68,7 @@ export function fetchUpdateItem(id, itemReturned) {
         body: JSON.stringify({ itemReturned })
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchSendNotice(id) {
@@ -120,14 +80,7 @@ export function fetchSendNotice(id) {
         body: JSON.stringify({ id })
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchRegister(username) {
@@ -139,14 +92,7 @@ export function fetchRegister(username) {
         body: JSON.stringify({ username })
     })
         .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+        .then(parseResponse);
 }
 
 export function fetchEditItem(id, updates) {

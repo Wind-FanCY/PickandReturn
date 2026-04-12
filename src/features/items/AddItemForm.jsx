@@ -14,6 +14,7 @@ function AddItemForm() {
     const [backDate, setBackDate] = useState('');
     const [modifyLimit, setModifyLimit] = useState('3');
     const [errors, setErrors] = useState({});
+    const handleInput = (setter) => (e) => setter(e.target.value);
 
     function onAddItem(itemInfo) {
         dispatch({ type: 'startLoadingItems' });
@@ -71,17 +72,17 @@ function AddItemForm() {
             </label>
             <label htmlFor="borrower" className="add__borrower">
                 <span className="borrower__title">Borrower:</span>
-                <input className="borrower__input" type="text" value={borrower} id="borrower" name="borrower" onChange={(e) => setBorrower(e.target.value)} />
+                <input className="borrower__input" type="text" value={borrower} id="borrower" name="borrower" onChange={handleInput(setBorrower)} />
             </label>
             {errors.borrower && <span className="field-error">{errors.borrower}</span>}
             <label htmlFor="lentDate" className="add__lentDate">
                 <span className="lentDate__title">Lent Date:</span>
-                <input className="lentDate__input" type="date" value={lentDate} id="lentDate" name="lentDate" onChange={(e) => setLentDate(e.target.value)} />
+                <input className="lentDate__input" type="date" value={lentDate} id="lentDate" name="lentDate" onChange={handleInput(setLentDate)} />
             </label>
             {errors.lentDate && <span className="field-error">{errors.lentDate}</span>}
             <label htmlFor="backDate" className="add__backDate">
                 <span className="backDate__title">Back Date:</span>
-                <input className="backDate__input" type="date" value={backDate} id="backDate" name="backDate" onChange={(e) => setBackDate(e.target.value)} />
+                <input className="backDate__input" type="date" value={backDate} id="backDate" name="backDate" onChange={handleInput(setBackDate)} />
             </label>
             {errors.backDate && <span className="field-error">{errors.backDate}</span>}
             {errors.dateRange && <span className="field-error">{errors.dateRange}</span>}
@@ -102,7 +103,7 @@ function AddItemForm() {
             </label>
             <label htmlFor="details" className="add__details">
                 <span className="details__title">Item Details:</span>
-                <input className="details__input" type="text" value={itemDetail} id="details" name="details" onChange={(e) => setItemDetail(e.target.value)} />
+                <input className="details__input" type="text" value={itemDetail} id="details" name="details" onChange={handleInput(setItemDetail)} />
             </label>
             {errors.itemDetail && <span className="field-error">{errors.itemDetail}</span>}
             <span className="add__tips">* All information needs to be filled</span>
