@@ -1,10 +1,14 @@
+/* ── Form container ── */
+
 .add__form {
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    border: 1.5px solid var(--color-border-strong);
+    border-top: 4px solid var(--color-accent);
     border-radius: var(--radius-md);
-    padding: 1.5rem 2rem;
-    margin: 0 2rem 1.5rem;
+    padding: 1.5rem 1.75rem;
+    margin: 0 0 1.5rem;
     box-shadow: var(--shadow-sm);
+    animation: form-slide-down 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
     display: grid;
     grid-template-areas:
         "lender borrower"
@@ -23,7 +27,7 @@
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .add__borrower {
@@ -31,7 +35,7 @@
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .add__lentDate {
@@ -39,7 +43,7 @@
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .add__backDate {
@@ -47,7 +51,7 @@
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .add__modify-limit {
@@ -55,7 +59,7 @@
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .add__details {
@@ -63,7 +67,7 @@
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 /* ── Labels ── */
@@ -74,11 +78,14 @@
 .backDate__title,
 .modify-limit__title,
 .details__title {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 0;
 }
 
 /* ── Inputs ── */
@@ -88,14 +95,15 @@
 .lentDate__input,
 .backDate__input,
 .details__input {
-    padding: 0.5rem 0.8rem;
+    padding: 0.5rem 0.75rem;
     border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background: white;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    background: var(--color-bg);
     color: var(--color-text-primary);
+    width: 100%;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .lender__input:focus,
@@ -103,46 +111,56 @@
 .lentDate__input:focus,
 .backDate__input:focus,
 .details__input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+    border-color: var(--color-primary-mid);
+    box-shadow: 0 0 0 2px rgba(45,80,22,0.09);
+    background: var(--color-surface-raised);
+    outline: none;
 }
 
-.details__input {
-    width: 100%;
+.lender__input:disabled {
+    background: var(--color-bg-alt);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
 }
+
+/* ── Modify limit select ── */
 
 .modify-limit__select {
-    padding: 0.45rem 0.8rem;
+    padding: 0.45rem 0.75rem;
     border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    outline: none;
-    background: white;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background: var(--color-bg);
     color: var(--color-text-primary);
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-fast);
     cursor: pointer;
+    outline: none;
 }
 
 .modify-limit__select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+    border-color: var(--color-primary-mid);
+    box-shadow: 0 0 0 2px rgba(45,80,22,0.09);
+    background: var(--color-surface-raised);
 }
 
 /* ── Validation errors ── */
 
 .field-error {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
     color: var(--color-danger);
-    font-size: 0.78rem;
-    font-weight: 500;
+    font-style: italic;
     display: block;
-    margin-top: -0.15rem;
+    margin-top: -0.1rem;
 }
 
 /* ── Tips ── */
 
 .add__tips {
     grid-area: tips;
-    font-size: 0.82rem;
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
     font-style: italic;
     padding: 0.25rem 0;
@@ -154,21 +172,27 @@
     grid-area: button;
     width: fit-content;
     margin: 0.5rem auto 0;
-    padding: 0.6rem 2rem;
+    padding: 0.6rem 2.25rem;
     background: var(--color-primary);
-    color: white;
-    border-radius: 2rem;
-    font-weight: 600;
-    font-size: 0.9rem;
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    transition: background 0.2s, transform 0.1s;
+    transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .add__button:hover {
-    background: var(--color-primary-dark);
+    background: var(--color-primary-mid);
     transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 /* ── Responsive ── */
@@ -184,6 +208,6 @@
             "details details"
             "tips tips"
             "button button";
-        margin: 0 1rem 1.5rem;
+        margin: 0 0 1.5rem;
     }
 }

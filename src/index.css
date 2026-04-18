@@ -1,52 +1,131 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap');
 
 :root {
-  --color-bg: #f0f4ff;
-  --color-surface: #ffffff;
-  --color-primary: #4f46e5;
-  --color-primary-dark: #4338ca;
-  --color-primary-light: #e0e7ff;
-  --color-accent: #f59e0b;
-  --color-danger: #ef4444;
-  --color-danger-dark: #dc2626;
-  --color-success: #10b981;
-  --color-success-dark: #059669;
-  --color-text-primary: #1e1b4b;
-  --color-text-secondary: #64748b;
-  --color-text-muted: #94a3b8;
-  --color-border: #e2e8f0;
-  --color-overdue-bg: #fef2f2;
-  --color-overdue-border: #fca5a5;
-  --color-new-bg: #f0fdf4;
-  --color-new-border: #86efac;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(79, 70, 229, 0.10), 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 24px rgba(79, 70, 229, 0.15), 0 4px 8px rgba(0, 0, 0, 0.08);
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --color-bg:             #faf7f2;
+  --color-bg-alt:         #f3ede3;
+  --color-surface:        #fffcf7;
+  --color-surface-raised: #ffffff;
+
+  --color-primary:        #2d5016;
+  --color-primary-mid:    #3d6b20;
+  --color-primary-light:  #e8f0e0;
+  --color-primary-xlight: #f2f6ee;
+
+  --color-accent:         #b5890a;
+  --color-accent-light:   #fdf3d0;
+
+  --color-danger:         #c4622d;
+  --color-danger-dark:    #a3501f;
+  --color-danger-light:   #fbeee6;
+  --color-danger-border:  #e8b49a;
+
+  --color-success:        #4a7c3f;
+  --color-success-dark:   #3a6231;
+  --color-success-light:  #eaf2e7;
+
+  --color-text-primary:   #1c2b12;
+  --color-text-secondary: #5a6b4a;
+  --color-text-muted:     #9aaa86;
+  --color-text-inverse:   #fffcf7;
+
+  --color-border:         #ddd6c8;
+  --color-border-strong:  #c4b99f;
+
+  --color-overdue-bg:     #fbeee6;
+  --color-overdue-border: #e8b49a;
+  --color-new-bg:         #eaf2e7;
+  --color-new-border:     #90bd82;
+
+  --radius-xs:   3px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-pill: 100px;
+
+  --shadow-xs:    0 1px 2px rgba(45, 80, 22, 0.06);
+  --shadow-sm:    0 2px 6px rgba(45, 80, 22, 0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 14px rgba(45, 80, 22, 0.10), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg:    0 8px 28px rgba(45, 80, 22, 0.13), 0 3px 8px rgba(0,0,0,0.06);
+  --shadow-panel: 0 12px 40px rgba(28, 43, 18, 0.16);
+
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Source Serif 4', Georgia, serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+
+  --text-xs:   0.72rem;
+  --text-sm:   0.82rem;
+  --text-base: 0.93rem;
+  --text-md:   1rem;
+  --text-lg:   1.15rem;
+  --text-xl:   1.4rem;
+  --text-2xl:  1.75rem;
+  --text-3xl:  2.25rem;
+
+  --transition-fast:   0.15s ease;
+  --transition-base:   0.22s ease;
+  --transition-slow:   0.38s cubic-bezier(0.34, 1.2, 0.64, 1);
+  --transition-panel:  0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: var(--font-body);
-}
-
-html,
-body {
-  height: 100dvh;
+  min-height: 100dvh;
   background-color: var(--color-bg);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 28px,
+      rgba(180, 160, 120, 0.025) 28px,
+      rgba(180, 160, 120, 0.025) 29px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent, transparent 60px,
+      rgba(180, 160, 120, 0.018) 60px,
+      rgba(180, 160, 120, 0.018) 61px
+    );
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  height: 100%;
   min-width: 45rem;
+}
+
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+  padding: 0;
+}
+
+h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
 }
 
 button {
@@ -56,7 +135,43 @@ button {
 }
 
 button:focus-visible,
-input:focus-visible {
-  outline: 2px solid var(--color-primary);
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary-mid);
   outline-offset: 2px;
+}
+
+@keyframes form-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes panel-drop {
+  from { opacity: 0; transform: translateY(-10px) scaleY(0.95); transform-origin: top right; }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); transform-origin: top right; }
+}
+
+@keyframes form-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0deg); }
+  15%       { transform: rotate(12deg); }
+  30%       { transform: rotate(-10deg); }
+  45%       { transform: rotate(8deg); }
+  60%       { transform: rotate(-5deg); }
+  75%       { transform: rotate(3deg); }
 }

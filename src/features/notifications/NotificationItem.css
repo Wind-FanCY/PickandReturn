@@ -1,62 +1,92 @@
+/* ── Notification item ── */
+
 .notification-item {
-    padding: 0.75rem 1rem;
+    padding: 0.8rem 1.1rem;
+    background: var(--color-surface-raised);
     border-bottom: 1px solid var(--color-border);
-    background: white;
-    transition: background 0.15s;
+    transition: background var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
 .notification-item:last-child {
     border-bottom: none;
 }
 
+/* ── Unread state ── */
+
 .notification-item--unread {
-    background: #eff6ff;
-    border-left: 3px solid var(--color-primary);
+    background: var(--color-accent-light);
+    border-left: 3px solid var(--color-accent);
 }
+
+/* ── Header row ── */
 
 .notification-item__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    margin-bottom: 0.35rem;
 }
+
+/* ── Type tag ── */
 
 .notification-item__type-tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--radius-xs);
     display: inline-block;
-    padding: 0.1rem 0.5rem;
-    border-radius: 2rem;
-    font-size: 0.72rem;
-    font-weight: 700;
+    width: fit-content;
     background: var(--color-primary-light);
     color: var(--color-primary);
-    letter-spacing: 0.03em;
+    border: 1px solid rgba(45,80,22,0.2);
 }
 
+/* ── Timestamp ── */
+
 .notification-item__time {
-    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
     color: var(--color-text-muted);
     white-space: nowrap;
 }
 
+/* ── Message ── */
+
 .notification-item__message {
-    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
     color: var(--color-text-primary);
-    line-height: 1.5;
-    margin: 0 0 0.5rem 0;
+    line-height: 1.55;
+    font-style: italic;
+    margin: 0;
 }
 
+/* ── Delete button ── */
+
 .notification-item__delete {
-    padding: 0.2rem 0.6rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    background: #fee2e2;
-    color: var(--color-danger);
-    border-radius: var(--radius-sm);
-    transition: background 0.2s, color 0.2s;
+    padding: 0.18rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    width: fit-content;
 }
 
 .notification-item__delete:hover {
-    background: var(--color-danger);
-    color: white;
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+    border-color: var(--color-danger-border);
 }
