@@ -17,12 +17,8 @@ function makeItemsList() {
             visitor: true,
             modifyLimit: 3,
             modifyRemaining: 3,
-<<<<<<< Updated upstream
-            lastAutoReminderDate: null
-=======
             lastAutoReminderDate: null,
             createdAt: '2026-04-01T08:00:00.000Z'
->>>>>>> Stashed changes
         },
         [id2]: {
             id: id2,
@@ -35,12 +31,8 @@ function makeItemsList() {
             visitor: true,
             modifyLimit: 3,
             modifyRemaining: 3,
-<<<<<<< Updated upstream
-            lastAutoReminderDate: null
-=======
             lastAutoReminderDate: null,
             createdAt: '2026-03-21T08:00:00.000Z'
->>>>>>> Stashed changes
         }
     };
 
