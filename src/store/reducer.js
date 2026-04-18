@@ -26,7 +26,8 @@ function reducer(state, action) {
                 error: '',
                 success: '',
                 loginStatus: LOGIN_STATUS.IS_LOGGED_IN,
-                username: action.username
+                username: action.username,
+                language: action.language || state.language
             };
 
         case ACTIONS.LOG_OUT:

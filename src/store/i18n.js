@@ -126,6 +126,21 @@ const translations = {
         'success.dueDateUpdated': 'Due date updated.',
         'success.modifyLimitUpdated': 'Modify limit updated.',
         'success.accountCreated': 'Account created! You can now log in.',
+
+        // Notifications
+        'notif.panelLabel': 'Notifications',
+        'notif.title': 'Notifications',
+        'notif.noNotifications': 'No notifications',
+        'notif.delete': 'Delete',
+        'notif.deleteLabel': 'Delete notification',
+        'notif.bellLabel': 'Notifications',
+        'notif.unreadLabel': (n) => `${n} unread notification(s)`,
+        'notif.reminderTitle': 'Return Reminder',
+        'notif.dateModifiedTitle': 'Date Modified',
+        'notif.overdue': 'Overdue',
+        'notif.today': (h, m) => `Today ${h}:${m}`,
+        'notif.daysAgo': (n) => `${n} day(s) ago`,
+        'notif.todayShort': 'Today',
     },
     zh: {
         // Nav
@@ -254,6 +269,21 @@ const translations = {
         'success.dueDateUpdated': '归还日期已更新。',
         'success.modifyLimitUpdated': '修改次数已更新。',
         'success.accountCreated': '账号创建成功！现在可以登录了。',
+
+        // Notifications
+        'notif.panelLabel': '通知面板',
+        'notif.title': '通知',
+        'notif.noNotifications': '暂无通知',
+        'notif.delete': '删除',
+        'notif.deleteLabel': '删除通知',
+        'notif.bellLabel': '通知',
+        'notif.unreadLabel': (n) => `${n} 条未读通知`,
+        'notif.reminderTitle': '归还提醒',
+        'notif.dateModifiedTitle': '日期修改',
+        'notif.overdue': '已逾期',
+        'notif.today': (h, m) => `今天 ${h}:${m}`,
+        'notif.daysAgo': (n) => `${n}天前`,
+        'notif.todayShort': '今天',
     }
 };
 

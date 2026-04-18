@@ -1,13 +1,18 @@
 import { useContext } from "react";
 import { AppContext } from "../../store/app-context";
-import { ACTIONS } from "../../store/constant";
+import { ACTIONS, LOGIN_STATUS } from "../../store/constant";
+import { fetchUpdateLanguage } from "../../services/services";
 import "./LangToggle.css";
 
 function LangToggle() {
     const [state, dispatch] = useContext(AppContext);
 
     function handleToggle() {
+        const newLang = state.language === 'zh' ? 'en' : 'zh';
         dispatch({ type: ACTIONS.TOGGLE_LANGUAGE });
+        if (state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN) {
+            fetchUpdateLanguage(newLang).catch(() => { });
+        }
     }
 
     return (

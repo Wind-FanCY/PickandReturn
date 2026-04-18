@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useContext } from "react";
 import { AppContext } from "../../store/app-context";
+import { t } from "../../store/i18n";
 import NotificationItem from "./NotificationItem";
 
 function NotificationPanel({ onClose, bellRef }) {
     const [state] = useContext(AppContext);
+    const lang = state.language;
     const panelRef = useRef(null);
 
     useEffect(() => {
@@ -26,13 +28,13 @@ function NotificationPanel({ onClose, bellRef }) {
     }, [onClose, bellRef]);
 
     return (
-        <div className="notification-panel" ref={panelRef} role="dialog" aria-label="通知面板">
+        <div className="notification-panel" ref={panelRef} role="dialog" aria-label={t(lang, 'notif.panelLabel')}>
             <div className="notification-panel__header">
-                <h3 className="notification-panel__title">通知</h3>
+                <h3 className="notification-panel__title">{t(lang, 'notif.title')}</h3>
             </div>
             <div className="notification-panel__body">
                 {state.notifications.length === 0 ? (
-                    <p className="notification-panel__empty">暂无通知</p>
+                    <p className="notification-panel__empty">{t(lang, 'notif.noNotifications')}</p>
                 ) : (
                     <ul className="notification-panel__list">
                         {state.notifications.map(notification => (

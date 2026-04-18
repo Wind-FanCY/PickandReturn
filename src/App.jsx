@@ -26,7 +26,7 @@ function App() {
   function checkForSession() {
     fetchSession()
       .then(session => {
-        dispatch({ type: ACTIONS.LOG_IN, username: session.username });
+        dispatch({ type: ACTIONS.LOG_IN, username: session.username, language: session.language || 'zh' });
         return fetchItems();
       })
       .catch(err => {

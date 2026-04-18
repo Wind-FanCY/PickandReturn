@@ -3,7 +3,8 @@ import users from "../models/users.js";
 
 function getSession(req, res) {
     const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
+    const session = sid ? sessions.getSession(sid) : null;
+    const username = session ? session.username : '';
 
     if (!sid || !users.isValidUsername(username)) {
         res.status(401).json({ error: 'auth-missing' });
@@ -15,7 +16,7 @@ function getSession(req, res) {
         return;
     }
 
-    res.json({ username });
+    res.json({ username, language: session.language || 'zh' });
 }
 
 function login(req, res) {
@@ -56,8 +57,25 @@ function logout(req, res) {
     res.json({ username });
 }
 
+function patchSession(req, res) {
+    const sid = req.cookies.sid;
+    const session = sessions.getSession(sid);
+    if (!session) {
+        res.status(401).json({ error: 'auth-missing' });
+        return;
+    }
+    const { language } = req.body;
+    if (language !== 'zh' && language !== 'en') {
+        res.status(400).json({ error: 'invalid-language' });
+        return;
+    }
+    const updated = sessions.setLanguage(sid, language);
+    res.json({ username: updated.username, language: updated.language });
+}
+
 export default {
     getSession,
     login,
-    logout
+    logout,
+    patchSession
 }
