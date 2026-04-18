@@ -17,7 +17,8 @@ function makeItemsList() {
             visitor: true,
             modifyLimit: 3,
             modifyRemaining: 3,
-            lastAutoReminderDate: null
+            lastAutoReminderDate: null,
+            createdAt: '2025-04-14T08:00:00.000Z'
         },
         [id2]: {
             id: id2,
@@ -30,7 +31,8 @@ function makeItemsList() {
             visitor: true,
             modifyLimit: 3,
             modifyRemaining: 3,
-            lastAutoReminderDate: null
+            lastAutoReminderDate: null,
+            createdAt: '2025-03-21T08:00:00.000Z'
         }
     };
 
@@ -56,7 +58,8 @@ function makeItemsList() {
             visitor: false,
             modifyLimit: limit,
             modifyRemaining: limit,
-            lastAutoReminderDate: null
+            lastAutoReminderDate: null,
+            createdAt: new Date().toISOString()
         };
         return id;
     };

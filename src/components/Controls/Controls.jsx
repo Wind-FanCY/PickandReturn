@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { fetchLogout } from "../../services/services";
 import { AppContext } from "../../store/app-context";
+import { t } from "../../store/i18n";
 
 import logoutIcon from "../../assets/logout_icon.png";
 
@@ -17,10 +18,12 @@ function Controls() {
             });
     }
 
+    const lang = state.language;
+
     return (
         <div className="controls">
             <span className="controls__username">{state.username}</span>
-            <button onClick={onLogout} className="controls__logout"><img className="icon" src={logoutIcon} alt="logout button" />Logout</button>
+            <button onClick={onLogout} className="controls__logout"><img className="icon" src={logoutIcon} alt="logout button" />{t(lang, 'controls.logout')}</button>
         </div>
     );
 }

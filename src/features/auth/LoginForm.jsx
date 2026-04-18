@@ -2,8 +2,10 @@ import { useContext, useState } from "react";
 import { AppContext } from "../../store/app-context";
 import { fetchLogin, fetchRegister } from "../../services/services";
 import { FORM_MODE } from "../../store/constant";
+import { t } from "../../store/i18n";
 
 import Status from '../../components/Status/Status';
+import LangToggle from '../../components/LangToggle/LangToggle';
 import './LoginForm.css';
 import loginIcon from '../../assets/login_icon.png';
 
@@ -13,13 +15,15 @@ function LoginForm() {
     const [mode, setMode] = useState(FORM_MODE.LOGIN);
     const [formError, setFormError] = useState('');
 
+    const lang = state.language;
+
     function validateUsername(value) {
         if (!value) {
-            setFormError('Username is required');
+            setFormError(t(lang, 'auth.usernameRequired'));
             return false;
         }
         if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-            setFormError('Only letters, numbers and _ are allowed');
+            setFormError(t(lang, 'auth.usernameInvalid'));
             return false;
         }
         setFormError('');
@@ -51,7 +55,7 @@ function LoginForm() {
             dispatch({ type: 'startLoadingItems' });
             fetchRegister(username)
                 .then(() => {
-                    dispatch({ type: 'reportSuccess', message: 'Account created! You can now log in.' });
+                    dispatch({ type: 'reportSuccess', message: 'success.accountCreated' });
                     setMode(FORM_MODE.LOGIN);
                     setUsername('');
                 })
@@ -76,10 +80,13 @@ function LoginForm() {
 
     return (
         <div className="login">
+            <div className="login__lang">
+                <LangToggle />
+            </div>
             <form className="login__form" onSubmit={onSubmit}>
-                <h1 className="login__title">{isLogin ? 'Login' : 'Register'}</h1>
+                <h1 className="login__title">{isLogin ? t(lang, 'auth.loginTitle') : t(lang, 'auth.registerTitle')}</h1>
                 <label className="login__label" htmlFor="username">
-                    <span className="label__title">Username:</span>
+                    <span className="label__title">{t(lang, 'auth.usernameLabel')}</span>
                     <input
                         id="username"
                         name="username"
@@ -91,18 +98,18 @@ function LoginForm() {
                 {formError && <p className="login__field-error">{formError}</p>}
                 <button className="login__button" type="submit">
                     <img className="icon" src={loginIcon} alt="submit button" />
-                    {isLogin ? 'Login' : 'Create Account'}
+                    {isLogin ? t(lang, 'auth.loginButton') : t(lang, 'auth.registerButton')}
                 </button>
                 <div className="login__switch">
                     {isLogin ? (
                         <p className="login__switch-text">
-                            New user?{' '}
-                            <button className="login__switch-button" onClick={switchToRegister}>Register</button>
+                            {t(lang, 'auth.newUser')}{' '}
+                            <button className="login__switch-button" onClick={switchToRegister}>{t(lang, 'auth.registerLink')}</button>
                         </p>
                     ) : (
                         <p className="login__switch-text">
-                            Already have an account?{' '}
-                            <button className="login__switch-button" onClick={switchToLogin}>Log in</button>
+                            {t(lang, 'auth.haveAccount')}{' '}
+                            <button className="login__switch-button" onClick={switchToLogin}>{t(lang, 'auth.loginLink')}</button>
                         </p>
                     )}
                 </div>

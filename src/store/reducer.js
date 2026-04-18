@@ -1,7 +1,6 @@
 import {
     LOGIN_STATUS,
     ACTIONS,
-    MESSAGES,
     PAGE_STATUS
 } from './constant';
 
@@ -15,7 +14,8 @@ export const initialState = {
     items: {},
     lastAddedItemId: '',
     notifications: [],
-    unreadCount: 0
+    unreadCount: 0,
+    language: 'zh'
 };
 
 function reducer(state, action) {
@@ -84,7 +84,7 @@ function reducer(state, action) {
                 ...state,
                 isItemsPending: false,
                 success: '',
-                error: action.error || MESSAGES.default
+                error: action.error || 'default'
             };
 
         case ACTIONS.REPORT_SUCCESS:
@@ -200,6 +200,12 @@ function reducer(state, action) {
                 }
             };
         }
+
+        case ACTIONS.TOGGLE_LANGUAGE:
+            return {
+                ...state,
+                language: state.language === 'en' ? 'zh' : 'en'
+            };
 
         default:
             return state;

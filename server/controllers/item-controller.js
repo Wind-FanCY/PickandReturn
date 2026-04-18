@@ -93,7 +93,22 @@ function updateItem(req, res) {
         return;
     }
     itemsList.updateItem(id, itemReturned);
-    res.json(itemsList.getItem(id));
+    const item = itemsList.getItem(id);
+    if (item && !item.visitor) {
+        const borrowerList = users.getUserItemsList(item.borrower);
+        if (borrowerList) {
+            if (itemReturned === true) {
+                if (borrowerList.contains(id)) {
+                    borrowerList.deleteItem(id);
+                }
+            } else if (itemReturned === false) {
+                if (!borrowerList.contains(id)) {
+                    borrowerList.addBorrowedItem(item);
+                }
+            }
+        }
+    }
+    res.json(item);
 }
 
 function deleteItem(req, res) {
@@ -108,6 +123,11 @@ function deleteItem(req, res) {
     const itemsList = users.getUserData(username);
     if (!itemsList.contains(id)) {
         res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+    const item = itemsList.getItem(id);
+    if (item.lender !== username) {
+        res.status(403).json({ error: 'forbidden' });
         return;
     }
     itemsList.deleteItem(id);

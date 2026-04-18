@@ -45,7 +45,8 @@ export const ACTIONS = {
     MARK_NOTIFICATIONS_READ: 'markNotificationsRead',
     EDIT_ITEM: 'editItem',
     MODIFY_DUE_DATE: 'modifyDueDate',
-    UPDATE_MODIFY_LIMIT: 'updateModifyLimit'
+    UPDATE_MODIFY_LIMIT: 'updateModifyLimit',
+    TOGGLE_LANGUAGE: 'toggleLanguage'
 };
 
 export const NOTIFICATION_TYPE = {

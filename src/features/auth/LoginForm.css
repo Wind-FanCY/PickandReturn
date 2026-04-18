@@ -1,6 +1,7 @@
 /* ── Outer container ── */
 
 .login {
+    position: relative;
     min-height: calc(100dvh - 80px);
     display: flex;
     align-items: center;
@@ -154,4 +155,10 @@
 
 .login__switch-button:hover {
     text-decoration-color: var(--color-accent);
+}
+
+.login__lang {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
 }

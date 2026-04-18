@@ -1,0 +1,267 @@
+const translations = {
+    en: {
+        // Nav
+        'nav.itemsLent': 'Items Lent',
+        'nav.toReturn': 'To Return',
+
+        // Auth (LoginForm)
+        'auth.loginTitle': 'Login',
+        'auth.registerTitle': 'Register',
+        'auth.usernameLabel': 'Username:',
+        'auth.loginButton': 'Login',
+        'auth.registerButton': 'Create Account',
+        'auth.newUser': 'New user?',
+        'auth.registerLink': 'Register',
+        'auth.haveAccount': 'Already have an account?',
+        'auth.loginLink': 'Log in',
+        'auth.usernameRequired': 'Username is required',
+        'auth.usernameInvalid': 'Only letters, numbers and _ are allowed',
+
+        // AddItemForm
+        'add.lender': 'Lender:',
+        'add.borrower': 'Borrower:',
+        'add.lentDate': 'Lent Date:',
+        'add.backDate': 'Due Date:',
+        'add.modifyLimit': 'Modify Limit:',
+        'add.details': 'Item Details:',
+        'add.tips': '* All information needs to be filled',
+        'add.button': 'Add',
+        'add.unlimited': 'Unlimited',
+        'add.noModify': 'No modify',
+        'add.1time': '1 time',
+        'add.3times': '3 times',
+        'add.5times': '5 times',
+        'add.borrowerRequired': 'Borrower is required',
+        'add.borrowerSelf': 'You cannot lend to yourself',
+        'add.lentDateRequired': 'Lent date is required',
+        'add.backDateRequired': 'Due date is required',
+        'add.dateRange': 'Due date must be on or after lent date',
+        'add.detailRequired': 'Item details are required',
+
+        // Item
+        'item.returned': 'Returned',
+        'item.borrower': 'Borrower:',
+        'item.lentDate': 'Lent Date:',
+        'item.dueDate': 'Due Date:',
+        'item.details': 'Details:',
+        'item.edit': 'Edit',
+        'item.save': 'Save',
+        'item.cancel': 'Cancel',
+        'item.remind': 'Remind',
+        'item.delete': 'Delete',
+        'item.confirmDelete': 'Delete this item?',
+        'item.confirm': 'Confirm',
+        'item.overdue': 'Overdue',
+        'item.modifyLimit': 'Modify limit:',
+        'item.detailsLabel': 'Details:',
+        'item.lentDateLabel': 'Lent Date:',
+        'item.dueDateLabel': 'Due Date:',
+        'item.detailRequired': 'Item details are required',
+        'item.lentDateRequired': 'Lent date is required',
+        'item.dueDateRequired': 'Due date is required',
+        'item.dateRange': 'Due date must be on or after lent date',
+        'item.unlimited': 'Unlimited',
+        'item.noModify': 'No modify',
+        'item.1time': '1 time',
+        'item.3times': '3 times',
+        'item.5times': '5 times',
+
+        // ReturnItem
+        'return.lender': 'Lender:',
+        'return.detail': 'Item:',
+        'return.lentDate': 'Lent Date:',
+        'return.backDate': 'Due Date:',
+        'return.unlimited': 'Unlimited modifications',
+        'return.remaining': (n) => `${n} modification(s) left`,
+        'return.newDueDate': 'New due date:',
+        'return.save': 'Save',
+        'return.cancel': 'Cancel',
+        'return.modify': 'Modify Due Date',
+        'return.overdue': 'Overdue',
+        'return.dateRequired': 'Please enter a date',
+        'return.dateRange': 'Due date must be on or after lent date',
+
+        // ItemsPage
+        'items.title': 'Lent Log',
+        'items.filterAll': 'All',
+        'items.filterNotReturned': 'Not Returned',
+        'items.filterReturned': 'Returned',
+        'items.sortAdded': 'Added',
+        'items.sortLentDate': 'Lent Date',
+        'items.sortDueDate': 'Due Date',
+        'items.sortBy': 'Sort by:',
+        'items.searchBorrower': 'Search borrower:',
+        'items.searchPlaceholder': 'Borrower name...',
+        'items.empty': 'Create your first lending reminder!',
+
+        // ReturnPage
+        'returnPage.title': 'To Return',
+        'returnPage.sortLentDate': 'Lent Date',
+        'returnPage.sortDueDate': 'Due Date',
+        'returnPage.sortBy': 'Sort by:',
+        'returnPage.searchLender': 'Search lender:',
+        'returnPage.searchPlaceholder': 'Lender name...',
+        'returnPage.empty': 'You have no items to return.',
+
+        // Controls
+        'controls.logout': 'Logout',
+
+        // Error keys (server error codes stored in state.error)
+        'auth-insufficient': 'Username "dog" is not allowed',
+        'required-username': 'Please enter a valid username (only a-z, A-Z, 0-9 and _)',
+        'required-item': 'Please offer all information',
+        'item-missing': 'Unable to find the relevant information',
+        'userNotExist': 'Borrower is not in the system',
+        'user-not-registered': 'Username not found. Please register first.',
+        'user-already-exists': 'Username already taken. Please log in.',
+        'networkError': 'Trouble connecting to the network. Please try again',
+        'default': 'Something went wrong. Please try again',
+
+        // Success keys (stored in state.success)
+        'success.itemAdded': 'Item added successfully!',
+        'success.itemDeleted': 'Item deleted.',
+        'success.statusUpdated': 'Status updated.',
+        'success.reminderSent': 'Reminder sent!',
+        'success.itemUpdated': 'Item updated.',
+        'success.dueDateUpdated': 'Due date updated.',
+        'success.modifyLimitUpdated': 'Modify limit updated.',
+        'success.accountCreated': 'Account created! You can now log in.',
+    },
+    zh: {
+        // Nav
+        'nav.itemsLent': '出借记录',
+        'nav.toReturn': '待归还',
+
+        // Auth
+        'auth.loginTitle': '登录',
+        'auth.registerTitle': '注册',
+        'auth.usernameLabel': '用户名：',
+        'auth.loginButton': '登录',
+        'auth.registerButton': '创建账号',
+        'auth.newUser': '新用户？',
+        'auth.registerLink': '注册',
+        'auth.haveAccount': '已有账号？',
+        'auth.loginLink': '去登录',
+        'auth.usernameRequired': '用户名不能为空',
+        'auth.usernameInvalid': '仅允许字母、数字和下划线 _',
+
+        // AddItemForm
+        'add.lender': '出借者：',
+        'add.borrower': '借入者：',
+        'add.lentDate': '出借日期：',
+        'add.backDate': '归还日期：',
+        'add.modifyLimit': '可修改次数：',
+        'add.details': '物品详情：',
+        'add.tips': '* 所有信息均需填写',
+        'add.button': '添加',
+        'add.unlimited': '无限次',
+        'add.noModify': '禁止修改',
+        'add.1time': '1 次',
+        'add.3times': '3 次',
+        'add.5times': '5 次',
+        'add.borrowerRequired': '借入者不能为空',
+        'add.borrowerSelf': '不能向自己出借',
+        'add.lentDateRequired': '出借日期不能为空',
+        'add.backDateRequired': '归还日期不能为空',
+        'add.dateRange': '归还日期必须晚于或等于出借日期',
+        'add.detailRequired': '物品详情不能为空',
+
+        // Item
+        'item.returned': '已归还',
+        'item.borrower': '借入者：',
+        'item.lentDate': '出借日期：',
+        'item.dueDate': '应还日期：',
+        'item.details': '物品详情：',
+        'item.edit': '编辑',
+        'item.save': '保存',
+        'item.cancel': '取消',
+        'item.remind': '提醒',
+        'item.delete': '删除',
+        'item.confirmDelete': '确认删除？',
+        'item.confirm': '确认',
+        'item.overdue': '已逾期',
+        'item.modifyLimit': '可修改次数：',
+        'item.detailsLabel': '物品详情：',
+        'item.lentDateLabel': '出借日期：',
+        'item.dueDateLabel': '应还日期：',
+        'item.detailRequired': '物品详情不能为空',
+        'item.lentDateRequired': '出借日期不能为空',
+        'item.dueDateRequired': '应还日期不能为空',
+        'item.dateRange': '归还日期必须晚于或等于出借日期',
+        'item.unlimited': '无限次',
+        'item.noModify': '禁止修改',
+        'item.1time': '1 次',
+        'item.3times': '3 次',
+        'item.5times': '5 次',
+
+        // ReturnItem
+        'return.lender': '出借者：',
+        'return.detail': '物品：',
+        'return.lentDate': '出借日期：',
+        'return.backDate': '应还日期：',
+        'return.unlimited': '无限次可修改',
+        'return.remaining': (n) => `剩余 ${n} 次`,
+        'return.newDueDate': '新归还日期：',
+        'return.save': '保存',
+        'return.cancel': '取消',
+        'return.modify': '修改归还日期',
+        'return.overdue': '已逾期',
+        'return.dateRequired': '请输入日期',
+        'return.dateRange': '归还日期必须晚于或等于出借日期',
+
+        // ItemsPage
+        'items.title': '出借记录',
+        'items.filterAll': '全部',
+        'items.filterNotReturned': '未归还',
+        'items.filterReturned': '已归还',
+        'items.sortAdded': '添加时间',
+        'items.sortLentDate': '出借日期',
+        'items.sortDueDate': '应还日期',
+        'items.sortBy': '排序：',
+        'items.searchBorrower': '搜索借入者：',
+        'items.searchPlaceholder': '借入者姓名...',
+        'items.empty': '添加第一条出借记录！',
+
+        // ReturnPage
+        'returnPage.title': '待归还',
+        'returnPage.sortLentDate': '出借日期',
+        'returnPage.sortDueDate': '应还日期',
+        'returnPage.sortBy': '排序：',
+        'returnPage.searchLender': '搜索出借者：',
+        'returnPage.searchPlaceholder': '出借者姓名...',
+        'returnPage.empty': '没有需要归还的物品。',
+
+        // Controls
+        'controls.logout': '退出登录',
+
+        // Error keys
+        'auth-insufficient': '用户名 "dog" 不被允许',
+        'required-username': '请输入有效用户名（仅限 a-z、A-Z、0-9 和 _）',
+        'required-item': '请填写所有信息',
+        'item-missing': '找不到相关信息',
+        'userNotExist': '借入者不在系统中',
+        'user-not-registered': '用户名不存在，请先注册',
+        'user-already-exists': '用户名已被占用，请直接登录',
+        'networkError': '网络连接失败，请重试',
+        'default': '出错了，请重试',
+
+        // Success keys
+        'success.itemAdded': '物品添加成功！',
+        'success.itemDeleted': '物品已删除。',
+        'success.statusUpdated': '状态已更新。',
+        'success.reminderSent': '提醒已发送！',
+        'success.itemUpdated': '物品已更新。',
+        'success.dueDateUpdated': '归还日期已更新。',
+        'success.modifyLimitUpdated': '修改次数已更新。',
+        'success.accountCreated': '账号创建成功！现在可以登录了。',
+    }
+};
+
+// t(lang, key) or t(lang, key, n) for function-valued translations
+export function t(lang, key, ...args) {
+    const dict = translations[lang] || translations.en;
+    const val = dict[key] ?? translations.en[key] ?? key;
+    return typeof val === 'function' ? val(...args) : val;
+}
+
+export default translations;
