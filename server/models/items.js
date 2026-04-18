@@ -11,26 +11,36 @@ function makeItemsList() {
             itemDetail: 'This is a visitor demo. You can see the item information you lent to someone here',
             lender: 'visitor1',
             borrower: 'visitor2',
-            lentDate: '2025-04-14',
-            backDate: '2025-04-21',
+            lentDate: '2026-04-01',
+            backDate: '2026-05-01',
             returned: false,
             visitor: true,
             modifyLimit: 3,
             modifyRemaining: 3,
+<<<<<<< Updated upstream
             lastAutoReminderDate: null
+=======
+            lastAutoReminderDate: null,
+            createdAt: '2026-04-01T08:00:00.000Z'
+>>>>>>> Stashed changes
         },
         [id2]: {
             id: id2,
             itemDetail: 'This is a visitor demo. You can see the item information you need to return',
             lender: 'visitor2',
             borrower: 'visitor1',
-            lentDate: '2025-03-21',
-            backDate: '2025-05-06',
+            lentDate: '2026-03-21',
+            backDate: '2026-06-01',
             returned: false,
             visitor: true,
             modifyLimit: 3,
             modifyRemaining: 3,
+<<<<<<< Updated upstream
             lastAutoReminderDate: null
+=======
+            lastAutoReminderDate: null,
+            createdAt: '2026-03-21T08:00:00.000Z'
+>>>>>>> Stashed changes
         }
     };
 

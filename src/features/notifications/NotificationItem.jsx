@@ -2,9 +2,10 @@ import { useContext } from "react";
 import { AppContext } from "../../store/app-context";
 import { ACTIONS, NOTIFICATION_TYPE } from "../../store/constant";
 import { fetchDeleteNotification } from "../../services/services";
+import { t } from "../../store/i18n";
 import "./NotificationItem.css";
 
-function getRelativeTime(dateString) {
+function getRelativeTime(dateString, lang) {
     const now = new Date();
     const date = new Date(dateString);
     const todayStr = now.toISOString().slice(0, 10);
@@ -13,29 +14,30 @@ function getRelativeTime(dateString) {
     if (dateStr === todayStr) {
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `今天 ${hours}:${minutes}`;
+        return t(lang, 'notif.today', hours, minutes);
     }
 
     const diffMs = now - date;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     if (diffDays <= 0) {
-        return '今天';
+        return t(lang, 'notif.todayShort');
     }
-    return `${diffDays}天前`;
+    return t(lang, 'notif.daysAgo', diffDays);
 }
 
-function getTypeLabel(type) {
+function getTypeLabel(type, lang) {
     if (type === NOTIFICATION_TYPE.RETURN_REMINDER) {
-        return '还物提醒';
+        return t(lang, 'notif.reminderTitle');
     }
     if (type === NOTIFICATION_TYPE.DATE_MODIFIED) {
-        return '日期修改';
+        return t(lang, 'notif.dateModifiedTitle');
     }
     return type;
 }
 
 function NotificationItem({ notification }) {
     const [state, dispatch] = useContext(AppContext);
+    const lang = state.language;
 
     function handleDelete() {
         fetchDeleteNotification(notification.id)
@@ -50,16 +52,16 @@ function NotificationItem({ notification }) {
     return (
         <div className={`notification-item${notification.read === false ? ' notification-item--unread' : ''}`}>
             <div className="notification-item__header">
-                <span className="notification-item__type-tag">{getTypeLabel(notification.type)}</span>
-                <span className="notification-item__time">{getRelativeTime(notification.createdAt)}</span>
+                <span className="notification-item__type-tag">{getTypeLabel(notification.type, lang)}</span>
+                <span className="notification-item__time">{getRelativeTime(notification.createdAt, lang)}</span>
             </div>
             <p className="notification-item__message">{notification.message}</p>
             <button
                 className="notification-item__delete"
                 onClick={handleDelete}
-                aria-label="删除通知"
+                aria-label={t(lang, 'notif.deleteLabel')}
             >
-                删除
+                {t(lang, 'notif.delete')}
             </button>
         </div>
     );

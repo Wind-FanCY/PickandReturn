@@ -198,3 +198,17 @@ export function fetchDeleteNotification(id) {
                 .then(err => Promise.reject(err));
         });
 }
+
+export function fetchUpdateLanguage(language) {
+    return fetch('/api/v1/session', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language })
+    })
+        .catch(() => Promise.reject({ error: 'networkError' }))
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) return Promise.reject(data);
+            return data;
+        });
+}

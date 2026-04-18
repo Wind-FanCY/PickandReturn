@@ -2,11 +2,13 @@ import { useContext, useState, useRef } from "react";
 import { AppContext } from "../../store/app-context";
 import { ACTIONS } from "../../store/constant";
 import { fetchMarkNotificationsRead } from "../../services/services";
+import { t } from "../../store/i18n";
 import NotificationPanel from "./NotificationPanel";
 import "./NotificationBell.css";
 
 function NotificationBell() {
     const [state, dispatch] = useContext(AppContext);
+    const lang = state.language;
     const [isOpen, setIsOpen] = useState(false);
     const bellRef = useRef(null);
 
@@ -34,12 +36,12 @@ function NotificationBell() {
             <button
                 className="notification-bell__button"
                 onClick={handleBellClick}
-                aria-label="通知"
+                aria-label={t(lang, 'notif.bellLabel')}
                 aria-expanded={isOpen}
             >
                 <span className="notification-bell__icon" aria-hidden="true">🔔</span>
                 {state.unreadCount > 0 && (
-                    <span className="notification-bell__badge" aria-label={`${state.unreadCount} 条未读通知`}>
+                    <span className="notification-bell__badge" aria-label={t(lang, 'notif.unreadLabel', state.unreadCount)}>
                         {state.unreadCount}
                     </span>
                 )}

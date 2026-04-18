@@ -17,6 +17,7 @@ app.post('/api/v1/users', userController.register);
 
 app.get('/api/v1/session', sessionControllor.getSession);
 app.post('/api/v1/session', sessionControllor.login);
+app.patch('/api/v1/session', sessionControllor.patchSession);
 app.delete('/api/v1/session', sessionControllor.logout);
 
 app.get('/api/v1/items', itemController.getItemsList);
