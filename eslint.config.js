@@ -35,4 +35,22 @@ export default [
       ],
     },
   },
+  {
+    // Backend runs under Node, not the browser — give it Node globals
+    // (process, console, etc.) instead of the frontend's browser globals.
+    files: [
+      'server.js',
+      'app.js',
+      'lib/**/*.js',
+      'server/**/*.js',
+      'prisma/**/*.js',
+      'tests/**/*.js',
+      'vitest.config.js',
+    ],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: globals.node,
+    },
+  },
 ]

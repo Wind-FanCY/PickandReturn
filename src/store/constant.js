@@ -18,7 +18,16 @@ export const SERVER = {
     ITEM_MISSING: 'item-missing',
     USER_NOT_EXIST: 'userNotExist',
     USER_NOT_REGISTERED: 'user-not-registered',
-    USER_ALREADY_EXISTS: 'user-already-exists'
+    USER_ALREADY_EXISTS: 'user-already-exists',
+    REQUIRED_PASSWORD: 'required-password',
+    INVALID_STATE: 'invalid-state',
+    INVALID_LANGUAGE: 'invalid-language',
+    INVALID_MODIFY_LIMIT: 'invalid-modifyLimit',
+    BAD_REQUEST: 'bad-request',
+    FORBIDDEN: 'forbidden',
+    NOT_FOUND: 'not-found',
+    REQUIRED_BACKDATE: 'required-backDate',
+    RATE_LIMITED: 'rate-limited'
 };
 
 export const CLIENT = {

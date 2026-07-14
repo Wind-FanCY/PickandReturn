@@ -1,65 +1,36 @@
-import sessions from "../models/sessions.js";
-import users from "../models/users.js";
+import prisma from '../../lib/prisma.js';
 
-function getNotifications(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
-    const userNotifs = users.getUserNotifications(username);
-    if (!userNotifs) {
-        res.status(404).json({ error: 'user-not-found' });
-        return;
-    }
-
-    res.json({ notifications: userNotifs.getAll() });
+async function getNotifications(req, res) {
+    const notifications = await prisma.notification.findMany({
+        where: { userId: req.userId },
+        orderBy: { createdAt: 'desc' }
+    });
+    res.json({ notifications });
 }
 
-function markAllRead(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
+async function markAllRead(req, res) {
+    await prisma.notification.updateMany({
+        where: { userId: req.userId },
+        data: { read: true }
+    });
 
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
-    const userNotifs = users.getUserNotifications(username);
-    if (!userNotifs) {
-        res.status(404).json({ error: 'user-not-found' });
-        return;
-    }
-
-    const result = userNotifs.markAllRead();
-    res.json({ notifications: result });
+    const notifications = await prisma.notification.findMany({
+        where: { userId: req.userId },
+        orderBy: { createdAt: 'desc' }
+    });
+    res.json({ notifications });
 }
 
-function deleteNotification(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
+async function deleteNotification(req, res) {
     const { id } = req.params;
-    const userNotifs = users.getUserNotifications(username);
-    if (!userNotifs) {
-        res.status(404).json({ error: 'user-not-found' });
-        return;
-    }
 
-    const deleted = userNotifs.delete(id);
-    if (!deleted) {
+    const notification = await prisma.notification.findUnique({ where: { id } });
+    if (!notification || notification.userId !== req.userId) {
         res.status(404).json({ error: 'not-found' });
         return;
     }
 
+    await prisma.notification.delete({ where: { id } });
     res.json({ message: 'deleted' });
 }
 

@@ -1,280 +1,334 @@
-import sessions from "../models/sessions.js";
-import users from "../models/users.js";
+import prisma from '../../lib/prisma.js';
+import { serializeItem, formatDateOnly } from '../services/item-presenter.js';
+import { requestReturn as requestReturnService, confirmReturn as confirmReturnService } from '../services/return-flow.js';
+import { MODIFY_UNLIMITED, DEFAULT_MODIFY_LIMIT } from '../constants.js';
 
-function getItemsList(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
+const ITEM_INCLUDE = { lender: true, borrower: true };
 
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
-    const itemsList = users.getUserData(username).getItems();
-    res.json(itemsList);
+// 把输入解析成合法 Date，非法（含 undefined/乱码）返回 null，供调用方转 400。
+function parseDate(value) {
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function addItem(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
+async function getItemsList(req, res) {
+    const items = await prisma.item.findMany({
+        where: { OR: [{ lenderId: req.userId }, { borrowerId: req.userId }] },
+        include: ITEM_INCLUDE
+    });
 
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
+    const itemsMap = {};
+    items.forEach((item) => {
+        itemsMap[item.id] = serializeItem(item);
+    });
+    res.json(itemsMap);
+}
 
-    const { itemInfo } = req.body;
-    const { itemDetail, lender, borrower, lentDate, backDate } = itemInfo;
-    if (!itemDetail || !lender || !borrower || !lentDate || !backDate) {
+async function addItem(req, res) {
+    const { itemInfo } = req.body || {};
+    const { itemDetail, borrower, lentDate, backDate, modifyLimit } = itemInfo || {};
+
+    if (!itemDetail || typeof borrower !== 'string' || !borrower || !lentDate || !backDate) {
         res.status(400).json({ error: 'required-item' });
         return;
     }
 
-    const lenderItemsList = users.getUserData(username);
-    const id = lenderItemsList.addLentItem(itemInfo);
-    const newItem = lenderItemsList.getItem(id);
-
-    // Write the item into the borrower's list as well (with the generated id)
-    const borrowerItemsList = users.getUserItemsList(itemInfo.borrower);
-    if (borrowerItemsList) {
-        borrowerItemsList.addBorrowedItem(newItem);
-    }
-
-    res.json(newItem);
-}
-
-function sendNotice(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
+    const parsedLentDate = parseDate(lentDate);
+    const parsedBackDate = parseDate(backDate);
+    if (!parsedLentDate || !parsedBackDate) {
+        res.status(400).json({ error: 'bad-request' });
         return;
     }
 
-    const { id } = req.params;
-    const lenderItemsList = users.getUserData(username);
-    if (!lenderItemsList.contains(id)) {
-        res.status(404).json({ error: 'item-missing' });
+    if (borrower === req.username) {
+        res.status(400).json({ error: 'bad-request' });
         return;
     }
 
-    const item = lenderItemsList.getItem(id);
-    if (!item) {
-        res.status(400).json({ error: 'required-item' });
+    if (borrower.toLowerCase() === 'demo') {
+        res.status(400).json({ error: 'bad-request' });
         return;
     }
 
-    const borrowerNotifs = users.getUserNotifications(item.borrower);
-    if (!borrowerNotifs) {
+    const borrowerUser = await prisma.user.findUnique({ where: { username: borrower } });
+    if (!borrowerUser) {
         res.status(404).json({ error: 'userNotExist' });
         return;
     }
 
-    const message = `${item.lender} 提醒您归还物品：${item.itemDetail}，应还日期 ${item.backDate}`;
-    const notif = borrowerNotifs.add('return_reminder', message, id);
-    res.json({ notification: notif });
+    const limit = modifyLimit !== undefined ? modifyLimit : DEFAULT_MODIFY_LIMIT;
+
+    const item = await prisma.item.create({
+        data: {
+            itemDetail,
+            lentDate: parsedLentDate,
+            backDate: parsedBackDate,
+            modifyLimit: limit,
+            modifyRemaining: limit,
+            lenderId: req.userId,
+            borrowerId: borrowerUser.id
+        },
+        include: ITEM_INCLUDE
+    });
+
+    req.log.info({ itemId: item.id }, 'item created');
+    res.status(201).json(serializeItem(item));
 }
 
-function updateItem(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
+async function sendNotice(req, res) {
     const { id } = req.params;
-    const { itemReturned } = req.body;
-    const itemsList = users.getUserData(username);
-    if (!itemsList.contains(id)) {
+
+    const item = await prisma.item.findUnique({ where: { id }, include: ITEM_INCLUDE });
+    if (!item) {
         res.status(404).json({ error: 'item-missing' });
         return;
     }
-    itemsList.updateItem(id, itemReturned);
-    const item = itemsList.getItem(id);
-    if (item && !item.visitor) {
-        const borrowerList = users.getUserItemsList(item.borrower);
-        if (borrowerList) {
-            if (itemReturned === true) {
-                if (borrowerList.contains(id)) {
-                    borrowerList.deleteItem(id);
-                }
-            } else if (itemReturned === false) {
-                if (!borrowerList.contains(id)) {
-                    borrowerList.addBorrowedItem(item);
-                }
-            }
-        }
-    }
-    res.json(item);
-}
 
-function deleteItem(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-    const { id } = req.params;
-    const itemsList = users.getUserData(username);
-    if (!itemsList.contains(id)) {
-        res.status(404).json({ error: 'item-missing' });
-        return;
-    }
-    const item = itemsList.getItem(id);
-    if (item.lender !== username) {
+    if (item.lenderId !== req.userId) {
         res.status(403).json({ error: 'forbidden' });
         return;
     }
-    itemsList.deleteItem(id);
+
+    const message = `${item.lender.username} 提醒您归还物品：${item.itemDetail}，应还日期 ${formatDateOnly(item.backDate)}`;
+    const notification = await prisma.notification.create({
+        data: {
+            type: 'return_reminder',
+            message,
+            userId: item.borrowerId,
+            relatedItemId: item.id
+        }
+    });
+
+    res.json({ notification });
+}
+
+// 借阅方触发：pending -> requested
+async function requestReturn(req, res) {
+    const { id } = req.params;
+
+    const item = await prisma.item.findUnique({ where: { id }, include: ITEM_INCLUDE });
+    if (!item) {
+        res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+
+    if (item.borrowerId !== req.userId) {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    if (item.returnStatus !== 'pending') {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+
+    const updated = await requestReturnService(item);
+    if (!updated) {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+    res.json(serializeItem(updated));
+}
+
+// 出借方触发：requested -> confirmed
+async function confirmReturn(req, res) {
+    const { id } = req.params;
+
+    const item = await prisma.item.findUnique({ where: { id }, include: ITEM_INCLUDE });
+    if (!item) {
+        res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+
+    if (item.lenderId !== req.userId) {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    if (item.returnStatus !== 'requested') {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+
+    const updated = await confirmReturnService(item);
+    if (!updated) {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+    res.json(serializeItem(updated));
+}
+
+async function editItem(req, res) {
+    const { id } = req.params;
+
+    const item = await prisma.item.findUnique({ where: { id } });
+    if (!item) {
+        res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+
+    if (item.lenderId !== req.userId) {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    // confirmed 属于历史记录，只读，不允许再编辑
+    if (item.returnStatus === 'confirmed') {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    const { itemDetail, backDate, lentDate } = req.body || {};
+    const data = {};
+    if (itemDetail !== undefined) data.itemDetail = itemDetail;
+    if (backDate !== undefined) {
+        const d = parseDate(backDate);
+        if (!d) {
+            res.status(400).json({ error: 'bad-request' });
+            return;
+        }
+        data.backDate = d;
+    }
+    if (lentDate !== undefined) {
+        const d = parseDate(lentDate);
+        if (!d) {
+            res.status(400).json({ error: 'bad-request' });
+            return;
+        }
+        data.lentDate = d;
+    }
+
+    const updated = await prisma.item.update({ where: { id }, data, include: ITEM_INCLUDE });
+    res.json(serializeItem(updated));
+}
+
+async function deleteItem(req, res) {
+    const { id } = req.params;
+
+    const item = await prisma.item.findUnique({ where: { id } });
+    if (!item) {
+        res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+
+    if (item.lenderId !== req.userId) {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    // confirmed 的 Item 保留借还历史，不允许删除
+    if (item.returnStatus === 'confirmed') {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    await prisma.item.delete({ where: { id } });
     res.json({ message: `item ${id} deleted` });
 }
 
-function editItem(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
+async function modifyDueDate(req, res) {
     const { id } = req.params;
-    const lenderItemsList = users.getUserData(username);
-    if (!lenderItemsList.contains(id)) {
+
+    const item = await prisma.item.findUnique({ where: { id }, include: ITEM_INCLUDE });
+    if (!item) {
         res.status(404).json({ error: 'item-missing' });
         return;
     }
 
-    const item = lenderItemsList.getItem(id);
-    if (item.lender !== username) {
+    if (item.borrowerId !== req.userId) {
         res.status(403).json({ error: 'forbidden' });
         return;
     }
 
-    const { itemDetail, backDate, lentDate } = req.body;
-    const updates = {};
-    if (itemDetail !== undefined) updates.itemDetail = itemDetail;
-    if (backDate !== undefined) updates.backDate = backDate;
-    if (lentDate !== undefined) updates.lentDate = lentDate;
-
-    const updatedItem = lenderItemsList.editItem(id, updates);
-
-    // Sync changes to borrower's side
-    const borrowerItemsList = users.getUserItemsList(item.borrower);
-    if (borrowerItemsList && borrowerItemsList.contains(id)) {
-        borrowerItemsList.editItem(id, updates);
-    }
-
-    res.json({ item: updatedItem });
-}
-
-function modifyDueDate(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
-        return;
-    }
-
-    const { id } = req.params;
-    const borrowerItemsList = users.getUserData(username);
-    if (!borrowerItemsList.contains(id)) {
-        res.status(404).json({ error: 'item-missing' });
-        return;
-    }
-
-    const item = borrowerItemsList.getItem(id);
-    if (item.borrower !== username) {
+    // 只有 pending 阶段借阅方才能改期；requested/confirmed 后操作按钮应禁用
+    if (item.returnStatus !== 'pending') {
         res.status(403).json({ error: 'forbidden' });
         return;
     }
 
-    if (item.modifyRemaining === 0) {
+    if (item.modifyRemaining === 0 && item.modifyLimit !== MODIFY_UNLIMITED) {
         res.status(403).json({ error: 'forbidden' });
         return;
     }
 
-    const { backDate } = req.body;
+    const { backDate } = req.body || {};
     if (!backDate) {
         res.status(400).json({ error: 'required-backDate' });
         return;
     }
 
-    // Update borrower's side
-    const updatedItem = borrowerItemsList.modifyDueDate(id, backDate);
-
-    // Sync changes to lender's side
-    const lenderItemsList = users.getUserItemsList(item.lender);
-    if (lenderItemsList && lenderItemsList.contains(id)) {
-        lenderItemsList.modifyDueDate(id, backDate);
-    }
-
-    // Notify the lender
-    const lenderNotifs = users.getUserNotifications(item.lender);
-    if (lenderNotifs) {
-        lenderNotifs.add(
-            'date_modified',
-            `${item.borrower} 修改了归还日期：${item.itemDetail}，新日期 ${backDate}`,
-            id
-        );
-    }
-
-    res.json({ item: updatedItem });
-}
-
-function updateModifyLimit(req, res) {
-    const sid = req.cookies.sid;
-    const username = sid ? sessions.getSessionUser(sid) : '';
-
-    if (!sid || !users.isValidUsername(username)) {
-        res.status(401).json({ error: 'auth-missing' });
+    const parsedBackDate = parseDate(backDate);
+    if (!parsedBackDate) {
+        res.status(400).json({ error: 'bad-request' });
         return;
     }
 
+    const newRemaining =
+        item.modifyLimit === MODIFY_UNLIMITED ? item.modifyRemaining : item.modifyRemaining - 1;
+
+    const [updated] = await prisma.$transaction([
+        prisma.item.update({
+            where: { id },
+            data: { backDate: parsedBackDate, modifyRemaining: newRemaining },
+            include: ITEM_INCLUDE
+        }),
+        prisma.notification.create({
+            data: {
+                type: 'date_modified',
+                message: `${item.borrower.username} 修改了归还日期：${item.itemDetail}，新日期 ${backDate}`,
+                userId: item.lenderId,
+                relatedItemId: id
+            }
+        })
+    ]);
+
+    res.json(serializeItem(updated));
+}
+
+async function updateModifyLimit(req, res) {
     const { id } = req.params;
-    const lenderItemsList = users.getUserData(username);
-    if (!lenderItemsList.contains(id)) {
+
+    const item = await prisma.item.findUnique({ where: { id } });
+    if (!item) {
         res.status(404).json({ error: 'item-missing' });
         return;
     }
 
-    const item = lenderItemsList.getItem(id);
-    if (item.lender !== username) {
+    if (item.lenderId !== req.userId) {
         res.status(403).json({ error: 'forbidden' });
         return;
     }
 
-    const { modifyLimit } = req.body;
-    const isValidLimit = modifyLimit === -1 || modifyLimit === 0 || (Number.isInteger(modifyLimit) && modifyLimit > 0);
+    // confirmed 属于历史记录，只读，不允许再改修改次数
+    if (item.returnStatus === 'confirmed') {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    const { modifyLimit } = req.body || {};
+    const isValidLimit = modifyLimit === MODIFY_UNLIMITED || (Number.isInteger(modifyLimit) && modifyLimit >= 0);
     if (!isValidLimit) {
         res.status(400).json({ error: 'invalid-modifyLimit' });
         return;
     }
 
-    const updatedItem = lenderItemsList.updateModifyLimit(id, modifyLimit);
+    const updated = await prisma.item.update({
+        where: { id },
+        data: { modifyLimit, modifyRemaining: modifyLimit },
+        include: ITEM_INCLUDE
+    });
 
-    // Sync to borrower's side
-    const borrowerItemsList = users.getUserItemsList(item.borrower);
-    if (borrowerItemsList && borrowerItemsList.contains(id)) {
-        borrowerItemsList.updateModifyLimit(id, modifyLimit);
-    }
-
-    res.json({ item: updatedItem });
+    res.json(serializeItem(updated));
 }
 
 export default {
     getItemsList,
     addItem,
     sendNotice,
-    updateItem,
-    deleteItem,
+    requestReturn,
+    confirmReturn,
     editItem,
+    deleteItem,
     modifyDueDate,
     updateModifyLimit
 };
