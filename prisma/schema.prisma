@@ -1,0 +1,81 @@
+// PickandReturn 数据库 schema
+// 迁移：npx prisma migrate dev --name xxx（开发） / npx prisma migrate deploy（生产）
+// 四张表：User / Session / Item / Notification
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  language     String   @default("zh")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  lentItems     Item[]         @relation("Lender")
+  borrowedItems Item[]         @relation("Borrower")
+  notifications Notification[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model Session {
+  sid       String   @id
+  userId    String   @map("user_id")
+  language  String   @default("zh")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Item {
+  id                   String    @id @default(uuid())
+  itemDetail           String    @map("item_detail")
+  lentDate             DateTime  @map("lent_date") @db.Date
+  backDate             DateTime  @map("back_date") @db.Date
+  returnStatus         String    @default("pending") @map("return_status")
+  // 值域：pending | requested | confirmed
+  returnedAt           DateTime? @map("returned_at")
+  confirmedAt          DateTime? @map("confirmed_at")
+  modifyLimit          Int       @default(3) @map("modify_limit")
+  modifyRemaining      Int       @map("modify_remaining")
+  lastAutoReminderDate DateTime? @map("last_auto_reminder_date") @db.Date
+
+  lenderId   String @map("lender_id")
+  borrowerId String @map("borrower_id")
+  lender     User   @relation("Lender", fields: [lenderId], references: [id])
+  borrower   User   @relation("Borrower", fields: [borrowerId], references: [id])
+
+  notifications Notification[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("items")
+}
+
+model Notification {
+  id            String  @id @default(uuid())
+  type          String
+  // 值域：return_reminder | date_modified | return_requested | return_confirmed
+  message       String
+  read          Boolean @default(false)
+  userId        String  @map("user_id")
+  relatedItemId String? @map("related_item_id")
+
+  user        User  @relation(fields: [userId], references: [id])
+  relatedItem Item? @relation(fields: [relatedItemId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
