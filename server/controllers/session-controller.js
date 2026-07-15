@@ -8,10 +8,20 @@ const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 // 使"用户不存在"和"密码错误"两条路径耗时接近，防止通过响应时间枚举用户名。
 const DUMMY_HASH = bcrypt.hashSync('timing-attack-mitigation-dummy', 10);
 
+// cookie 的 secure 属性：默认生产环境为 true（只走 HTTPS）。
+// 可用 COOKIE_SECURE 环境变量显式覆盖——例如备案前临时用 http://IP 访问时设为 false，
+// 让登录 cookie 在 http 下也能保存；上了 HTTPS 后再翻回 true（或删除该变量）。
+function cookieSecure() {
+    if (process.env.COOKIE_SECURE !== undefined) {
+        return process.env.COOKIE_SECURE === 'true';
+    }
+    return process.env.NODE_ENV === 'production';
+}
+
 function cookieOptions() {
     return {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: cookieSecure(),
         sameSite: 'lax',
         maxAge: THIRTY_DAYS_MS
     };
@@ -63,7 +73,7 @@ async function logout(req, res) {
     await prisma.session.delete({ where: { sid: req.sid } });
     res.clearCookie('sid', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: cookieSecure(),
         sameSite: 'lax'
     });
     res.json({ username: req.username });
