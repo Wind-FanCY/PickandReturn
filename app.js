@@ -8,7 +8,7 @@ import pinoHttp from 'pino-http';
 import prisma from './lib/prisma.js';
 import logger from './lib/logger.js';
 import requireAuth from './server/middleware/require-auth.js';
-import { createLoginLimiter } from './server/middleware/login-rate-limit.js';
+import { createLoginLimiter, createRegisterLimiter } from './server/middleware/login-rate-limit.js';
 import sessionController from './server/controllers/session-controller.js';
 import itemController from './server/controllers/item-controller.js';
 import userController from './server/controllers/user-controller.js';
@@ -16,15 +16,22 @@ import notificationController from './server/controllers/notification-controller
 
 const app = express();
 
+// 生产部署在 Nginx 反代后（单跳）。不设置的话 req.ip 恒为 127.0.0.1，
+// 会让 express-rate-limit 退化成全站共享一个限流桶（任何人可锁死所有人登录）。
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(pinoHttp({ logger }));
-app.use(cookieParser());
+app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json());
 app.use(express.static('./dist'));
 
 // 集成测试里每个用例都要反复登录，会在几个用例内就跑满配额；
 // 限流本身在独立的 mini app 上单独测试（见 tests/auth.test.js），这里测试环境直接跳过。
 const loginLimiter = createLoginLimiter({
+    skip: () => process.env.NODE_ENV === 'test'
+});
+const registerLimiter = createRegisterLimiter({
     skip: () => process.env.NODE_ENV === 'test'
 });
 
@@ -38,7 +45,7 @@ app.get('/api/v1/healthz', async (req, res) => {
     }
 });
 
-app.post('/api/v1/users', userController.register);
+app.post('/api/v1/users', registerLimiter, userController.register);
 
 app.get('/api/v1/session', requireAuth, sessionController.getSession);
 app.post('/api/v1/session', loginLimiter, sessionController.login);

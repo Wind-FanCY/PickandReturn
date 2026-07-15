@@ -25,6 +25,12 @@ async function getSession(req, res) {
 async function login(req, res) {
     const { username, password } = req.body || {};
 
+    // 非字符串 username 会让 Prisma 抛校验错 → 500；这里当作凭证无效处理（且不泄露）
+    if (typeof username !== 'string') {
+        res.status(401).json({ error: 'user-not-registered' });
+        return;
+    }
+
     const user = await prisma.user.findUnique({ where: { username } });
 
     // 时序对齐：无论用户是否存在都跑一次 bcrypt.compare（用户不存在时比对假 hash）

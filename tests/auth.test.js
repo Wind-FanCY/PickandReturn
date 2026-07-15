@@ -4,7 +4,8 @@ import express from 'express';
 import app from '../app.js';
 import prisma from '../lib/prisma.js';
 import { createUser, login, registerAndLogin } from './helpers.js';
-import { createLoginLimiter } from '../server/middleware/login-rate-limit.js';
+import { createLoginLimiter, createRegisterLimiter } from '../server/middleware/login-rate-limit.js';
+import { cleanupExpiredSessions } from '../server/services/session-cleanup.js';
 
 describe('POST /api/v1/users (register)', () => {
     it('registers a new user successfully', async () => {
@@ -147,5 +148,66 @@ describe('login rate limiter', () => {
 
         expect(lastRes.status).toBe(429);
         expect(lastRes.body).toEqual({ error: 'rate-limited' });
+    });
+});
+
+describe('register rate limiter (D2)', () => {
+    // 同 login 限流：共享 app 在 test 环境跳过，这里用 mini-app 验证真实限流行为。
+    it('returns 429 JSON after exceeding the 20-attempts/hour limit', async () => {
+        const miniApp = express();
+        miniApp.use(express.json());
+        miniApp.post('/api/v1/users', createRegisterLimiter(), (req, res) => {
+            res.json({ ok: true });
+        });
+
+        let lastRes;
+        for (let i = 0; i < 21; i += 1) {
+            lastRes = await request(miniApp).post('/api/v1/users').send({});
+        }
+
+        expect(lastRes.status).toBe(429);
+        expect(lastRes.body).toEqual({ error: 'rate-limited' });
+    });
+});
+
+describe('session security (D3/D4)', () => {
+    it('rejects a non-string username with 401, not 500 (L1)', async () => {
+        const res = await request(app)
+            .post('/api/v1/session')
+            .send({ username: { not: '' }, password: 'password1' });
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({ error: 'user-not-registered' });
+    });
+
+    it('rejects a request whose session has expired', async () => {
+        const { agent } = await registerAndLogin(app, { username: 'alice', password: 'password1' });
+        // 直接把该 session 的过期时间改到过去
+        await prisma.session.updateMany({ data: { expiresAt: new Date(Date.now() - 1000) } });
+
+        const res = await agent.get('/api/v1/session');
+        expect(res.status).toBe(401);
+        expect(res.body).toEqual({ error: 'auth-missing' });
+    });
+
+    it('cleanupExpiredSessions deletes only expired rows', async () => {
+        // 一个有效 session（登录）+ 手动插一条过期 session
+        await registerAndLogin(app, { username: 'alice', password: 'password1' });
+        const alice = await prisma.user.findUnique({ where: { username: 'alice' } });
+        await prisma.session.create({
+            data: {
+                sid: 'expired-sid',
+                userId: alice.id,
+                expiresAt: new Date(Date.now() - 1000)
+            }
+        });
+
+        const before = await prisma.session.count();
+        expect(before).toBe(2);
+
+        const removed = await cleanupExpiredSessions();
+        expect(removed).toBe(1);
+
+        const after = await prisma.session.count();
+        expect(after).toBe(1); // 有效的那条还在
     });
 });

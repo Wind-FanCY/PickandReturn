@@ -299,3 +299,27 @@ describe('PATCH /api/v1/items/:id/modifylimit', () => {
         expect(res.body).toEqual({ error: 'invalid-modifyLimit' });
     });
 });
+
+describe('security hardening (Phase D)', () => {
+    it('rejects itemDetail longer than the max length (M2)', async () => {
+        const { lender } = await setupLenderAndBorrower();
+        const res = await lender.agent
+            .post('/api/v1/items')
+            .send({ itemInfo: { ...ITEM_INFO, itemDetail: 'x'.repeat(201) } });
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'bad-request' });
+    });
+
+    it('enforces a cooldown between manual reminders on the same item (M1)', async () => {
+        const { lender } = await setupLenderAndBorrower();
+        const createRes = await lender.agent.post('/api/v1/items').send({ itemInfo: ITEM_INFO });
+        const id = createRes.body.id;
+
+        const first = await lender.agent.post(`/api/v1/items/${id}/remind`);
+        expect(first.status).toBe(200);
+
+        const second = await lender.agent.post(`/api/v1/items/${id}/remind`);
+        expect(second.status).toBe(429);
+        expect(second.body).toEqual({ error: 'rate-limited' });
+    });
+});

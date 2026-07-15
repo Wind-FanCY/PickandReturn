@@ -2,12 +2,16 @@ import 'dotenv/config';
 import app from './app.js';
 import logger from './lib/logger.js';
 import { runAutoReminder } from './server/services/reminder.js';
+import { cleanupExpiredSessions } from './server/services/session-cleanup.js';
 
 const PORT = process.env.PORT || 3001;
 
-function runAutoReminderSafely() {
+function runMidnightJobsSafely() {
     runAutoReminder().catch((err) => {
         logger.error({ err }, 'auto reminder job failed');
+    });
+    cleanupExpiredSessions().catch((err) => {
+        logger.error({ err }, 'session cleanup job failed');
     });
 }
 
@@ -18,8 +22,8 @@ function scheduleMidnightJob() {
     nextMidnight.setHours(24, 0, 0, 0);
     const msUntilMidnight = nextMidnight - now;
     setTimeout(function () {
-        runAutoReminderSafely();
-        setInterval(runAutoReminderSafely, 24 * 60 * 60 * 1000);
+        runMidnightJobsSafely();
+        setInterval(runMidnightJobsSafely, 24 * 60 * 60 * 1000);
     }, msUntilMidnight);
 }
 

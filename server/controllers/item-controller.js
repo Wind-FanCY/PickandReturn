@@ -1,7 +1,7 @@
 import prisma from '../../lib/prisma.js';
 import { serializeItem, formatDateOnly } from '../services/item-presenter.js';
 import { requestReturn as requestReturnService, confirmReturn as confirmReturnService } from '../services/return-flow.js';
-import { MODIFY_UNLIMITED, DEFAULT_MODIFY_LIMIT } from '../constants.js';
+import { MODIFY_UNLIMITED, DEFAULT_MODIFY_LIMIT, MAX_ITEM_DETAIL_LENGTH, REMIND_COOLDOWN_MS } from '../constants.js';
 
 const ITEM_INCLUDE = { lender: true, borrower: true };
 
@@ -28,8 +28,13 @@ async function addItem(req, res) {
     const { itemInfo } = req.body || {};
     const { itemDetail, borrower, lentDate, backDate, modifyLimit } = itemInfo || {};
 
-    if (!itemDetail || typeof borrower !== 'string' || !borrower || !lentDate || !backDate) {
+    if (!itemDetail || typeof itemDetail !== 'string' || typeof borrower !== 'string' || !borrower || !lentDate || !backDate) {
         res.status(400).json({ error: 'required-item' });
+        return;
+    }
+
+    if (itemDetail.length > MAX_ITEM_DETAIL_LENGTH) {
+        res.status(400).json({ error: 'bad-request' });
         return;
     }
 
@@ -86,6 +91,19 @@ async function sendNotice(req, res) {
 
     if (item.lenderId !== req.userId) {
         res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    // 提醒冷却：同一 item 一小时内只允许一次手动提醒，防止提醒轰炸（M1）
+    const recentReminder = await prisma.notification.findFirst({
+        where: {
+            relatedItemId: item.id,
+            type: 'return_reminder',
+            createdAt: { gt: new Date(Date.now() - REMIND_COOLDOWN_MS) }
+        }
+    });
+    if (recentReminder) {
+        res.status(429).json({ error: 'rate-limited' });
         return;
     }
 
@@ -180,7 +198,13 @@ async function editItem(req, res) {
 
     const { itemDetail, backDate, lentDate } = req.body || {};
     const data = {};
-    if (itemDetail !== undefined) data.itemDetail = itemDetail;
+    if (itemDetail !== undefined) {
+        if (typeof itemDetail !== 'string' || itemDetail.length > MAX_ITEM_DETAIL_LENGTH) {
+            res.status(400).json({ error: 'bad-request' });
+            return;
+        }
+        data.itemDetail = itemDetail;
+    }
     if (backDate !== undefined) {
         const d = parseDate(backDate);
         if (!d) {

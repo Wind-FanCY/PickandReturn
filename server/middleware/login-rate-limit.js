@@ -14,3 +14,17 @@ export function createLoginLimiter({ skip } = {}) {
         }
     });
 }
+
+// 注册接口限流：比登录宽松，1 小时内最多 20 次。防批量建号与用户名枚举滥用。
+export function createRegisterLimiter({ skip } = {}) {
+    return rateLimit({
+        windowMs: 60 * 60 * 1000,
+        limit: 20,
+        standardHeaders: true,
+        legacyHeaders: false,
+        skip,
+        handler(req, res) {
+            res.status(429).json({ error: 'rate-limited' });
+        }
+    });
+}
