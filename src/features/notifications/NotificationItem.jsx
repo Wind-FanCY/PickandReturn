@@ -32,6 +32,12 @@ function getTypeLabel(type, lang) {
     if (type === NOTIFICATION_TYPE.DATE_MODIFIED) {
         return t(lang, 'notif.dateModifiedTitle');
     }
+    if (type === NOTIFICATION_TYPE.RETURN_REQUESTED) {
+        return t(lang, 'notif.returnRequestedTitle');
+    }
+    if (type === NOTIFICATION_TYPE.RETURN_CONFIRMED) {
+        return t(lang, 'notif.returnConfirmedTitle');
+    }
     return type;
 }
 

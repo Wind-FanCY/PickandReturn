@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../../store/app-context";
-import { SHOW } from "../../store/constant";
+import { SHOW, RETURN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
 import Loading from "../../components/Loading/Loading";
 import ReturnItem from "./ReturnItem";
@@ -13,9 +13,9 @@ function ReturnPage() {
 
     const lang = state.language;
 
-    const filteredItems = Object.values(state.items)
-        .filter(item => item.borrower === state.username)
-        .filter(item => item.lender.toLowerCase().includes(searchText.toLowerCase()))
+    const borrowedItems = Object.values(state.items)
+        .filter(item => item.borrower.username === state.username)
+        .filter(item => item.lender.username.toLowerCase().includes(searchText.toLowerCase()))
         .sort((a, b) => {
             if (sortKey === 'lentDate') {
                 return (a.lentDate || '').localeCompare(b.lentDate || '');
@@ -26,10 +26,13 @@ function ReturnPage() {
             return 0;
         });
 
+    const historyItems = borrowedItems.filter(item => item.returnStatus === RETURN_STATUS.CONFIRMED);
+    const activeItems = borrowedItems.filter(item => item.returnStatus !== RETURN_STATUS.CONFIRMED);
+
     let show;
     if (state.isItemsPending) {
         show = SHOW.PENDING;
-    } else if (!filteredItems.length) {
+    } else if (!activeItems.length) {
         show = SHOW.EMPTY;
     } else {
         show = SHOW.EXIST;
@@ -70,12 +73,26 @@ function ReturnPage() {
             )}
             {show === SHOW.EXIST && (
                 <ul className="return-page__list">
-                    {filteredItems.map(item => (
+                    {activeItems.map(item => (
                         <li className="return-page__item" key={item.id}>
                             <ReturnItem item={item} />
                         </li>
                     ))}
                 </ul>
+            )}
+            {historyItems.length > 0 && (
+                <details className="return-page__history">
+                    <summary className="return-page__history-summary">
+                        {t(lang, 'items.history')} ({historyItems.length})
+                    </summary>
+                    <ul className="return-page__history-list">
+                        {historyItems.map(item => (
+                            <li className="return-page__item" key={item.id}>
+                                <ReturnItem item={item} />
+                            </li>
+                        ))}
+                    </ul>
+                </details>
             )}
         </main>
     );

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../../store/app-context";
-import { SHOW } from "../../store/constant";
+import { SHOW, RETURN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
 
 import Loading from "../../components/Loading/Loading";
@@ -9,21 +9,16 @@ import AddItemForm from "./AddItemForm";
 import "./ItemsPage.css";
 
 function ItemsPage() {
-    const [state, dispatch] = useContext(AppContext);
+    const [state] = useContext(AppContext);
     const [filterStatus, setFilterStatus] = useState('all');
     const [searchText, setSearchText] = useState('');
     const [sortKey, setSortKey] = useState('createdAt');
 
     const lang = state.language;
 
-    const filteredItems = Object.values(state.items)
-        .filter(item => item.lender === state.username)
-        .filter(item => {
-            if (filterStatus === 'returned') return item.returned;
-            if (filterStatus === 'not-returned') return !item.returned;
-            return true;
-        })
-        .filter(item => item.borrower.toLowerCase().includes(searchText.toLowerCase()))
+    const lentItems = Object.values(state.items)
+        .filter(item => item.lender.username === state.username)
+        .filter(item => item.borrower.username.toLowerCase().includes(searchText.toLowerCase()))
         .sort((a, b) => {
             if (sortKey === 'createdAt') {
                 return (b.createdAt || '').localeCompare(a.createdAt || '');
@@ -37,10 +32,20 @@ function ItemsPage() {
             return 0;
         });
 
+    const historyItems = lentItems.filter(item => item.returnStatus === RETURN_STATUS.CONFIRMED);
+
+    const activeItems = lentItems
+        .filter(item => item.returnStatus !== RETURN_STATUS.CONFIRMED)
+        .filter(item => {
+            if (filterStatus === 'requested') return item.returnStatus === RETURN_STATUS.REQUESTED;
+            if (filterStatus === 'pending') return item.returnStatus === RETURN_STATUS.PENDING;
+            return true;
+        });
+
     let show;
     if (state.isItemsPending) {
         show = SHOW.PENDING;
-    } else if (!filteredItems.length) {
+    } else if (!activeItems.length) {
         show = SHOW.EMPTY;
     } else {
         show = SHOW.EXIST;
@@ -58,13 +63,13 @@ function ItemsPage() {
                             onClick={() => setFilterStatus('all')}
                         >{t(lang, 'items.filterAll')}</button>
                         <button
-                            className={`filter-btn${filterStatus === 'not-returned' ? ' filter-btn--active' : ''}`}
-                            onClick={() => setFilterStatus('not-returned')}
+                            className={`filter-btn${filterStatus === 'pending' ? ' filter-btn--active' : ''}`}
+                            onClick={() => setFilterStatus('pending')}
                         >{t(lang, 'items.filterNotReturned')}</button>
                         <button
-                            className={`filter-btn${filterStatus === 'returned' ? ' filter-btn--active' : ''}`}
-                            onClick={() => setFilterStatus('returned')}
-                        >{t(lang, 'items.filterReturned')}</button>
+                            className={`filter-btn${filterStatus === 'requested' ? ' filter-btn--active' : ''}`}
+                            onClick={() => setFilterStatus('requested')}
+                        >{t(lang, 'items.filterRequested')}</button>
                     </div>
                     <div className="items__sort-search">
                         <div className="items__sort">
@@ -102,7 +107,7 @@ function ItemsPage() {
             )}
             {show === SHOW.EXIST && (
                 <ul className="items__list">
-                    {filteredItems.map(item => (
+                    {activeItems.map(item => (
                         <li
                             className={`item${item.id === state.lastAddedItemId ? ' item--new' : ''}`}
                             key={item.id}
@@ -111,6 +116,20 @@ function ItemsPage() {
                         </li>
                     ))}
                 </ul>
+            )}
+            {historyItems.length > 0 && (
+                <details className="items__history">
+                    <summary className="items__history-summary">
+                        {t(lang, 'items.history')} ({historyItems.length})
+                    </summary>
+                    <ul className="items__history-list">
+                        {historyItems.map(item => (
+                            <li className="item" key={item.id}>
+                                <Item item={item} />
+                            </li>
+                        ))}
+                    </ul>
+                </details>
             )}
         </div>
     );

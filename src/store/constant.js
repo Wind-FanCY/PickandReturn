@@ -4,10 +4,10 @@ export const LOGIN_STATUS = {
     IS_LOGGED_IN: 'loggedIn'
 };
 
-export const PAGE_STATUS = {
-    ITEMS_PAGE: 'itemsPage',
-    NOTICES_PAGE: 'noticesPage',
-    RETURN_PAGE: 'returnPage'
+export const RETURN_STATUS = {
+    PENDING: 'pending',
+    REQUESTED: 'requested',
+    CONFIRMED: 'confirmed'
 };
 
 export const SERVER = {
@@ -31,21 +31,18 @@ export const SERVER = {
 };
 
 export const CLIENT = {
-    NETWORK_ERROR: 'networkError',
-    NO_SESSION: 'noSession'
+    NETWORK_ERROR: 'networkError'
 };
 
 export const ACTIONS = {
     LOG_IN: 'logIn',
     LOG_OUT: 'logOut',
-    CHECK_ITEMS: 'checkItems',
-    CHECK_NOTICES: 'checkNotices',
-    CHECK_RETURN: 'checkReturn',
     START_LOADING_ITEMS: 'startLoadingItems',
     REPLACE_ITEMS: 'replaceItems',
     REPORT_ERROR: 'reportError',
     REPORT_SUCCESS: 'reportSuccess',
-    RETURN_ITEM: 'returnItem',
+    REQUEST_RETURN: 'requestReturn',
+    CONFIRM_RETURN: 'confirmReturn',
     DELETE_ITEM: 'deleteItem',
     ADD_ITEM: 'addItem',
     SEND_NOTICE: 'sendNotice',
@@ -60,7 +57,9 @@ export const ACTIONS = {
 
 export const NOTIFICATION_TYPE = {
     RETURN_REMINDER: 'return_reminder',
-    DATE_MODIFIED: 'date_modified'
+    DATE_MODIFIED: 'date_modified',
+    RETURN_REQUESTED: 'return_requested',
+    RETURN_CONFIRMED: 'return_confirmed'
 };
 
 export const SHOW = {
@@ -79,9 +78,4 @@ export const MESSAGES = {
     [SERVER.USER_NOT_REGISTERED]: 'Username not found. Please register first.',
     [SERVER.USER_ALREADY_EXISTS]: 'Username already taken. Please log in.',
     default: 'Something went wrong. Please try again'
-};
-
-export const FORM_MODE = {
-    LOGIN: 'login',
-    REGISTER: 'register'
 };

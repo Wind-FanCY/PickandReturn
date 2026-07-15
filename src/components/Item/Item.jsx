@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../../store/app-context";
-import { ACTIONS } from "../../store/constant";
+import { ACTIONS, RETURN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
 import {
     fetchDeleteItem,
-    fetchUpdateItem,
     fetchSendNotice,
     fetchEditItem,
-    fetchUpdateModifyLimit
+    fetchUpdateModifyLimit,
+    fetchConfirmReturn
 } from "../../services/services";
 
 import reminderIcon from "../../assets/reminder_icon.png";
@@ -24,8 +24,10 @@ function Item({ item }) {
     const [editErrors, setEditErrors] = useState({});
 
     const lang = state.language;
-    const isReturnedClass = item.returned ? "item__text--returned" : "";
-    const isOverdue = !item.returned && new Date(item.backDate) < new Date();
+    const isPending = item.returnStatus === RETURN_STATUS.PENDING;
+    const isRequested = item.returnStatus === RETURN_STATUS.REQUESTED;
+    const isConfirmed = item.returnStatus === RETURN_STATUS.CONFIRMED;
+    const isOverdue = !isConfirmed && new Date(item.backDate) < new Date();
 
     function onDeleteItem(id) {
         dispatch({ type: ACTIONS.START_LOADING_ITEMS });
@@ -39,11 +41,11 @@ function Item({ item }) {
             });
     }
 
-    function onToggleLendStatus(id) {
-        fetchUpdateItem(id, !state.items[id].returned)
+    function onConfirmReturn(id) {
+        fetchConfirmReturn(id)
             .then(updatedItem => {
-                dispatch({ type: ACTIONS.RETURN_ITEM, item: updatedItem });
-                dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.statusUpdated' });
+                dispatch({ type: ACTIONS.CONFIRM_RETURN, item: updatedItem });
+                dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.returnConfirmed' });
             })
             .catch(err => {
                 dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
@@ -82,8 +84,8 @@ function Item({ item }) {
         };
 
         fetchEditItem(item.id, updates)
-            .then(data => {
-                dispatch({ type: ACTIONS.EDIT_ITEM, payload: data.item });
+            .then(updatedItem => {
+                dispatch({ type: ACTIONS.EDIT_ITEM, payload: updatedItem });
                 dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.itemUpdated' });
                 setIsEditing(false);
             })
@@ -103,8 +105,8 @@ function Item({ item }) {
     function onModifyLimitChange(e) {
         const newLimit = parseInt(e.target.value, 10);
         fetchUpdateModifyLimit(item.id, newLimit)
-            .then(data => {
-                dispatch({ type: ACTIONS.UPDATE_MODIFY_LIMIT, payload: data.item });
+            .then(updatedItem => {
+                dispatch({ type: ACTIONS.UPDATE_MODIFY_LIMIT, payload: updatedItem });
                 dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.modifyLimitUpdated' });
             })
             .catch(err => {
@@ -120,22 +122,22 @@ function Item({ item }) {
         return lang === 'zh' ? `${value} 次` : `${value} time(s)`;
     }
 
+    if (isConfirmed) {
+        return (
+            <div className="item__content item__content--confirmed">
+                <span className="item__borrower item__text--returned">{t(lang, 'item.borrower')} {item.borrower.username}</span>
+                <span className="item__lentDate item__text--returned">{t(lang, 'item.lentDate')} {item.lentDate}</span>
+                <span className="item__backDate item__text--returned">{t(lang, 'item.dueDate')} {item.backDate}</span>
+                <span className="item__text item__text--returned">{t(lang, 'item.details')} {item.itemDetail}</span>
+                <span className="item__returned-tag">{t(lang, 'item.returned')}</span>
+            </div>
+        );
+    }
+
     return (
-        <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}`}>
+        <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}${isRequested ? ' item__content--requested' : ''}`}>
             {isOverdue && <span className="item__overdue-tag">{t(lang, 'item.overdue')}</span>}
-            <label className="item__label">
-                <input
-                    className="item__toggle"
-                    data-id={item.id}
-                    type="checkbox"
-                    checked={!!item.returned}
-                    onChange={(e) => {
-                        const id = e.target.dataset.id;
-                        onToggleLendStatus(id);
-                    }}
-                />
-                <span className="toggle__title">{t(lang, 'item.returned')}</span>
-            </label>
+            {isRequested && <span className="item__requested-tag">{t(lang, 'item.requestedTag')}</span>}
 
             {isEditing ? (
                 <form className="item__edit-form" onSubmit={onSaveEdit}>
@@ -180,33 +182,35 @@ function Item({ item }) {
                 </form>
             ) : (
                 <>
-                    <span className={`item__borrower ${isReturnedClass}`}>{t(lang, 'item.borrower')} {item.borrower}</span>
-                    <span className={`item__lentDate ${isReturnedClass}`}>{t(lang, 'item.lentDate')} {item.lentDate}</span>
-                    <span className={`item__backDate ${isReturnedClass}`}>{t(lang, 'item.dueDate')} {item.backDate}</span>
-                    <span className={`item__text ${isReturnedClass}`}>{t(lang, 'item.details')} {item.itemDetail}</span>
-                    <button className="item__edit-btn" onClick={() => setIsEditing(true)}>{t(lang, 'item.edit')}</button>
+                    <span className="item__borrower">{t(lang, 'item.borrower')} {item.borrower.username}</span>
+                    <span className="item__lentDate">{t(lang, 'item.lentDate')} {item.lentDate}</span>
+                    <span className="item__backDate">{t(lang, 'item.dueDate')} {item.backDate}</span>
+                    <span className="item__text">{t(lang, 'item.details')} {item.itemDetail}</span>
+                    {isPending && <button className="item__edit-btn" onClick={() => setIsEditing(true)}>{t(lang, 'item.edit')}</button>}
                 </>
             )}
 
-            <div className="item__modify-limit">
-                <label htmlFor={`modify-limit-${item.id}`} className="item__modify-limit-label">
-                    <span>{t(lang, 'item.modifyLimit')}</span>
-                    <select
-                        id={`modify-limit-${item.id}`}
-                        className="item__modify-limit-select"
-                        value={modifyLimit}
-                        onChange={onModifyLimitChange}
-                    >
-                        <option value="-1">{t(lang, 'item.unlimited')}</option>
-                        <option value="0">{t(lang, 'item.noModify')}</option>
-                        <option value="1">{t(lang, 'item.1time')}</option>
-                        <option value="3">{t(lang, 'item.3times')}</option>
-                        <option value="5">{t(lang, 'item.5times')}</option>
-                    </select>
-                </label>
-            </div>
+            {isPending && (
+                <div className="item__modify-limit">
+                    <label htmlFor={`modify-limit-${item.id}`} className="item__modify-limit-label">
+                        <span>{t(lang, 'item.modifyLimit')}</span>
+                        <select
+                            id={`modify-limit-${item.id}`}
+                            className="item__modify-limit-select"
+                            value={modifyLimit}
+                            onChange={onModifyLimitChange}
+                        >
+                            <option value="-1">{t(lang, 'item.unlimited')}</option>
+                            <option value="0">{t(lang, 'item.noModify')}</option>
+                            <option value="1">{t(lang, 'item.1time')}</option>
+                            <option value="3">{t(lang, 'item.3times')}</option>
+                            <option value="5">{t(lang, 'item.5times')}</option>
+                        </select>
+                    </label>
+                </div>
+            )}
 
-            {!item.returned && (
+            {isPending && (
                 <button
                     data-id={item.id}
                     className="item__send"
@@ -219,29 +223,40 @@ function Item({ item }) {
                 </button>
             )}
 
-            {!confirmingDelete ? (
+            {isRequested && (
                 <button
-                    className="item__delete"
-                    onClick={() => setConfirmingDelete(true)}
+                    className="item__confirm-return"
+                    onClick={() => onConfirmReturn(item.id)}
                 >
-                    <img className="icon" src={deleteIcon} alt="delete button" />{t(lang, 'item.delete')}
+                    {t(lang, 'item.confirmReturn')}
                 </button>
-            ) : (
-                <div className="item__confirm-delete">
-                    <span>{t(lang, 'item.confirmDelete')}</span>
+            )}
+
+            {isPending && (
+                !confirmingDelete ? (
                     <button
-                        className="item__confirm-yes"
-                        onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}
+                        className="item__delete"
+                        onClick={() => setConfirmingDelete(true)}
                     >
-                        {t(lang, 'item.confirm')}
+                        <img className="icon" src={deleteIcon} alt="delete button" />{t(lang, 'item.delete')}
                     </button>
-                    <button
-                        className="item__confirm-no"
-                        onClick={() => setConfirmingDelete(false)}
-                    >
-                        {t(lang, 'item.cancel')}
-                    </button>
-                </div>
+                ) : (
+                    <div className="item__confirm-delete">
+                        <span>{t(lang, 'item.confirmDelete')}</span>
+                        <button
+                            className="item__confirm-yes"
+                            onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}
+                        >
+                            {t(lang, 'item.confirm')}
+                        </button>
+                        <button
+                            className="item__confirm-no"
+                            onClick={() => setConfirmingDelete(false)}
+                        >
+                            {t(lang, 'item.cancel')}
+                        </button>
+                    </div>
+                )
             )}
         </div>
     );

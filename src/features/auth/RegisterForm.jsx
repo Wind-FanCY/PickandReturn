@@ -1,8 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AppContext } from "../../store/app-context";
-import { fetchLogin } from "../../services/services";
-import { loadUserData } from "../../store/load-user-data";
+import { fetchRegister } from "../../services/services";
 import { ACTIONS } from "../../store/constant";
 import { t } from "../../store/i18n";
 
@@ -11,55 +10,44 @@ import LangToggle from '../../components/LangToggle/LangToggle';
 import './LoginForm.css';
 import loginIcon from '../../assets/login_icon.png';
 
-const DEMO_USERNAME = 'demo';
-const DEMO_PASSWORD = 'demo123';
-
-function LoginForm() {
+function RegisterForm() {
     const [state, dispatch] = useContext(AppContext);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
     const lang = state.language;
 
-    function validate(u, p) {
+    function validate() {
         const newErrors = {};
-        if (!u) newErrors.username = t(lang, 'auth.usernameRequired');
-        else if (!/^[a-zA-Z0-9_]+$/.test(u)) newErrors.username = t(lang, 'auth.usernameInvalid');
-        if (!p) newErrors.password = t(lang, 'auth.passwordRequired');
-        else if (p.length < 6) newErrors.password = t(lang, 'auth.passwordTooShort');
+        if (!username) newErrors.username = t(lang, 'auth.usernameRequired');
+        else if (!/^[a-zA-Z0-9_]+$/.test(username)) newErrors.username = t(lang, 'auth.usernameInvalid');
+        if (!password) newErrors.password = t(lang, 'auth.passwordRequired');
+        else if (password.length < 6) newErrors.password = t(lang, 'auth.passwordTooShort');
+        if (confirmPassword !== password) newErrors.confirmPassword = t(lang, 'auth.passwordMismatch');
         return newErrors;
-    }
-
-    async function doLogin(u, p) {
-        dispatch({ type: ACTIONS.START_LOADING_ITEMS });
-        try {
-            const session = await fetchLogin(u, p);
-            dispatch({ type: ACTIONS.LOG_IN, username: session.username, language: session.language });
-            await loadUserData(dispatch);
-            navigate('/items');
-        } catch (err) {
-            dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
-        }
     }
 
     function onSubmit(e) {
         e.preventDefault();
-        const newErrors = validate(username, password);
+        const newErrors = validate();
         if (Object.keys(newErrors).length > 0) {
             setFieldErrors(newErrors);
             return;
         }
         setFieldErrors({});
-        doLogin(username, password);
-    }
 
-    function onTryDemo() {
-        setUsername(DEMO_USERNAME);
-        setPassword(DEMO_PASSWORD);
-        setFieldErrors({});
-        doLogin(DEMO_USERNAME, DEMO_PASSWORD);
+        dispatch({ type: ACTIONS.START_LOADING_ITEMS });
+        fetchRegister(username, password)
+            .then(() => {
+                dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.accountCreated' });
+                navigate('/login');
+            })
+            .catch(err => {
+                dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
+            });
     }
 
     return (
@@ -68,7 +56,7 @@ function LoginForm() {
                 <LangToggle />
             </div>
             <form className="login__form" onSubmit={onSubmit}>
-                <h1 className="login__title">{t(lang, 'auth.loginTitle')}</h1>
+                <h1 className="login__title">{t(lang, 'auth.registerTitle')}</h1>
                 <label className="login__label" htmlFor="username">
                     <span className="label__title">{t(lang, 'auth.usernameLabel')}</span>
                     <input
@@ -92,17 +80,26 @@ function LoginForm() {
                     />
                 </label>
                 {fieldErrors.password && <p className="login__field-error">{fieldErrors.password}</p>}
+                <label className="login__label" htmlFor="confirmPassword">
+                    <span className="label__title">{t(lang, 'auth.confirmPasswordLabel')}</span>
+                    <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        className="label__input"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                    />
+                </label>
+                {fieldErrors.confirmPassword && <p className="login__field-error">{fieldErrors.confirmPassword}</p>}
                 <button className="login__button" type="submit">
                     <img className="icon" src={loginIcon} alt="submit button" />
-                    {t(lang, 'auth.loginButton')}
-                </button>
-                <button className="login__demo-button" type="button" onClick={onTryDemo}>
-                    {t(lang, 'auth.tryDemo')}
+                    {t(lang, 'auth.registerButton')}
                 </button>
                 <div className="login__switch">
                     <p className="login__switch-text">
-                        {t(lang, 'auth.newUser')}{' '}
-                        <Link className="login__switch-button" to="/register">{t(lang, 'auth.registerLink')}</Link>
+                        {t(lang, 'auth.haveAccount')}{' '}
+                        <Link className="login__switch-button" to="/login">{t(lang, 'auth.loginLink')}</Link>
                     </p>
                 </div>
                 <Status error={state.error} success={state.success} />
@@ -111,4 +108,4 @@ function LoginForm() {
     );
 }
 
-export default LoginForm;
+export default RegisterForm;

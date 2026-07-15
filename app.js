@@ -1,5 +1,6 @@
 // Express app：只负责中间件挂载 + 路由注册。不调用 listen()，不启动定时任务，
 // 这样 supertest 可以直接 import 这个 app 做集成测试，而不会意外触发午夜提醒任务。
+import path from 'path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -59,6 +60,14 @@ app.patch('/api/v1/items/:id/modifylimit', requireAuth, itemController.updateMod
 app.get('/api/v1/notifications', requireAuth, notificationController.getNotifications);
 app.patch('/api/v1/notifications/read', requireAuth, notificationController.markAllRead);
 app.delete('/api/v1/notifications/:id', requireAuth, notificationController.deleteNotification);
+
+// SPA fallback：非 /api 的 GET 请求一律回退到前端 index.html，
+// 让 react-router 的 BrowserRouter 在深链/刷新时也能工作（如直接访问 /login、/items）。
+app.get(/^\/(?!api\/).*/, (req, res, next) => {
+    res.sendFile(path.resolve('./dist/index.html'), (err) => {
+        if (err) next();
+    });
+});
 
 // 全局错误处理：不暴露 stack，只返回 { error: code }
 // eslint-disable-next-line no-unused-vars

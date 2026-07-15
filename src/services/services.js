@@ -1,214 +1,124 @@
-function parseResponse(response) {
-    if (response.ok) {
-        return response.json();
+// 统一的错误解析：response 非 2xx 时，解析 body 的 { error } 并 throw；
+// body 不是合法 JSON 时 fall back 成 { error: 'networkError' }。
+async function parseError(response) {
+    try {
+        return await response.json();
+    } catch {
+        return { error: 'networkError' };
     }
-    return response.json()
-        .catch(error => Promise.reject({ error }))
-        .then(err => Promise.reject(err));
 }
 
-export function fetchSession() {
-    return fetch('api/v1/session')
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+async function apiFetch(path, options) {
+    let response;
+    try {
+        response = await fetch(path, options);
+    } catch {
+        throw { error: 'networkError' };
+    }
+    if (!response.ok) {
+        throw await parseError(response);
+    }
+    return response.json();
 }
 
-export function fetchLogout() {
-    return fetch('api/v1/session', {
-        method: 'DELETE'
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+const JSON_HEADERS = { 'content-type': 'application/json' };
+
+export async function fetchSession() {
+    return apiFetch('api/v1/session');
 }
 
-export function fetchLogin(username) {
-    return fetch('api/v1/session', {
+export async function fetchLogout() {
+    return apiFetch('api/v1/session', { method: 'DELETE' });
+}
+
+export async function fetchLogin(username, password) {
+    return apiFetch('api/v1/session', {
         method: 'POST',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
-        body: JSON.stringify({ username })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+        headers: JSON_HEADERS,
+        body: JSON.stringify({ username, password })
+    });
 }
 
-export function fetchItems() {
-    return fetch('api/v1/items')
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+export async function fetchItems() {
+    return apiFetch('api/v1/items');
 }
 
-export function fetchAddItem(itemInfo) {
-    return fetch('api/v1/items', {
+export async function fetchAddItem(itemInfo) {
+    return apiFetch('api/v1/items', {
         method: 'POST',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
+        headers: JSON_HEADERS,
         body: JSON.stringify({ itemInfo })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+    });
 }
 
-export function fetchDeleteItem(id) {
-    return fetch(`api/v1/items/${id}`, {
-        method: 'DELETE'
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+export async function fetchDeleteItem(id) {
+    return apiFetch(`api/v1/items/${id}`, { method: 'DELETE' });
 }
 
-export function fetchUpdateItem(id, itemReturned) {
-    return fetch(`api/v1/items/${id}`, {
-        method: 'PATCH',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
-        body: JSON.stringify({ itemReturned })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+export async function fetchSendNotice(id) {
+    return apiFetch(`api/v1/items/${id}/remind`, { method: 'POST' });
 }
 
-export function fetchSendNotice(id) {
-    return fetch(`api/v1/items/${id}`, {
+export async function fetchRequestReturn(id) {
+    return apiFetch(`api/v1/items/${id}/request-return`, { method: 'POST' });
+}
+
+export async function fetchConfirmReturn(id) {
+    return apiFetch(`api/v1/items/${id}/confirm-return`, { method: 'POST' });
+}
+
+export async function fetchRegister(username, password) {
+    return apiFetch('api/v1/users', {
         method: 'POST',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
-        body: JSON.stringify({ id })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
+        headers: JSON_HEADERS,
+        body: JSON.stringify({ username, password })
+    });
 }
 
-export function fetchRegister(username) {
-    return fetch('api/v1/users', {
-        method: 'POST',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
-        body: JSON.stringify({ username })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(parseResponse);
-}
-
-export function fetchEditItem(id, updates) {
-    return fetch(`api/v1/items/${id}`, {
+export async function fetchEditItem(id, updates) {
+    return apiFetch(`api/v1/items/${id}`, {
         method: 'PUT',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
+        headers: JSON_HEADERS,
         body: JSON.stringify(updates)
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+    });
 }
 
-export function fetchModifyDueDate(id, newBackDate) {
-    return fetch(`api/v1/items/${id}/duedate`, {
+export async function fetchModifyDueDate(id, newBackDate) {
+    return apiFetch(`api/v1/items/${id}/duedate`, {
         method: 'PATCH',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
+        headers: JSON_HEADERS,
         body: JSON.stringify({ backDate: newBackDate })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+    });
 }
 
-export function fetchUpdateModifyLimit(id, modifyLimit) {
-    return fetch(`api/v1/items/${id}/modifylimit`, {
+export async function fetchUpdateModifyLimit(id, modifyLimit) {
+    return apiFetch(`api/v1/items/${id}/modifylimit`, {
         method: 'PATCH',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
+        headers: JSON_HEADERS,
         body: JSON.stringify({ modifyLimit })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+    });
 }
 
-export function fetchNotifications() {
-    return fetch('api/v1/notifications')
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+export async function fetchNotifications() {
+    return apiFetch('api/v1/notifications');
 }
 
-export function fetchMarkNotificationsRead() {
-    return fetch('api/v1/notifications/read', {
+export async function fetchMarkNotificationsRead() {
+    return apiFetch('api/v1/notifications/read', {
         method: 'PATCH',
-        headers: new Headers({
-            'content-type': 'application/json'
-        }),
+        headers: JSON_HEADERS,
         body: JSON.stringify({})
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+    });
 }
 
-export function fetchDeleteNotification(id) {
-    return fetch(`api/v1/notifications/${id}`, {
-        method: 'DELETE'
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            return response.json()
-                .catch(error => Promise.reject({ error }))
-                .then(err => Promise.reject(err));
-        });
+export async function fetchDeleteNotification(id) {
+    return apiFetch(`api/v1/notifications/${id}`, { method: 'DELETE' });
 }
 
-export function fetchUpdateLanguage(language) {
-    return fetch('/api/v1/session', {
+export async function fetchUpdateLanguage(language) {
+    return apiFetch('api/v1/session', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: JSON_HEADERS,
         body: JSON.stringify({ language })
-    })
-        .catch(() => Promise.reject({ error: 'networkError' }))
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) return Promise.reject(data);
-            return data;
-        });
+    });
 }

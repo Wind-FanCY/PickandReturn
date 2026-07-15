@@ -3,19 +3,26 @@ const translations = {
         // Nav
         'nav.itemsLent': 'Items Lent',
         'nav.toReturn': 'To Return',
+        'nav.notifications': 'Notifications',
 
         // Auth (LoginForm)
         'auth.loginTitle': 'Login',
         'auth.registerTitle': 'Register',
         'auth.usernameLabel': 'Username:',
+        'auth.passwordLabel': 'Password:',
+        'auth.confirmPasswordLabel': 'Confirm Password:',
         'auth.loginButton': 'Login',
         'auth.registerButton': 'Create Account',
+        'auth.tryDemo': 'Try Demo',
         'auth.newUser': 'New user?',
         'auth.registerLink': 'Register',
         'auth.haveAccount': 'Already have an account?',
         'auth.loginLink': 'Log in',
         'auth.usernameRequired': 'Username is required',
         'auth.usernameInvalid': 'Only letters, numbers and _ are allowed',
+        'auth.passwordRequired': 'Password is required',
+        'auth.passwordTooShort': 'Password must be at least 6 characters',
+        'auth.passwordMismatch': 'Passwords do not match',
 
         // AddItemForm
         'add.lender': 'Lender:',
@@ -52,6 +59,8 @@ const translations = {
         'item.confirmDelete': 'Delete this item?',
         'item.confirm': 'Confirm',
         'item.overdue': 'Overdue',
+        'item.requestedTag': 'Return Requested',
+        'item.confirmReturn': 'Confirm Received',
         'item.modifyLimit': 'Modify limit:',
         'item.detailsLabel': 'Details:',
         'item.lentDateLabel': 'Lent Date:',
@@ -78,6 +87,9 @@ const translations = {
         'return.cancel': 'Cancel',
         'return.modify': 'Modify Due Date',
         'return.overdue': 'Overdue',
+        'return.requestedTag': 'Awaiting Confirmation',
+        'return.requestReturn': 'I Have Returned It',
+        'return.waitingConfirm': 'Waiting for lender to confirm',
         'return.dateRequired': 'Please enter a date',
         'return.dateRange': 'Due date must be on or after lent date',
 
@@ -85,7 +97,7 @@ const translations = {
         'items.title': 'Lent Log',
         'items.filterAll': 'All',
         'items.filterNotReturned': 'Not Returned',
-        'items.filterReturned': 'Returned',
+        'items.filterRequested': 'Awaiting Confirmation',
         'items.sortAdded': 'Added',
         'items.sortLentDate': 'Lent Date',
         'items.sortDueDate': 'Due Date',
@@ -93,6 +105,7 @@ const translations = {
         'items.searchBorrower': 'Search borrower:',
         'items.searchPlaceholder': 'Borrower name...',
         'items.empty': 'Create your first lending reminder!',
+        'items.history': 'History',
 
         // ReturnPage
         'returnPage.title': 'To Return',
@@ -114,6 +127,15 @@ const translations = {
         'userNotExist': 'Borrower is not in the system',
         'user-not-registered': 'Username not found. Please register first.',
         'user-already-exists': 'Username already taken. Please log in.',
+        'required-password': 'Password must be at least 6 characters',
+        'invalid-state': 'This action is no longer available for this item',
+        'invalid-language': 'Unsupported language',
+        'invalid-modifyLimit': 'Invalid modify limit',
+        'bad-request': 'Invalid request',
+        'forbidden': 'You are not allowed to do this',
+        'not-found': 'Not found',
+        'required-backDate': 'Please enter a due date',
+        'rate-limited': 'Too many attempts. Please try again later.',
         'networkError': 'Trouble connecting to the network. Please try again',
         'default': 'Something went wrong. Please try again',
 
@@ -126,6 +148,8 @@ const translations = {
         'success.dueDateUpdated': 'Due date updated.',
         'success.modifyLimitUpdated': 'Modify limit updated.',
         'success.accountCreated': 'Account created! You can now log in.',
+        'success.returnRequested': 'Return requested!',
+        'success.returnConfirmed': 'Return confirmed!',
 
         // Notifications
         'notif.panelLabel': 'Notifications',
@@ -135,30 +159,44 @@ const translations = {
         'notif.deleteLabel': 'Delete notification',
         'notif.bellLabel': 'Notifications',
         'notif.unreadLabel': (n) => `${n} unread notification(s)`,
+        'notif.markAllRead': 'Mark all as read',
         'notif.reminderTitle': 'Return Reminder',
         'notif.dateModifiedTitle': 'Date Modified',
+        'notif.returnRequestedTitle': 'Return Requested',
+        'notif.returnConfirmedTitle': 'Return Confirmed',
         'notif.overdue': 'Overdue',
         'notif.today': (h, m) => `Today ${h}:${m}`,
         'notif.daysAgo': (n) => `${n} day(s) ago`,
         'notif.todayShort': 'Today',
+
+        // NotFoundPage
+        'notFound.text': 'The page you are looking for does not exist.',
+        'notFound.backHome': 'Back to home',
     },
     zh: {
         // Nav
         'nav.itemsLent': '出借记录',
         'nav.toReturn': '待归还',
+        'nav.notifications': '通知',
 
         // Auth
         'auth.loginTitle': '登录',
         'auth.registerTitle': '注册',
         'auth.usernameLabel': '用户名：',
+        'auth.passwordLabel': '密码：',
+        'auth.confirmPasswordLabel': '确认密码：',
         'auth.loginButton': '登录',
         'auth.registerButton': '创建账号',
+        'auth.tryDemo': '体验演示账号',
         'auth.newUser': '新用户？',
         'auth.registerLink': '注册',
         'auth.haveAccount': '已有账号？',
         'auth.loginLink': '去登录',
         'auth.usernameRequired': '用户名不能为空',
         'auth.usernameInvalid': '仅允许字母、数字和下划线 _',
+        'auth.passwordRequired': '密码不能为空',
+        'auth.passwordTooShort': '密码至少需要 6 位',
+        'auth.passwordMismatch': '两次输入的密码不一致',
 
         // AddItemForm
         'add.lender': '出借者：',
@@ -195,6 +233,8 @@ const translations = {
         'item.confirmDelete': '确认删除？',
         'item.confirm': '确认',
         'item.overdue': '已逾期',
+        'item.requestedTag': '待确认归还',
+        'item.confirmReturn': '确认收到',
         'item.modifyLimit': '可修改次数：',
         'item.detailsLabel': '物品详情：',
         'item.lentDateLabel': '出借日期：',
@@ -221,6 +261,9 @@ const translations = {
         'return.cancel': '取消',
         'return.modify': '修改归还日期',
         'return.overdue': '已逾期',
+        'return.requestedTag': '待确认',
+        'return.requestReturn': '我已归还',
+        'return.waitingConfirm': '等待出借方确认',
         'return.dateRequired': '请输入日期',
         'return.dateRange': '归还日期必须晚于或等于出借日期',
 
@@ -228,7 +271,7 @@ const translations = {
         'items.title': '出借记录',
         'items.filterAll': '全部',
         'items.filterNotReturned': '未归还',
-        'items.filterReturned': '已归还',
+        'items.filterRequested': '待确认',
         'items.sortAdded': '添加时间',
         'items.sortLentDate': '出借日期',
         'items.sortDueDate': '应还日期',
@@ -236,6 +279,7 @@ const translations = {
         'items.searchBorrower': '搜索借入者：',
         'items.searchPlaceholder': '借入者姓名...',
         'items.empty': '添加第一条出借记录！',
+        'items.history': '历史记录',
 
         // ReturnPage
         'returnPage.title': '待归还',
@@ -257,6 +301,15 @@ const translations = {
         'userNotExist': '借入者不在系统中',
         'user-not-registered': '用户名不存在，请先注册',
         'user-already-exists': '用户名已被占用，请直接登录',
+        'required-password': '密码至少需要 6 位',
+        'invalid-state': '该物品当前状态不支持此操作',
+        'invalid-language': '不支持的语言',
+        'invalid-modifyLimit': '可修改次数无效',
+        'bad-request': '请求无效',
+        'forbidden': '没有权限执行此操作',
+        'not-found': '未找到',
+        'required-backDate': '请输入归还日期',
+        'rate-limited': '尝试次数过多，请稍后再试',
         'networkError': '网络连接失败，请重试',
         'default': '出错了，请重试',
 
@@ -269,6 +322,8 @@ const translations = {
         'success.dueDateUpdated': '归还日期已更新。',
         'success.modifyLimitUpdated': '修改次数已更新。',
         'success.accountCreated': '账号创建成功！现在可以登录了。',
+        'success.returnRequested': '已请求归还！',
+        'success.returnConfirmed': '已确认收到！',
 
         // Notifications
         'notif.panelLabel': '通知面板',
@@ -278,12 +333,19 @@ const translations = {
         'notif.deleteLabel': '删除通知',
         'notif.bellLabel': '通知',
         'notif.unreadLabel': (n) => `${n} 条未读通知`,
+        'notif.markAllRead': '全部标为已读',
         'notif.reminderTitle': '归还提醒',
         'notif.dateModifiedTitle': '日期修改',
+        'notif.returnRequestedTitle': '请求归还',
+        'notif.returnConfirmedTitle': '确认归还',
         'notif.overdue': '已逾期',
         'notif.today': (h, m) => `今天 ${h}:${m}`,
         'notif.daysAgo': (n) => `${n}天前`,
         'notif.todayShort': '今天',
+
+        // NotFoundPage
+        'notFound.text': '你访问的页面不存在。',
+        'notFound.backHome': '返回首页',
     }
 };
 

@@ -195,3 +195,30 @@
     border-color: var(--color-new-border) !important;
     background: var(--color-new-bg) !important;
 }
+
+/* ── History (confirmed returns) archive ── */
+
+.items__history {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+}
+
+.items__history-summary {
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    padding: 0.4rem 0;
+}
+
+.items__history-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1.1rem;
+    padding: 0;
+    margin: 1rem 0 0;
+}

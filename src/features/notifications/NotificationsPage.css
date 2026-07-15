@@ -1,0 +1,76 @@
+/* ── Page container ── */
+
+.notifications-page {
+    padding: 0 var(--space-8) var(--space-8);
+}
+
+/* ── Header row ── */
+
+.notifications-page__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 0 1rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 1.25rem;
+}
+
+.notifications-page__title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    font-style: italic;
+    color: var(--color-text-primary);
+    letter-spacing: -0.01em;
+}
+
+.notifications-page__mark-read {
+    padding: 0.4rem 0.9rem;
+    border: 1.5px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.notifications-page__mark-read:hover {
+    border-color: var(--color-primary-mid);
+    color: var(--color-primary);
+    background: var(--color-primary-xlight);
+}
+
+/* ── Empty state ── */
+
+.notifications-page__empty {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    font-style: italic;
+    font-family: var(--font-body);
+    padding: 2rem 0;
+}
+
+/* ── List ── */
+
+.notifications-page__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.notifications-page__list .notification-item {
+    border: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.notifications-page__list .notification-item--unread {
+    border-color: rgba(181,137,10,0.3);
+}

@@ -44,6 +44,95 @@
     margin-bottom: 0.15rem;
 }
 
+/* ── Requested card (awaiting lender confirmation) ── */
+
+.return-item--requested {
+    background: var(--color-accent-light);
+    border-left: 3px solid var(--color-accent);
+    border-color: rgba(181,137,10,0.35);
+    padding-left: calc(1.25rem - 3px);
+}
+
+.return-item__requested-tag {
+    background: var(--color-accent);
+    color: white;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.12rem 0.5rem;
+    border-radius: var(--radius-xs);
+    display: inline-block;
+    width: fit-content;
+    margin-bottom: 0.15rem;
+}
+
+/* ── Confirmed card (read-only history row) ── */
+
+.return-item--confirmed {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.return-item__returned-tag {
+    background: var(--color-text-muted);
+    color: white;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.12rem 0.5rem;
+    border-radius: var(--radius-xs);
+    display: inline-block;
+    width: fit-content;
+    margin-top: 0.15rem;
+}
+
+/* ── Request return button ── */
+
+.return-item__request-btn {
+    padding: 0.45rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    width: fit-content;
+    margin-top: 0.25rem;
+}
+
+.return-item__request-btn:hover {
+    background: var(--color-primary-mid);
+    transform: translateY(-1px);
+}
+
+/* ── Waiting for confirmation (disabled) ── */
+
+.return-item__waiting-btn {
+    padding: 0.45rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--color-bg-alt);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xs);
+    cursor: not-allowed;
+    width: fit-content;
+    margin-top: 0.25rem;
+}
+
 /* ── Field rows ── */
 
 .return-item__lender,

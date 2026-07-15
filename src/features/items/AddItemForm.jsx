@@ -53,7 +53,6 @@ function AddItemForm() {
 
         const itemInfo = {
             itemDetail: itemDetail,
-            lender: state.username,
             borrower: borrower,
             lentDate: lentDate,
             backDate: backDate,

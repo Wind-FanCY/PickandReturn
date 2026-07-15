@@ -1,7 +1,6 @@
 import {
     LOGIN_STATUS,
-    ACTIONS,
-    PAGE_STATUS
+    ACTIONS
 } from './constant';
 
 export const initialState = {
@@ -9,7 +8,6 @@ export const initialState = {
     success: '',
     username: '',
     loginStatus: LOGIN_STATUS.PENDING,
-    pageStatus: PAGE_STATUS.ITEMS_PAGE,
     isItemsPending: false,
     items: {},
     lastAddedItemId: '',
@@ -37,30 +35,11 @@ function reducer(state, action) {
                 success: '',
                 username: '',
                 loginStatus: LOGIN_STATUS.NOT_LOGGED_IN,
-                pageStatus: PAGE_STATUS.ITEMS_PAGE,
                 isItemsPending: false,
                 items: {},
                 lastAddedItemId: '',
                 notifications: [],
                 unreadCount: 0
-            };
-
-        case ACTIONS.CHECK_ITEMS:
-            return {
-                ...state,
-                pageStatus: PAGE_STATUS.ITEMS_PAGE
-            };
-
-        case ACTIONS.CHECK_NOTICES:
-            return {
-                ...state,
-                pageStatus: PAGE_STATUS.NOTICES_PAGE
-            };
-
-        case ACTIONS.CHECK_RETURN:
-            return {
-                ...state,
-                pageStatus: PAGE_STATUS.RETURN_PAGE
             };
 
         case ACTIONS.START_LOADING_ITEMS:
@@ -95,10 +74,10 @@ function reducer(state, action) {
                 success: action.message
             };
 
-        case ACTIONS.RETURN_ITEM:
+        case ACTIONS.REQUEST_RETURN:
+        case ACTIONS.CONFIRM_RETURN:
             return {
                 ...state,
-                lastAddedItemId: '',
                 error: '',
                 success: '',
                 items: {
