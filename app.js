@@ -20,7 +20,17 @@ const app = express();
 // 会让 express-rate-limit 退化成全站共享一个限流桶（任何人可锁死所有人登录）。
 app.set('trust proxy', 1);
 
-app.use(helmet());
+// 备案前用 http://IP 临时访问时（COOKIE_SECURE=false），去掉 CSP 的
+// upgrade-insecure-requests——否则浏览器会把所有资源请求升级到 https，
+// 而临时入口没有证书，导致静态资源全部加载失败（白屏）。上 HTTPS 后自动恢复默认。
+const httpInterim = process.env.COOKIE_SECURE === 'false';
+app.use(
+  helmet(
+    httpInterim
+      ? { contentSecurityPolicy: { useDefaults: true, directives: { 'upgrade-insecure-requests': null } } }
+      : undefined
+  )
+);
 app.use(pinoHttp({ logger }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json());
