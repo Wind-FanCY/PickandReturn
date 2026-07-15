@@ -211,3 +211,28 @@
         margin: 0 0 1.5rem;
     }
 }
+
+/* ── Mobile: bigger touch targets, no iOS zoom on inputs ── */
+
+@media (max-width: 768px) {
+    .add__form {
+        padding: var(--space-md);
+        gap: 0.25rem var(--space-md);
+    }
+
+    .lender__input,
+    .borrower__input,
+    .lentDate__input,
+    .backDate__input,
+    .details__input,
+    .modify-limit__select {
+        min-height: var(--touch-target);
+        font-size: var(--font-size-body);
+    }
+
+    .add__button {
+        min-height: var(--touch-target);
+        width: 100%;
+        justify-content: center;
+    }
+}

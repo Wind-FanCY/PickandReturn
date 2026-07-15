@@ -395,3 +395,31 @@
     outline: none;
     border-color: var(--color-primary-mid);
 }
+
+/* ── Mobile: bigger touch targets, roomier stacked buttons ── */
+
+@media (max-width: 768px) {
+    .item__edit-btn,
+    .item__send,
+    .item__delete,
+    .item__confirm-return,
+    .item__edit-save,
+    .item__edit-cancel,
+    .item__confirm-yes,
+    .item__confirm-no {
+        min-height: var(--touch-target);
+        padding: 0.6rem 0.9rem;
+        font-size: var(--font-size-sm);
+    }
+
+    .item__edit-actions,
+    .item__confirm-delete {
+        gap: var(--tap-gap);
+    }
+
+    .item__edit-input,
+    .item__modify-limit-select {
+        min-height: var(--touch-target);
+        font-size: var(--font-size-body);
+    }
+}

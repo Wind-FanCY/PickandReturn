@@ -75,6 +75,28 @@
   --transition-base:   0.22s ease;
   --transition-slow:   0.38s cubic-bezier(0.34, 1.2, 0.64, 1);
   --transition-panel:  0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Mobile / responsive tokens (C2) ── */
+  --breakpoint-mobile: 768px;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  --touch-target: 44px;
+  --tap-gap:      8px;
+
+  --font-size-body: 16px;
+  --font-size-sm:   14px;
+  --font-size-lg:   18px;
+
+  --z-tabbar: 100;
+  --z-modal:  200;
+
+  /* Semantic alias — reuses the existing accent gold rather than introducing a new hue */
+  --color-warning: var(--color-accent);
 }
 
 *, *::before, *::after {
@@ -174,4 +196,20 @@ textarea:focus-visible {
   45%       { transform: rotate(8deg); }
   60%       { transform: rotate(-5deg); }
   75%       { transform: rotate(3deg); }
+}
+
+/* ── Mobile layout base (C2) ── */
+
+@media (max-width: 768px) {
+  #root {
+    min-width: 0;
+  }
+
+  /* Prevent iOS Safari auto-zoom on focus; wins over single-class component
+     rules via specificity (.app input > .some-input-class). */
+  .app input,
+  .app select,
+  .app textarea {
+    font-size: var(--font-size-body);
+  }
 }

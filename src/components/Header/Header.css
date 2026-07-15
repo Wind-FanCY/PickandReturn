@@ -158,3 +158,48 @@
 .nav__right .lang-toggle--en .lang-toggle__zh {
     color: rgba(255, 255, 255, 0.35);
 }
+
+/* ── Mobile: compact header, page links move to the bottom TabBar ── */
+
+@media (max-width: 768px) {
+    .header__top {
+        padding: 0 var(--space-md);
+    }
+
+    .header__title {
+        font-size: var(--text-lg);
+        padding: 0.85rem 0;
+    }
+
+    .controls {
+        gap: var(--space-sm);
+    }
+
+    .controls__username {
+        max-width: 6rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 0.3rem 0.55rem;
+    }
+
+    .controls__logout {
+        min-height: var(--touch-target);
+        padding: 0.4rem 0.75rem;
+    }
+
+    /* Page-switch links live in the bottom TabBar on mobile */
+    .nav__list {
+        display: none;
+    }
+
+    .nav {
+        justify-content: flex-end;
+        padding: 0 var(--space-sm);
+    }
+
+    .nav__right {
+        gap: var(--tap-gap);
+        padding: 0.3rem 0;
+    }
+}

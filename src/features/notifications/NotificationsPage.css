@@ -74,3 +74,26 @@
 .notifications-page__list .notification-item--unread {
     border-color: rgba(181,137,10,0.3);
 }
+
+/* ── Mobile: compact page padding, bigger touch targets ── */
+
+@media (max-width: 768px) {
+    .notifications-page {
+        padding: 0 var(--space-md) var(--space-lg);
+    }
+
+    .notifications-page__title {
+        font-size: var(--text-lg);
+    }
+
+    .notifications-page__header {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        padding: var(--space-md) 0 var(--space-sm);
+    }
+
+    .notifications-page__mark-read {
+        min-height: var(--touch-target);
+        padding: 0.5rem 0.9rem;
+    }
+}

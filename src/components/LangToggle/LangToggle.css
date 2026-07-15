@@ -46,3 +46,12 @@
     color: var(--color-text-muted);
     font-weight: 400;
 }
+
+/* ── Mobile: bigger touch target ── */
+
+@media (max-width: 768px) {
+    .lang-toggle {
+        min-height: var(--touch-target);
+        padding: 0.5rem 0.7rem;
+    }
+}

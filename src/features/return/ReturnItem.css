@@ -365,3 +365,30 @@
     background: var(--color-bg-alt);
     border-color: var(--color-border-strong);
 }
+
+/* ── Mobile: bigger touch targets, roomier stacked buttons ── */
+
+@media (max-width: 768px) {
+    .return-item__request-btn,
+    .return-item__waiting-btn,
+    .return-item__modify-btn,
+    .return-item__delete,
+    .return-item__date-save,
+    .return-item__date-cancel,
+    .return-item__confirm-yes,
+    .return-item__confirm-no {
+        min-height: var(--touch-target);
+        padding: 0.6rem 0.9rem;
+        font-size: var(--font-size-sm);
+    }
+
+    .return-item__date-actions,
+    .return-item__confirm-delete {
+        gap: var(--tap-gap);
+    }
+
+    .return-item__date-input {
+        min-height: var(--touch-target);
+        font-size: var(--font-size-body);
+    }
+}

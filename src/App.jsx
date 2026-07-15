@@ -13,6 +13,7 @@ import { AppContext } from './store/app-context';
 import Header from './components/Header/Header';
 import Loading from './components/Loading/Loading';
 import ProtectedRoute from './components/ProtectedRoute';
+import TabBar from './components/TabBar/TabBar';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 import MainContent from './layout/MainContent';
 import LoginForm from './features/auth/LoginForm';
@@ -78,6 +79,7 @@ function App() {
           } />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        {state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN && <TabBar />}
       </div>
     </AppContext.Provider>
   );

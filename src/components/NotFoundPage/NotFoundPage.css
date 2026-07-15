@@ -35,3 +35,19 @@
 .not-found__link:hover {
     text-decoration-color: var(--color-accent);
 }
+
+/* ── Mobile: comfortable padding, roomier tap target ── */
+
+@media (max-width: 768px) {
+    .not-found {
+        padding: var(--space-md);
+        padding-bottom: calc(64px + env(safe-area-inset-bottom) + var(--space-md));
+    }
+
+    .not-found__link {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--touch-target);
+        padding: 0 var(--space-sm);
+    }
+}

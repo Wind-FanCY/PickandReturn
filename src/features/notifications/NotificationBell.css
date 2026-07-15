@@ -109,3 +109,17 @@
     padding: 0;
     margin: 0;
 }
+
+/* ── Mobile: bigger touch target, panel fits narrow viewports ── */
+
+@media (max-width: 768px) {
+    .notification-bell__button {
+        width: var(--touch-target);
+        height: var(--touch-target);
+    }
+
+    .notification-panel {
+        width: min(320px, calc(100vw - 2rem));
+        right: -0.5rem;
+    }
+}

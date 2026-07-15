@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { AppContext } from "../../store/app-context";
 import { fetchLogin } from "../../services/services";
 import { loadUserData } from "../../store/load-user-data";
-import { ACTIONS } from "../../store/constant";
+import { ACTIONS, LOGIN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
 
 import Status from '../../components/Status/Status';
@@ -22,6 +22,11 @@ function LoginForm() {
     const [fieldErrors, setFieldErrors] = useState({});
 
     const lang = state.language;
+
+    // 已登录用户不应停留在登录页（避免与 Header 登录态 UI 重叠）
+    if (state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN) {
+        return <Navigate to="/items" replace />;
+    }
 
     function validate(u, p) {
         const newErrors = {};

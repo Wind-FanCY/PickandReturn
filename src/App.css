@@ -21,3 +21,11 @@
     height: 1rem;
     object-fit: contain;
 }
+
+/* ── Mobile: keep content clear of the fixed bottom TabBar ── */
+
+@media (max-width: 768px) {
+    .main-content {
+        padding-bottom: calc(64px + env(safe-area-inset-bottom) + var(--space-md));
+    }
+}

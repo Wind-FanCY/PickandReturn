@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { AppContext } from "../../store/app-context";
 import { fetchRegister } from "../../services/services";
-import { ACTIONS } from "../../store/constant";
+import { ACTIONS, LOGIN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
 
 import Status from '../../components/Status/Status';
@@ -19,6 +19,11 @@ function RegisterForm() {
     const [fieldErrors, setFieldErrors] = useState({});
 
     const lang = state.language;
+
+    // 已登录用户不应停留在注册页
+    if (state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN) {
+        return <Navigate to="/items" replace />;
+    }
 
     function validate() {
         const newErrors = {};

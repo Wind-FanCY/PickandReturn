@@ -90,3 +90,17 @@
     color: var(--color-danger);
     border-color: var(--color-danger-border);
 }
+
+/* ── Mobile: bigger touch target, header wraps if needed ── */
+
+@media (max-width: 768px) {
+    .notification-item__header {
+        flex-wrap: wrap;
+        gap: var(--tap-gap);
+    }
+
+    .notification-item__delete {
+        min-height: var(--touch-target);
+        padding: 0.5rem 0.8rem;
+    }
+}

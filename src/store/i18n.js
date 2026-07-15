@@ -4,6 +4,7 @@ const translations = {
         'nav.itemsLent': 'Items Lent',
         'nav.toReturn': 'To Return',
         'nav.notifications': 'Notifications',
+        'nav.tabBarLabel': 'Primary',
 
         // Auth (LoginForm)
         'auth.loginTitle': 'Login',
@@ -178,6 +179,7 @@ const translations = {
         'nav.itemsLent': '出借记录',
         'nav.toReturn': '待归还',
         'nav.notifications': '通知',
+        'nav.tabBarLabel': '主导航',
 
         // Auth
         'auth.loginTitle': '登录',
