@@ -2,6 +2,7 @@ import {
     LOGIN_STATUS,
     ACTIONS
 } from './constant';
+import { localPrefs } from './local-storage';
 
 export const initialState = {
     error: '',
@@ -13,7 +14,7 @@ export const initialState = {
     lastAddedItemId: '',
     notifications: [],
     unreadCount: 0,
-    language: 'zh'
+    language: localPrefs.getLang()
 };
 
 function reducer(state, action) {

@@ -106,7 +106,11 @@ const translations = {
         'items.searchBorrower': 'Search borrower:',
         'items.searchPlaceholder': 'Borrower name...',
         'items.empty': 'Create your first lending reminder!',
+        'items.emptyFiltered': 'No records match your filters. Try adjusting the filters or search term.',
+        'items.clearFilters': 'Clear filters',
         'items.history': 'History',
+        'items.filtersSummary': 'Filter · Sort ▾',
+        'items.moreActions': 'More actions',
 
         // ReturnPage
         'returnPage.title': 'To Return',
@@ -116,6 +120,9 @@ const translations = {
         'returnPage.searchLender': 'Search lender:',
         'returnPage.searchPlaceholder': 'Lender name...',
         'returnPage.empty': 'You have no items to return.',
+        'returnPage.emptyFiltered': 'No records match your search. Try a different search term.',
+        'returnPage.clearFilters': 'Clear search',
+        'returnPage.filtersSummary': 'Sort · Search ▾',
 
         // Controls
         'controls.logout': 'Logout',
@@ -281,7 +288,11 @@ const translations = {
         'items.searchBorrower': '搜索借入者：',
         'items.searchPlaceholder': '借入者姓名...',
         'items.empty': '添加第一条出借记录！',
+        'items.emptyFiltered': '没有符合条件的记录，试试调整筛选或搜索词',
+        'items.clearFilters': '清除筛选',
         'items.history': '历史记录',
+        'items.filtersSummary': '筛选 · 排序 ▾',
+        'items.moreActions': '更多操作',
 
         // ReturnPage
         'returnPage.title': '待归还',
@@ -291,6 +302,9 @@ const translations = {
         'returnPage.searchLender': '搜索出借者：',
         'returnPage.searchPlaceholder': '出借者姓名...',
         'returnPage.empty': '没有需要归还的物品。',
+        'returnPage.emptyFiltered': '没有符合条件的记录，试试调整搜索词',
+        'returnPage.clearFilters': '清除搜索',
+        'returnPage.filtersSummary': '排序 · 搜索 ▾',
 
         // Controls
         'controls.logout': '退出登录',

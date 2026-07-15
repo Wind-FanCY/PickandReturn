@@ -54,7 +54,7 @@
 }
 
 .return-item__requested-tag {
-    background: var(--color-accent);
+    background: var(--color-accent-dark);
     color: white;
     font-family: var(--font-mono);
     font-size: 0.65rem;
@@ -154,7 +154,7 @@
     font-weight: 400;
     letter-spacing: 0.06em;
     background: var(--color-accent-light);
-    color: var(--color-accent);
+    color: var(--color-accent-dark);
     border: 1px solid rgba(181,137,10,0.25);
     padding: 0.12rem 0.5rem;
     border-radius: var(--radius-xs);

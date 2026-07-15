@@ -5,9 +5,9 @@ import { fetchLogin } from "../../services/services";
 import { loadUserData } from "../../store/load-user-data";
 import { ACTIONS, LOGIN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
+import { localPrefs } from "../../store/local-storage";
 
 import Status from '../../components/Status/Status';
-import LangToggle from '../../components/LangToggle/LangToggle';
 import './LoginForm.css';
 import loginIcon from '../../assets/login_icon.png';
 
@@ -17,7 +17,7 @@ const DEMO_PASSWORD = 'demo123';
 function LoginForm() {
     const [state, dispatch] = useContext(AppContext);
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState(localPrefs.getLastUsername());
     const [password, setPassword] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
@@ -42,6 +42,7 @@ function LoginForm() {
         try {
             const session = await fetchLogin(u, p);
             dispatch({ type: ACTIONS.LOG_IN, username: session.username, language: session.language });
+            localPrefs.setLastUsername(session.username);
             await loadUserData(dispatch);
             navigate('/items');
         } catch (err) {
@@ -69,9 +70,6 @@ function LoginForm() {
 
     return (
         <div className="login">
-            <div className="login__lang">
-                <LangToggle />
-            </div>
             <form className="login__form" onSubmit={onSubmit}>
                 <h1 className="login__title">{t(lang, 'auth.loginTitle')}</h1>
                 <label className="login__label" htmlFor="username">

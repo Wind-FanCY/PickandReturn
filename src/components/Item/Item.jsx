@@ -22,6 +22,7 @@ function Item({ item }) {
     const [editBackDate, setEditBackDate] = useState(item.backDate || '');
     const [editLentDate, setEditLentDate] = useState(item.lentDate || '');
     const [editErrors, setEditErrors] = useState({});
+    const [moreOpen, setMoreOpen] = useState(false);
 
     const lang = state.language;
     const isPending = item.returnStatus === RETURN_STATUS.PENDING;
@@ -191,26 +192,6 @@ function Item({ item }) {
             )}
 
             {isPending && (
-                <div className="item__modify-limit">
-                    <label htmlFor={`modify-limit-${item.id}`} className="item__modify-limit-label">
-                        <span>{t(lang, 'item.modifyLimit')}</span>
-                        <select
-                            id={`modify-limit-${item.id}`}
-                            className="item__modify-limit-select"
-                            value={modifyLimit}
-                            onChange={onModifyLimitChange}
-                        >
-                            <option value="-1">{t(lang, 'item.unlimited')}</option>
-                            <option value="0">{t(lang, 'item.noModify')}</option>
-                            <option value="1">{t(lang, 'item.1time')}</option>
-                            <option value="3">{t(lang, 'item.3times')}</option>
-                            <option value="5">{t(lang, 'item.5times')}</option>
-                        </select>
-                    </label>
-                </div>
-            )}
-
-            {isPending && (
                 <button
                     data-id={item.id}
                     className="item__send"
@@ -233,30 +214,59 @@ function Item({ item }) {
             )}
 
             {isPending && (
-                !confirmingDelete ? (
+                <div className="item__more">
                     <button
-                        className="item__delete"
-                        onClick={() => setConfirmingDelete(true)}
-                    >
-                        <img className="icon" src={deleteIcon} alt="delete button" />{t(lang, 'item.delete')}
-                    </button>
-                ) : (
-                    <div className="item__confirm-delete">
-                        <span>{t(lang, 'item.confirmDelete')}</span>
-                        <button
-                            className="item__confirm-yes"
-                            onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}
-                        >
-                            {t(lang, 'item.confirm')}
-                        </button>
-                        <button
-                            className="item__confirm-no"
-                            onClick={() => setConfirmingDelete(false)}
-                        >
-                            {t(lang, 'item.cancel')}
-                        </button>
+                        type="button"
+                        className="item__more-toggle"
+                        aria-expanded={moreOpen}
+                        onClick={() => setMoreOpen(v => !v)}
+                    >{t(lang, 'items.moreActions')}</button>
+
+                    <div className={`item__more-content${moreOpen ? ' item__more-content--open' : ''}`}>
+                    <div className="item__modify-limit">
+                        <label htmlFor={`modify-limit-${item.id}`} className="item__modify-limit-label">
+                            <span>{t(lang, 'item.modifyLimit')}</span>
+                            <select
+                                id={`modify-limit-${item.id}`}
+                                className="item__modify-limit-select"
+                                value={modifyLimit}
+                                onChange={onModifyLimitChange}
+                            >
+                                <option value="-1">{t(lang, 'item.unlimited')}</option>
+                                <option value="0">{t(lang, 'item.noModify')}</option>
+                                <option value="1">{t(lang, 'item.1time')}</option>
+                                <option value="3">{t(lang, 'item.3times')}</option>
+                                <option value="5">{t(lang, 'item.5times')}</option>
+                            </select>
+                        </label>
                     </div>
-                )
+
+                    {!confirmingDelete ? (
+                        <button
+                            className="item__delete"
+                            onClick={() => setConfirmingDelete(true)}
+                        >
+                            <img className="icon" src={deleteIcon} alt="delete button" />{t(lang, 'item.delete')}
+                        </button>
+                    ) : (
+                        <div className="item__confirm-delete">
+                            <span>{t(lang, 'item.confirmDelete')}</span>
+                            <button
+                                className="item__confirm-yes"
+                                onClick={() => { setConfirmingDelete(false); onDeleteItem(item.id); }}
+                            >
+                                {t(lang, 'item.confirm')}
+                            </button>
+                            <button
+                                className="item__confirm-no"
+                                onClick={() => setConfirmingDelete(false)}
+                            >
+                                {t(lang, 'item.cancel')}
+                            </button>
+                        </div>
+                    )}
+                    </div>
+                </div>
             )}
         </div>
     );

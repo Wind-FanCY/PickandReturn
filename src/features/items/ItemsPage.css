@@ -26,6 +26,11 @@
     margin-bottom: 0;
 }
 
+/* Desktop: no toggle affordance, controls always shown (in a11y tree) */
+.items__filters-toggle {
+    display: none;
+}
+
 .items__controls-row {
     display: flex;
     align-items: center;
@@ -147,6 +152,36 @@
     font-family: var(--font-body);
 }
 
+.items__empty-filtered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.items__empty-filtered .items__empty {
+    padding-bottom: 0;
+}
+
+.items__clear-filters {
+    padding: 0.5rem 1.1rem;
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+
+.items__clear-filters:hover {
+    border-color: var(--color-primary-mid);
+    color: var(--color-primary);
+    background: var(--color-primary-xlight);
+}
+
 /* ── Card grid ── */
 
 .items__list {
@@ -156,6 +191,7 @@
     gap: 1.1rem;
     padding: 0;
     margin: 0;
+    margin-top: var(--space-6);
 }
 
 /* ── Card list item ── */
@@ -220,7 +256,8 @@
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
     gap: 1.1rem;
     padding: 0;
-    margin: 1rem 0 0;
+    margin: 0;
+    margin-top: var(--space-6);
 }
 
 /* ── Mobile: single column, stacked controls, bigger touch targets ── */
@@ -235,9 +272,38 @@
         padding: var(--space-md) 0 var(--space-sm);
     }
 
+    /* ── Filters collapse into a toggle-driven panel on mobile ── */
+
+    .items__filters {
+        padding: 0;
+    }
+
+    .items__filters-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        cursor: pointer;
+        min-height: var(--touch-target);
+        padding: 0 0.9rem;
+        border: none;
+        background: transparent;
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        letter-spacing: 0.04em;
+        color: var(--color-text-secondary);
+    }
+
     .items__controls-row {
+        display: none;
         flex-direction: column;
         align-items: stretch;
+        gap: var(--tap-gap);
+    }
+
+    .items__controls-row--open {
+        display: flex;
+        padding: 0 0.9rem var(--space-sm);
     }
 
     .items__filter-buttons {

@@ -41,6 +41,16 @@ function getTypeLabel(type, lang) {
     return type;
 }
 
+function getTypeClass(type) {
+    if (type === NOTIFICATION_TYPE.DATE_MODIFIED || type === NOTIFICATION_TYPE.RETURN_REQUESTED) {
+        return 'notification-item__type-tag--warning';
+    }
+    if (type === NOTIFICATION_TYPE.RETURN_CONFIRMED) {
+        return 'notification-item__type-tag--success';
+    }
+    return '';
+}
+
 function NotificationItem({ notification }) {
     const [state, dispatch] = useContext(AppContext);
     const lang = state.language;
@@ -58,7 +68,7 @@ function NotificationItem({ notification }) {
     return (
         <div className={`notification-item${notification.read === false ? ' notification-item--unread' : ''}`}>
             <div className="notification-item__header">
-                <span className="notification-item__type-tag">{getTypeLabel(notification.type, lang)}</span>
+                <span className={`notification-item__type-tag ${getTypeClass(notification.type)}`.trim()}>{getTypeLabel(notification.type, lang)}</span>
                 <span className="notification-item__time">{getRelativeTime(notification.createdAt, lang)}</span>
             </div>
             <p className="notification-item__message">{notification.message}</p>

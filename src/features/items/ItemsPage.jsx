@@ -13,6 +13,7 @@ function ItemsPage() {
     const [filterStatus, setFilterStatus] = useState('all');
     const [searchText, setSearchText] = useState('');
     const [sortKey, setSortKey] = useState('createdAt');
+    const [controlsOpen, setControlsOpen] = useState(false);
 
     const lang = state.language;
 
@@ -51,12 +52,27 @@ function ItemsPage() {
         show = SHOW.EXIST;
     }
 
+    // Two distinct empty reasons: never lent anything at all, vs. records
+    // exist but the current filter/search narrowed the active list to zero.
+    const hasAnyLentItems = lentItems.length > 0;
+
+    function clearFilters() {
+        setFilterStatus('all');
+        setSearchText('');
+    }
+
     return (
         <div className="items">
             <h1 className="items__title">{t(lang, 'items.title')}</h1>
             <AddItemForm />
             <div className="items__filters">
-                <div className="items__controls-row">
+                <button
+                    type="button"
+                    className="items__filters-toggle"
+                    aria-expanded={controlsOpen}
+                    onClick={() => setControlsOpen(v => !v)}
+                >{t(lang, 'items.filtersSummary')}</button>
+                <div className={`items__controls-row${controlsOpen ? ' items__controls-row--open' : ''}`}>
                     <div className="items__filter-buttons">
                         <button
                             className={`filter-btn${filterStatus === 'all' ? ' filter-btn--active' : ''}`}
@@ -102,8 +118,16 @@ function ItemsPage() {
                 </div>
             </div>
             {show === SHOW.PENDING && <Loading className="items__waiting">Loading items...</Loading>}
-            {show === SHOW.EMPTY && (
+            {show === SHOW.EMPTY && !hasAnyLentItems && (
                 <p className="items__empty">{t(lang, 'items.empty')}</p>
+            )}
+            {show === SHOW.EMPTY && hasAnyLentItems && (
+                <div className="items__empty-filtered">
+                    <p className="items__empty">{t(lang, 'items.emptyFiltered')}</p>
+                    <button className="items__clear-filters" onClick={clearFilters}>
+                        {t(lang, 'items.clearFilters')}
+                    </button>
+                </div>
             )}
             {show === SHOW.EXIST && (
                 <ul className="items__list">

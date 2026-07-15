@@ -3,6 +3,7 @@
 .item__content {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 0.4rem;
     height: 100%;
 }
@@ -41,7 +42,7 @@
 }
 
 .item__requested-tag {
-    background: var(--color-accent);
+    background: var(--color-accent-dark);
     color: white;
     font-family: var(--font-mono);
     font-size: 0.65rem;
@@ -58,7 +59,7 @@
 /* ── Confirm return button ── */
 
 .item__confirm-return {
-    background: var(--color-accent);
+    background: var(--color-accent-dark);
     color: white;
     border: none;
     border-radius: var(--radius-xs);
@@ -74,7 +75,7 @@
 }
 
 .item__confirm-return:hover {
-    background: var(--color-accent-dark, #96700a);
+    background: var(--color-accent);
     transform: translateY(-1px);
 }
 
@@ -357,6 +358,22 @@
     border-color: var(--color-border-strong);
 }
 
+/* ── "More actions" panel (modify-limit + delete): collapsible on mobile,
+   always expanded on desktop ── */
+
+.item__more {
+    display: block;
+}
+
+/* Desktop: no toggle, content is a transparent wrapper (children in a11y tree) */
+.item__more-toggle {
+    display: none;
+}
+
+.item__more-content {
+    display: contents;
+}
+
 /* ── Modify limit ── */
 
 .item__modify-limit {
@@ -421,5 +438,37 @@
     .item__modify-limit-select {
         min-height: var(--touch-target);
         font-size: var(--font-size-body);
+    }
+
+    /* ── "More actions" collapses; primary actions (edit/remind/confirm) stay visible ── */
+
+    .item__more {
+        margin-top: 0.3rem;
+    }
+
+    .item__more-toggle {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: var(--touch-target);
+        padding: 0.4rem 0;
+        border: none;
+        background: transparent;
+        font-family: var(--font-mono);
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+    }
+
+    .item__more-content {
+        display: none;
+    }
+
+    .item__more-content--open {
+        display: block;
+        margin-top: var(--tap-gap);
     }
 }

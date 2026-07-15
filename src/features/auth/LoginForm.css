@@ -180,12 +180,6 @@
     text-decoration-color: var(--color-accent);
 }
 
-.login__lang {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-}
-
 /* ── Mobile: full-bleed form, larger touch targets, no iOS zoom ── */
 
 @media (max-width: 768px) {
@@ -213,10 +207,5 @@
     .login__button,
     .login__demo-button {
         min-height: var(--touch-target);
-    }
-
-    .login__lang {
-        top: var(--space-sm);
-        right: var(--space-sm);
     }
 }

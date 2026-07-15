@@ -10,6 +10,7 @@ function ReturnPage() {
     const [state] = useContext(AppContext);
     const [searchText, setSearchText] = useState('');
     const [sortKey, setSortKey] = useState('lentDate');
+    const [controlsOpen, setControlsOpen] = useState(false);
 
     const lang = state.language;
 
@@ -38,11 +39,25 @@ function ReturnPage() {
         show = SHOW.EXIST;
     }
 
+    // Two distinct empty reasons: nothing borrowed at all, vs. records exist
+    // but the current search narrowed the active list to zero.
+    const hasAnyBorrowedItems = borrowedItems.length > 0;
+
+    function clearFilters() {
+        setSearchText('');
+    }
+
     return (
         <main className="return-page">
             <h1 className="return-page__title">{t(lang, 'returnPage.title')}</h1>
             <div className="return-page__controls">
-                <div className="return-page__sort-search">
+                <button
+                    type="button"
+                    className="return-page__controls-toggle"
+                    aria-expanded={controlsOpen}
+                    onClick={() => setControlsOpen(v => !v)}
+                >{t(lang, 'returnPage.filtersSummary')}</button>
+                <div className={`return-page__sort-search${controlsOpen ? ' return-page__sort-search--open' : ''}`}>
                     <div className="return-page__sort">
                         <span className="sort__label">{t(lang, 'returnPage.sortBy')}</span>
                         <button
@@ -68,8 +83,16 @@ function ReturnPage() {
                 </div>
             </div>
             {show === SHOW.PENDING && <Loading>Loading items...</Loading>}
-            {show === SHOW.EMPTY && (
+            {show === SHOW.EMPTY && !hasAnyBorrowedItems && (
                 <p className="return-page__empty">{t(lang, 'returnPage.empty')}</p>
+            )}
+            {show === SHOW.EMPTY && hasAnyBorrowedItems && (
+                <div className="return-page__empty-filtered">
+                    <p className="return-page__empty">{t(lang, 'returnPage.emptyFiltered')}</p>
+                    <button className="return-page__clear-filters" onClick={clearFilters}>
+                        {t(lang, 'returnPage.clearFilters')}
+                    </button>
+                </div>
             )}
             {show === SHOW.EXIST && (
                 <ul className="return-page__list">

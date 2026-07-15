@@ -12,6 +12,7 @@
   --color-primary-xlight: #f2f6ee;
 
   --color-accent:         #b5890a;
+  --color-accent-dark:    #96700a;
   --color-accent-light:   #fdf3d0;
 
   --color-danger:         #c4622d;
@@ -25,7 +26,7 @@
 
   --color-text-primary:   #1c2b12;
   --color-text-secondary: #5a6b4a;
-  --color-text-muted:     #9aaa86;
+  --color-text-muted:     #65783f;
   --color-text-inverse:   #fffcf7;
 
   --color-border:         #ddd6c8;

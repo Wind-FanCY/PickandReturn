@@ -6,7 +6,6 @@ import { ACTIONS, LOGIN_STATUS } from "../../store/constant";
 import { t } from "../../store/i18n";
 
 import Status from '../../components/Status/Status';
-import LangToggle from '../../components/LangToggle/LangToggle';
 import './LoginForm.css';
 import loginIcon from '../../assets/login_icon.png';
 
@@ -57,9 +56,6 @@ function RegisterForm() {
 
     return (
         <div className="login">
-            <div className="login__lang">
-                <LangToggle />
-            </div>
             <form className="login__form" onSubmit={onSubmit}>
                 <h1 className="login__title">{t(lang, 'auth.registerTitle')}</h1>
                 <label className="login__label" htmlFor="username">

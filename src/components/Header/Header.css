@@ -127,35 +127,50 @@
     background: rgba(255,255,255,0.08);
 }
 
-/* ── LangToggle in dark nav ── */
+/* ── LangToggle in dark nav (also reused by header__right for the
+   logged-out header, so the dark-background contrast fix applies there too) ── */
 
-.nav__right .lang-toggle {
+.header__right {
+    display: flex;
+    align-items: center;
+}
+
+.nav__right .lang-toggle,
+.header__right .lang-toggle {
     background: transparent;
     border-color: rgba(255, 255, 255, 0.25);
 }
 
-.nav__right .lang-toggle:hover {
+.nav__right .lang-toggle:hover,
+.header__right .lang-toggle:hover {
     background: rgba(255, 255, 255, 0.10);
     border-color: rgba(255, 255, 255, 0.45);
 }
 
 .nav__right .lang-toggle__zh,
-.nav__right .lang-toggle__en {
+.nav__right .lang-toggle__en,
+.header__right .lang-toggle__zh,
+.header__right .lang-toggle__en {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.nav__right .lang-toggle__divider {
+.nav__right .lang-toggle__divider,
+.header__right .lang-toggle__divider {
     color: rgba(255, 255, 255, 0.25);
 }
 
 .nav__right .lang-toggle--zh .lang-toggle__zh,
-.nav__right .lang-toggle--en .lang-toggle__en {
+.nav__right .lang-toggle--en .lang-toggle__en,
+.header__right .lang-toggle--zh .lang-toggle__zh,
+.header__right .lang-toggle--en .lang-toggle__en {
     color: #fdf3d0;
     text-decoration-color: #fdf3d0;
 }
 
 .nav__right .lang-toggle--zh .lang-toggle__en,
-.nav__right .lang-toggle--en .lang-toggle__zh {
+.nav__right .lang-toggle--en .lang-toggle__zh,
+.header__right .lang-toggle--zh .lang-toggle__en,
+.header__right .lang-toggle--en .lang-toggle__zh {
     color: rgba(255, 255, 255, 0.35);
 }
 
