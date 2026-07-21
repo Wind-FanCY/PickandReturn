@@ -8,7 +8,7 @@ import LangToggle from "../LangToggle/LangToggle";
 import "./Header.css";
 
 function Header() {
-    const [state, dispatch] = useContext(AppContext);
+    const [state] = useContext(AppContext);
     const isLoggedIn = state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN;
 
     return (

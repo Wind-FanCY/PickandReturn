@@ -117,12 +117,6 @@ function Item({ item }) {
 
     const modifyLimit = item.modifyLimit !== undefined ? item.modifyLimit : -1;
 
-    function getModifyLimitLabel(value) {
-        if (value === -1) return t(lang, 'item.unlimited');
-        if (value === 0) return t(lang, 'item.noModify');
-        return lang === 'zh' ? `${value} 次` : `${value} time(s)`;
-    }
-
     if (isConfirmed) {
         return (
             <div className="item__content item__content--confirmed">

@@ -1,0 +1,100 @@
+name: Deploy to ECS
+
+# push 到 main 自动部署（双分支模型：release 开发，main 发版）
+on:
+  push:
+    branches: [main]
+
+# 同一时刻只跑一个部署，避免并发部署互相踩踏
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    # 门禁：runner 上起一个 Postgres 供集成测试用
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pnr
+          POSTGRES_PASSWORD: pnr_dev_pw
+          POSTGRES_DB: pnr_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pnr -d pnr_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Prisma generate + migrate test DB
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://pnr:pnr_dev_pw@localhost:5432/pnr_test?schema=public
+
+      - name: Run integration tests
+        run: npm run test:run
+        env:
+          DATABASE_URL: postgresql://pnr:pnr_dev_pw@localhost:5432/pnr_test?schema=public
+          NODE_ENV: test
+
+      - name: Build frontend
+        run: npm run build
+
+      # 门禁全绿后才推到服务器 —— 推送式：runner 主动推，ECS 不连 GitHub
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ECS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.ECS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Rsync code + build to ECS
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.env' \
+            --exclude 'logs' \
+            ./ "${{ secrets.ECS_USER }}@${{ secrets.ECS_HOST }}:/var/www/pickandreturn/"
+
+      - name: Install deps + migrate + reload on ECS
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.ECS_USER }}@${{ secrets.ECS_HOST }}" << 'REMOTE'
+            set -e
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm use 20
+            cd /var/www/pickandreturn
+            npm ci
+            npx prisma generate
+            npx prisma migrate deploy
+            pm2 reload pnr --update-env
+          REMOTE
+
+      - name: Health check
+        run: |
+          sleep 3
+          curl -sf https://pnr.windfcy.fun/api/v1/healthz || (echo "healthz failed" && exit 1)
