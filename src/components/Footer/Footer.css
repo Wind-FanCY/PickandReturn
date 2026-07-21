@@ -1,0 +1,28 @@
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-lg) var(--space-md);
+    margin-top: auto;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+.footer__beian {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+}
+
+.footer__beian:hover {
+    text-decoration: underline;
+}
+
+/* 移动端登录后有底部固定 TabBar，页脚要给它让出空间避免被遮挡 */
+@media (max-width: 768px) {
+    .app--has-tabbar .footer {
+        margin-bottom: calc(56px + env(safe-area-inset-bottom));
+    }
+}

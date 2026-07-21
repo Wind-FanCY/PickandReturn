@@ -1,6 +1,8 @@
 .app {
     min-height: 100dvh;
     background-color: var(--color-bg);
+    display: flex;
+    flex-direction: column;
 }
 
 .login__waiting {

@@ -14,6 +14,7 @@ import Header from './components/Header/Header';
 import Loading from './components/Loading/Loading';
 import ProtectedRoute from './components/ProtectedRoute';
 import TabBar from './components/TabBar/TabBar';
+import Footer from './components/Footer/Footer';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 import MainContent from './layout/MainContent';
 import LoginForm from './features/auth/LoginForm';
@@ -49,7 +50,7 @@ function App() {
 
   return (
     <AppContext.Provider value={ [state, dispatch] }>
-      <div className="app">
+      <div className={`app${state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN ? ' app--has-tabbar' : ''}`}>
         <Header />
         <Routes>
           <Route
@@ -79,6 +80,7 @@ function App() {
           } />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <Footer />
         {state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN && <TabBar />}
       </div>
     </AppContext.Provider>
