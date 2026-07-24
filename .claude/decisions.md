@@ -272,13 +272,6 @@ model Notification {
                     [PostgreSQL 16]（本机安装）
 ```
 
-### 服务器信息
-- **IP**：`47.95.179.176`（阿里云 ECS，国内节点）
-- **配置**：2 核 2G，40G 磁盘，Ubuntu
-- **域名**：`pnr.windfcy.fun`（已备案，指向此项目）
-- **主域名**：`windfcy.fun`（未来放个人作品集主站）
-- **SSL**：Let's Encrypt（`certbot` 自动申请 + 续期）
-
 ### 进程管理
 - **PM2**（`npm install -g pm2`）
 - 进程名：`pnr`（新版本）、`pnr-legacy`（旧版本，蓝绿部署期间）
