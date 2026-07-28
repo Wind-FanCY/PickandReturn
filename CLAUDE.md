@@ -211,7 +211,7 @@ npx prisma db seed                # 跑 seed 脚本（写 demo 账号 + 示例�
 
 ## 部署简报
 
-- **服务器**：阿里云 ECS（国内节点），IP `47.95.179.176`
+- **服务器**：阿里云 ECS（国内节点），实际 IP 见私有部署笔记（不入库）
 - **域名**：`pnr.windfcy.fun`（已备案）
 - **进程管理**：PM2（进程名 `pnr`，端口 3001）
 - **反向代理**：Nginx（SSL 由 Let's Encrypt 提供）

@@ -1,0 +1,14 @@
+# PickandReturn 应用日志轮转（系统 logrotate 备选方案，见 deploy/LOGGING.md 方案 B）
+# 部署：sudo cp 到 /etc/logrotate.d/pnr（若部署目录不是 /var/www/pickandreturn 请改路径）
+# 目标：按天轮转、压缩、保留 200 天（≥6 个月，满足《网络安全法》第 21 条）。
+
+/var/www/pickandreturn/logs/*.log {
+    daily                 # 每天轮转
+    rotate 200            # 保留 200 份（≈6.5 个月，>180 天）
+    compress              # gzip 压缩历史日志
+    delaycompress         # 最近一份不压缩，便于查看
+    missingok             # 日志缺失不报错
+    notifempty            # 空文件不轮转
+    dateext               # 归档名带日期后缀
+    copytruncate          # 关键：PM2 持有文件句柄，复制后清空原文件（无需重启进程）
+}
