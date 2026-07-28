@@ -180,6 +180,20 @@
     text-decoration-color: var(--color-accent);
 }
 
+.login__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+}
+
+.login__consent-checkbox {
+    margin-top: 0.2em;
+    flex-shrink: 0;
+}
+
 /* ── Mobile: full-bleed form, larger touch targets, no iOS zoom ── */
 
 @media (max-width: 768px) {

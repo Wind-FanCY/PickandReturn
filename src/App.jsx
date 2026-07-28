@@ -19,6 +19,7 @@ import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 import MainContent from './layout/MainContent';
 import LoginForm from './features/auth/LoginForm';
 import RegisterForm from './features/auth/RegisterForm';
+import PrivacyPage from './components/PrivacyPage/PrivacyPage';
 import ItemsPage from './features/items/ItemsPage';
 import ReturnPage from './features/return/ReturnPage';
 import NotificationsPage from './features/notifications/NotificationsPage';
@@ -63,6 +64,7 @@ function App() {
           />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/items" element={
             <ProtectedRoute>
               <MainContent><ItemsPage /></MainContent>

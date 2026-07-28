@@ -1,6 +1,7 @@
 import prisma from '../../lib/prisma.js';
 import { serializeItem, formatDateOnly } from '../services/item-presenter.js';
 import { requestReturn as requestReturnService, confirmReturn as confirmReturnService } from '../services/return-flow.js';
+import { containsSensitiveWord } from '../services/content-filter.js';
 import { MODIFY_UNLIMITED, DEFAULT_MODIFY_LIMIT, MAX_ITEM_DETAIL_LENGTH, REMIND_COOLDOWN_MS } from '../constants.js';
 
 const ITEM_INCLUDE = { lender: true, borrower: true };
@@ -35,6 +36,11 @@ async function addItem(req, res) {
 
     if (itemDetail.length > MAX_ITEM_DETAIL_LENGTH) {
         res.status(400).json({ error: 'bad-request' });
+        return;
+    }
+
+    if (containsSensitiveWord(itemDetail)) {
+        res.status(400).json({ error: 'sensitive-content' });
         return;
     }
 
@@ -201,6 +207,10 @@ async function editItem(req, res) {
     if (itemDetail !== undefined) {
         if (typeof itemDetail !== 'string' || itemDetail.length > MAX_ITEM_DETAIL_LENGTH) {
             res.status(400).json({ error: 'bad-request' });
+            return;
+        }
+        if (containsSensitiveWord(itemDetail)) {
+            res.status(400).json({ error: 'sensitive-content' });
             return;
         }
         data.itemDetail = itemDetail;

@@ -15,6 +15,7 @@ function RegisterForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [agreed, setAgreed] = useState(false);
     const [fieldErrors, setFieldErrors] = useState({});
 
     const lang = state.language;
@@ -31,6 +32,7 @@ function RegisterForm() {
         if (!password) newErrors.password = t(lang, 'auth.passwordRequired');
         else if (password.length < 6) newErrors.password = t(lang, 'auth.passwordTooShort');
         if (confirmPassword !== password) newErrors.confirmPassword = t(lang, 'auth.passwordMismatch');
+        if (!agreed) newErrors.agreed = t(lang, 'auth.agreeRequired');
         return newErrors;
     }
 
@@ -93,6 +95,21 @@ function RegisterForm() {
                     />
                 </label>
                 {fieldErrors.confirmPassword && <p className="login__field-error">{fieldErrors.confirmPassword}</p>}
+                <label className="login__consent" htmlFor="agree">
+                    <input
+                        id="agree"
+                        name="agree"
+                        type="checkbox"
+                        className="login__consent-checkbox"
+                        checked={agreed}
+                        onChange={e => setAgreed(e.target.checked)}
+                    />
+                    <span className="login__consent-text">
+                        {t(lang, 'auth.agreePrefix')}{' '}
+                        <Link className="login__switch-button" to="/privacy">{t(lang, 'auth.privacyLink')}</Link>
+                    </span>
+                </label>
+                {fieldErrors.agreed && <p className="login__field-error">{fieldErrors.agreed}</p>}
                 <button className="login__button" type="submit">
                     <img className="icon" src={loginIcon} alt="submit button" />
                     {t(lang, 'auth.registerButton')}
