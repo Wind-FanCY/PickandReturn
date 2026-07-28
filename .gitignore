@@ -26,6 +26,7 @@ dist-ssr
 # AI tooling (personal Claude Code dev environment, not part of the product)
 .claude/skills/
 .claude/worktrees/
+.claude/settings.local.json
 .agents/
 skills-lock.json
 

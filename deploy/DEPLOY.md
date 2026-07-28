@@ -6,7 +6,7 @@
 
 | 项 | 值 |
 |----|----|
-| 服务器 | 阿里云 ECS `47.95.179.176`（Ubuntu 22.04，2C2G） |
+| 服务器 | 阿里云 ECS `<SERVER_IP>`（Ubuntu 22.04，2C2G，实际 IP 见私有部署笔记，不入库） |
 | 域名 | `pnr.windfcy.fun`（备案通过后启用） |
 | 部署目录 | `/var/www/pickandreturn` |
 | 运行时 | Node 20（nvm）+ PM2（进程名 `pnr`，端口 3001） |
@@ -30,6 +30,7 @@
    ```
 4. **Nginx**：`deploy/nginx/pnr.windfcy.fun.conf` → `/etc/nginx/sites-available/`，软链到 `sites-enabled/`，`nginx -t && systemctl reload nginx`
 5. **备份 cron**：`deploy/backup.sh`，crontab 每日 3 点
+6. **日志轮转 + 留存 ≥6 个月**（合规，《网络安全法》第 21 条）：见 `deploy/LOGGING.md`
 
 ## 部署 / 更新（手动）
 
@@ -48,8 +49,8 @@ curl -s http://127.0.0.1:3001/api/v1/healthz   # 确认存活
 
 备案完成后执行，即可公网 HTTPS 访问：
 ```bash
-# 1. 阿里云 DNS 加 A 记录：主机记录 pnr → 47.95.179.176
-#    验证：dig +short pnr.windfcy.fun  应返回 47.95.179.176
+# 1. 阿里云 DNS 加 A 记录：主机记录 pnr → <SERVER_IP>
+#    验证：dig +short pnr.windfcy.fun  应返回 <SERVER_IP>
 # 2. 申请证书（自动改 Nginx 加 443 + 跳转）
 sudo certbot --nginx -d pnr.windfcy.fun
 # 3. 验证

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import prisma from '../../lib/prisma.js';
+import { containsSensitiveWord } from '../services/content-filter.js';
 
 const USERNAME_RE = /^[a-zA-Z0-9_]+$/;
 const BCRYPT_COST = 10;
@@ -15,6 +16,11 @@ async function register(req, res) {
 
     if (username.toLowerCase() === 'dog') {
         res.status(403).json({ error: 'auth-insufficient' });
+        return;
+    }
+
+    if (containsSensitiveWord(username)) {
+        res.status(400).json({ error: 'sensitive-content' });
         return;
     }
 
