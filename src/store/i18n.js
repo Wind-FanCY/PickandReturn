@@ -172,6 +172,8 @@ const translations = {
 
         // Controls
         'controls.logout': 'Logout',
+        'controls.changePassword': 'Change password',
+        'controls.accountMenu': 'Account menu',
 
         // Error keys (server error codes stored in state.error)
         'auth-insufficient': 'Username "dog" is not allowed',
@@ -402,6 +404,8 @@ const translations = {
 
         // Controls
         'controls.logout': '退出登录',
+        'controls.changePassword': '修改密码',
+        'controls.accountMenu': '账户菜单',
 
         // Error keys
         'auth-insufficient': '用户名 "dog" 不被允许',
