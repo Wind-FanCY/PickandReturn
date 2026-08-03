@@ -32,6 +32,8 @@
   --color-border:         #ddd6c8;
   --color-border-strong:  #c4b99f;
 
+  --color-overlay: rgba(28, 43, 18, 0.45);   /* 用 text-primary 色相做遮罩,非纯黑 */
+
   --color-overdue-bg:     #fbeee6;
   --color-overdue-border: #e8b49a;
   --color-new-bg:         #eaf2e7;

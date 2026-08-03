@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import TabBar from './components/TabBar/TabBar';
 import Footer from './components/Footer/Footer';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
+import MustChangeBanner from './components/MustChangeBanner/MustChangeBanner';
 import MainContent from './layout/MainContent';
 import LoginForm from './features/auth/LoginForm';
 import RegisterForm from './features/auth/RegisterForm';
@@ -23,6 +24,7 @@ import PrivacyPage from './components/PrivacyPage/PrivacyPage';
 import ItemsPage from './features/items/ItemsPage';
 import ReturnPage from './features/return/ReturnPage';
 import NotificationsPage from './features/notifications/NotificationsPage';
+import ChangePasswordForm from './features/auth/ChangePasswordForm';
 import './App.css';
 
 function App() {
@@ -31,7 +33,12 @@ function App() {
   async function checkForSession() {
     try {
       const session = await fetchSession();
-      dispatch({ type: ACTIONS.LOG_IN, username: session.username, language: session.language || 'zh' });
+      dispatch({
+        type: ACTIONS.LOG_IN,
+        username: session.username,
+        language: session.language || 'zh',
+        mustChangePassword: session.mustChangePassword
+      });
       await loadUserData(dispatch);
     } catch (err) {
       if (err?.error === SERVER.AUTH_MISSING) {
@@ -53,6 +60,7 @@ function App() {
     <AppContext.Provider value={ [state, dispatch] }>
       <div className={`app${state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN ? ' app--has-tabbar' : ''}`}>
         <Header />
+        {state.loginStatus === LOGIN_STATUS.IS_LOGGED_IN && <MustChangeBanner />}
         <Routes>
           <Route
             path="/"
@@ -78,6 +86,11 @@ function App() {
           <Route path="/notifications" element={
             <ProtectedRoute>
               <MainContent><NotificationsPage /></MainContent>
+            </ProtectedRoute>
+          } />
+          <Route path="/change-password" element={
+            <ProtectedRoute>
+              <MainContent><ChangePasswordForm /></MainContent>
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFoundPage />} />

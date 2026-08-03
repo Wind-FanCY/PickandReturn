@@ -52,7 +52,8 @@ export const ACTIONS = {
     EDIT_ITEM: 'editItem',
     MODIFY_DUE_DATE: 'modifyDueDate',
     UPDATE_MODIFY_LIMIT: 'updateModifyLimit',
-    TOGGLE_LANGUAGE: 'toggleLanguage'
+    TOGGLE_LANGUAGE: 'toggleLanguage',
+    SET_MUST_CHANGE_PASSWORD: 'setMustChangePassword'
 };
 
 export const NOTIFICATION_TYPE = {

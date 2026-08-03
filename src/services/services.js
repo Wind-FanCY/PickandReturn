@@ -43,11 +43,12 @@ export async function fetchItems() {
     return apiFetch('api/v1/items');
 }
 
-export async function fetchAddItem(itemInfo) {
+export async function fetchAddItem(itemInfo, createBorrower) {
+    const body = createBorrower ? { itemInfo, createBorrower: true } : { itemInfo };
     return apiFetch('api/v1/items', {
         method: 'POST',
         headers: JSON_HEADERS,
-        body: JSON.stringify({ itemInfo })
+        body: JSON.stringify(body)
     });
 }
 
@@ -121,4 +122,16 @@ export async function fetchUpdateLanguage(language) {
         headers: JSON_HEADERS,
         body: JSON.stringify({ language })
     });
+}
+
+export async function fetchChangePassword(oldPassword, newPassword) {
+    return apiFetch('api/v1/users/me/password', {
+        method: 'POST',
+        headers: JSON_HEADERS,
+        body: JSON.stringify({ oldPassword, newPassword })
+    });
+}
+
+export async function fetchResetBorrowerPassword(itemId) {
+    return apiFetch(`api/v1/items/${itemId}/reset-borrower-password`, { method: 'POST' });
 }

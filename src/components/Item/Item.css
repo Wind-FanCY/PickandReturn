@@ -413,6 +413,90 @@
     border-color: var(--color-primary-mid);
 }
 
+/* ── Borrower password reset (lender view) ── */
+
+.item__reset-borrower {
+    margin-top: 0.3rem;
+}
+
+.item__reset-entry {
+    background: var(--color-accent-light);
+    color: var(--color-accent-dark);
+    border: 1px solid rgba(181,137,10,0.3);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.38rem 0.6rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    width: fit-content;
+}
+
+.item__reset-entry:hover {
+    background: var(--color-accent);
+    color: white;
+}
+
+.item__reset-confirm-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.item__reset-confirm-prompt {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md);
+}
+
+.item__reset-confirm-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.item__reset-confirm-yes {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background: var(--color-accent-dark);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.item__reset-confirm-yes:hover {
+    background: var(--color-accent);
+}
+
+.item__reset-confirm-no {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.item__reset-confirm-no:hover {
+    background: var(--color-bg-alt);
+    border-color: var(--color-border-strong);
+}
+
 /* ── Mobile: bigger touch targets, roomier stacked buttons ── */
 
 @media (max-width: 768px) {
@@ -423,7 +507,10 @@
     .item__edit-save,
     .item__edit-cancel,
     .item__confirm-yes,
-    .item__confirm-no {
+    .item__confirm-no,
+    .item__reset-entry,
+    .item__reset-confirm-yes,
+    .item__reset-confirm-no {
         min-height: var(--touch-target);
         padding: 0.6rem 0.9rem;
         font-size: var(--font-size-sm);
