@@ -47,6 +47,33 @@ async function register(req, res) {
     res.status(201).json({ username });
 }
 
+// 自助改密：需先验证旧密码，成功后清除 mustChangePassword 标记。
+async function changePassword(req, res) {
+    const { oldPassword, newPassword } = req.body || {};
+
+    const oldMatches =
+        typeof oldPassword === 'string' && (await bcrypt.compare(oldPassword, req.session.user.passwordHash));
+    if (!oldMatches) {
+        res.status(403).json({ error: 'wrong-password' });
+        return;
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.length < MIN_PASSWORD_LENGTH) {
+        res.status(400).json({ error: 'required-password' });
+        return;
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, BCRYPT_COST);
+    await prisma.user.update({
+        where: { id: req.userId },
+        data: { passwordHash, mustChangePassword: false }
+    });
+
+    req.log.info({ userId: req.userId }, 'user changed password');
+    res.json({ ok: true });
+}
+
 export default {
-    register
+    register,
+    changePassword
 };

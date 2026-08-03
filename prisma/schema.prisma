@@ -16,6 +16,7 @@ model User {
   username     String   @unique
   passwordHash String   @map("password_hash")
   language     String   @default("zh")
+  mustChangePassword Boolean @default(false) @map("must_change_password")
   createdAt    DateTime @default(now()) @map("created_at")
 
   lentItems     Item[]         @relation("Lender")

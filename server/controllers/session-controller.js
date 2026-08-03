@@ -29,7 +29,11 @@ function cookieOptions() {
 
 // requireAuth 已挂 req.userId/req.username/req.session
 async function getSession(req, res) {
-    res.json({ username: req.username, language: req.session.language });
+    res.json({
+        username: req.username,
+        language: req.session.language,
+        mustChangePassword: req.session.user.mustChangePassword
+    });
 }
 
 async function login(req, res) {
@@ -66,7 +70,7 @@ async function login(req, res) {
 
     res.cookie('sid', sid, cookieOptions());
     req.log.info({ userId: user.id }, 'user logged in');
-    res.json({ username: user.username, language: session.language });
+    res.json({ username: user.username, language: session.language, mustChangePassword: user.mustChangePassword });
 }
 
 async function logout(req, res) {
