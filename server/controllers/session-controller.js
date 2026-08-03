@@ -95,7 +95,11 @@ async function patchSession(req, res) {
         prisma.user.update({ where: { id: req.userId }, data: { language } })
     ]);
 
-    res.json({ username: req.username, language: session.language });
+    res.json({
+        username: req.username,
+        language: session.language,
+        mustChangePassword: req.session.user.mustChangePassword
+    });
 }
 
 export default {

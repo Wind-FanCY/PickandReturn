@@ -110,7 +110,7 @@ mustChangePassword Boolean @default(false) @map("must_change_password")
 
 ### 4. session 响应(改)—— 传播 mustChangePassword
 
-- `GET /api/v1/session` 与 `POST /api/v1/session`(login)的成功响应,**新增字段 `mustChangePassword: boolean`**。
+- `GET` / `POST`(login) / `PATCH`(改语言) `/api/v1/session` 的成功响应,**均新增字段 `mustChangePassword: boolean`**,保持三个 session 响应形状一致。
 - 前端据此在首次登录时决定是否显示"强提示横幅"。
 - 现有字段(`username`、`language` 等)不变。
 

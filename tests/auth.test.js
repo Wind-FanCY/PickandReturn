@@ -109,7 +109,7 @@ describe('session lifecycle', () => {
         const { agent } = await registerAndLogin(app, { username: 'alice', password: 'password1' });
         const patchRes = await agent.patch('/api/v1/session').send({ language: 'en' });
         expect(patchRes.status).toBe(200);
-        expect(patchRes.body).toEqual({ username: 'alice', language: 'en' });
+        expect(patchRes.body).toEqual({ username: 'alice', language: 'en', mustChangePassword: false });
 
         const getRes = await agent.get('/api/v1/session');
         expect(getRes.body.language).toBe('en');
