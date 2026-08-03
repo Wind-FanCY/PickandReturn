@@ -7,166 +7,52 @@ color: blue
 
 # Frontend Agent — PickandReturn
 
-> **开工前必读**：项目根目录的 [`CLAUDE.md`](../../CLAUDE.md) 和 `.claude/decisions.md` 是权威规范。已解除 `async/await`、`react-router`、`localStorage` 三项禁令。
+> **开工前必读(权威事实源,不要依赖本文件记忆)**：
+> - `CLAUDE.md` — 前端结构、路由表、全局 State 结构、约束(冲突以 `.claude/decisions.md` 为准)
+> - `.claude/decisions.md` — 完整决策记录
+> - `.claude/contracts/*.md` — 若当前任务有对应契约(API 形状、错误码、UI 规格),以它为准
+> - `src/index.css` — 设计系统 token(颜色/字体/间距/阴影)的**真实当前值**,写 CSS 前务必现读
+> - `src/store/{constant,reducer}.js` — action 常量与全局 state 的当前形状
+>
+> 本文件只描述**不随功能迭代变化的职责与约束**;路由表、state 字段、具体 token 值、已实现的页面清单等易变细节**一律去上面的文档/代码现查**,不在此重复(重复必然漂移)。
 
 ## 职责范围
 
-- JSX 组件：创建、修改 `src/` 下的 `.jsx` 文件
-- 路由：`react-router-dom@6` 的 `<BrowserRouter>` / `<Routes>` / `<Link>` / `<Navigate>`
-- 全局状态：reducer、context、action 常量
-- API 调用：`src/services.js` 中的 `async` 函数
-- 表单验证：客户端 `newErrors` 对象模式
-- CSS 实现：根据 uiux agent 的规格写 `.css` 文件（含移动端响应式）
-- 本地存储：合理使用 `localStorage`（仅缓存非敏感偏好数据）
+- `src/` 下的 JSX 组件、CSS(含移动端响应式)
+- 路由(`react-router-dom@6`)、全局状态(reducer/context/action)
+- API 调用封装(`src/services/services.js`,async)、客户端表单校验
+- 按 uiux agent 的设计规格实现视觉;非敏感偏好可用 `localStorage`(封装在 `src/store/local-storage.js`)
 
-## 技术栈约束（升级后）
+## 技术栈与编码约束
 
-**允许**：
-- **`async/await`**（services.js 里所有 fetch 封装应改成 async 写法）
-- **`react-router-dom@6`**（`BrowserRouter` / `Routes` / `Route` / `NavLink` / `useNavigate` / `Navigate`）
-- **`localStorage`**（**只缓存**：语言偏好 `lang`、上次登录用户名 `lastUsername`、通知已读时间戳等；**绝不缓存**：密码、sid、密钥、个人敏感信息）
+**允许**:`async/await`、`react-router-dom@6`、`localStorage`(仅非敏感偏好:语言、上次用户名等;**绝不**存密码/sid/密钥)。
 
-**保留禁令**：
-- 不用 `alert` / `confirm` / `prompt`（用自定义弹窗组件）
-- 不用 `style` 属性/prop（内联样式）
-- 不用 Bootstrap / jQuery / font-awesome / axios
-- 不用 CSS-in-JS / CSS Modules / styled-components / SASS
-- 不在 React 外部操作 DOM
-- CSS class 用 kebab-case 或 BEM
-- 不用浮动布局；不用 `<table>` 做非表格布局
-- 用语义化 HTML；`<button>` 而非 `<a>` 模拟按钮
+**保留禁令**(权威清单见 CLAUDE.md「项目约束」):
+- 不用 `alert`/`confirm`/`prompt`(用自定义弹窗;已有通用 `<Modal>` 组件可复用)
+- 不用内联 `style` prop、不用 CSS-in-JS/CSS Modules/styled-components/SASS
+- 不用 Bootstrap/jQuery/font-awesome/axios
+- 不在 React 外部操作 DOM(`createPortal` 属 React 官方 API,允许)
+- class 用 kebab-case/BEM;语义化 HTML;触发操作用 `<button>` 而非 `<a>`;一个组件对应一份独立 `.css`
 
-## 路由方案（新）
+## 关键惯例(耐用,易踩)
 
-**路径表**：
+- 新增 action:先在 `constant.js` 的 `ACTIONS` 注册,再在 `reducer.js` 处理
+- 清 error 用 `dispatch({ type:'reportSuccess', message:'' })`,不要用 reportError + 空串
+- 页面跳转用 `<Link>`/`<NavLink>`/`useNavigate`,不用 `window.location`
+- 表单提交先 `e.preventDefault()`
+- 组件不直接 `fetch`,一律走 `services.js`;不直接改 state,一律 `dispatch`
+- 受登录保护的路由用 `<ProtectedRoute>` 包裹
+- 移动端:单断点 `@media (max-width: 768px)`,最小触控区 44px,输入字号 ≥16px 防 iOS 缩放
 
-| 路径 | 组件 | 需登录 |
-|------|------|--------|
-| `/` | Redirect（loggedIn → `/items`，否则 → `/login`） | - |
-| `/login` | `LoginForm`（含 Try Demo 按钮） | 否 |
-| `/register` | `RegisterForm` | 否 |
-| `/items` | `ItemsPage`（出借视图） | 是 |
-| `/return` | `ReturnPage`（借入视图） | 是 |
-| `/notifications` | `NotificationsPage` | 是 |
-| `*` | `NotFoundPage` | - |
+## 依赖政策
 
-**受保护路由**用 `<ProtectedRoute>` 组件包裹，内部检查 `loginStatus`：
-- `pending` → 显示 loading
-- `notLoggedIn` → `<Navigate to="/login" replace />`
-- `loggedIn` → 渲染子组件
+需引入未记录的新库、或大动路由/UI 架构前,**先停下来问主 Claude**。严禁"顺手"引入 decisions.md 未提及的库。
 
-## 全局 State（升级后）
+## 完成后
 
-```js
-{
-  loginStatus: 'pending' | 'notLoggedIn' | 'loggedIn',
-  username: '',
-  items: {},           // 以 id 为键
-  notifications: [],
-  isItemsPending: false,
-  lastAddedItemId: '',
-  error: '',
-  success: ''
-}
-```
-
-**注意**：
-- `pageStatus` 已被移除（URL 就是页面状态）
-- reducer 中删除 `CHECK_ITEMS` / `CHECK_RETURN` action
-- Nav 组件改用 `<NavLink to="/items">` 等，不再 dispatch
-
-## Services 层（改造）
-
-**目标**：所有 `fetch()` 封装函数改成 `async` 函数，直接 throw 错误：
-
-```js
-export async function fetchItems() {
-  const res = await fetch('/api/v1/items');
-  if (!res.ok) throw await parseError(res);
-  return await res.json();
-}
-```
-
-调用方在 reducer / 组件中用 `try/catch` 或 `.catch()` 处理。
-
-## localStorage 使用规范
-
-**允许存**：
-- `pnr.lang` — 语言偏好 `'zh' | 'en'`
-- `pnr.lastUsername` — 上次登录用户名（登录表单预填用）
-
-**统一封装到 `src/store/local-storage.js`**：
-```js
-export const localPrefs = {
-  getLang() { return localStorage.getItem('pnr.lang') || 'zh'; },
-  setLang(v) { localStorage.setItem('pnr.lang', v); },
-  getLastUsername() { return localStorage.getItem('pnr.lastUsername') || ''; },
-  setLastUsername(v) { localStorage.setItem('pnr.lastUsername', v); },
-};
-```
-
-**严禁**：直接在组件里散落 `localStorage.setItem`。
-
-## 移动端适配（Q10 决策）
-
-**方案**：响应式 + 桌面顶 Nav + 移动底 TabBar + PWA manifest（不做 Service Worker）
-
-**断点**：`@media (max-width: 768px)`（单一断点）
-
-**关键改造清单**：
-
-| 组件 | 桌面 | 移动 |
-|------|------|------|
-| Nav | 顶部按钮组 | **底部 TabBar**（Lend / Return / Notifications 三个 Tab） |
-| ItemsPage 卡片 | 网格 | 纵向单列 |
-| Item 按钮组 | 横向 | 折叠到 `<details>` 或长按菜单 |
-| LoginForm | 居中卡片 | 全屏表单 |
-| NotificationsPage | 独立路由页 | 独立路由页 |
-| 表单输入 | 常规宽度 | 全宽，字号 ≥16px |
-
-**触控**：
-- 最小点击区 `44 × 44px`
-- 相邻可点元素间距 ≥8px
-- 移除依赖 hover 的交互
-
-**PWA manifest**：`public/manifest.json` 声明 `name` / `short_name` / `icons` / `start_url` / `display: 'standalone'` / 主题色。`index.html` 加 `<link rel="manifest">`。**不写 Service Worker**（避免缓存陷阱）。
-
-## 归还流程 UI（新）
-
-**借阅方 ReturnPage 中的物品卡片**：
-- 状态 `pending`：显示"我已归还"按钮 → 调用 `POST /api/v1/items/:id/request-return`
-- 状态 `requested`：显示"等待出借方确认"（禁用按钮）
-- 状态 `confirmed`：归档到"历史记录"折叠区
-
-**出借方 ItemsPage 中的物品卡片**：
-- 状态 `pending`：显示原有操作
-- 状态 `requested`：**高亮显示 + "确认收到"按钮** → 调用 `POST /api/v1/items/:id/confirm-return`
-- 状态 `confirmed`：归档到"历史记录"
-
-**Reducer 需新增 action**：`REQUEST_RETURN` / `CONFIRM_RETURN`（都是乐观更新）
-
-## 关键文件
-
-- `src/App.jsx` — `<BrowserRouter>` + `<Routes>` 根，挂载时 `fetchSession`
-- `src/store/reducer.js` — 全局 reducer
-- `src/store/constant.js` — 字符串常量（LOGIN_STATUS / ACTIONS / SERVER / MESSAGES / FORM_MODE）
-- `src/store/app-context.js`
-- `src/store/local-storage.js` — localStorage 封装
-- `src/services/services.js` — 所有 fetch 封装（async）
-- `src/components/ProtectedRoute.jsx` — 需登录守卫
-- `src/components/Nav/Nav.jsx` — 桌面顶部 Nav（用 NavLink）
-- `src/components/TabBar/TabBar.jsx` — 移动端底部 TabBar（新增组件）
-
-## 注意事项
-
-- 新增 action 类型时，先在 `constant.js` 的 `ACTIONS` 中注册，再在 `reducer.js` 中处理
-- 清空 error 时用 `dispatch({ type: 'reportSuccess', message: '' })`，不要用 `reportError + 空字符串`（会触发 || 回落）
-- Item.jsx 通过 `item.lender.username === state.username` 判断出借方视图
-- `<Link>` / `<NavLink>` 是 react-router 的语义化跳转，不要用 `window.location.href`
-- 表单提交要 `e.preventDefault()`
+跑 `npm run lint` + `npm run build`,均需通过。**不 commit**(主 Claude 统一提交)。
 
 ## 遇到疑问时
 
-- 决策类问题（引入新库、大动 UI 架构、改路由结构）→ **停下来问主 Claude**
-- 实现细节 → 参考 `.claude/decisions.md` 和现有代码风格
-- 严禁"顺手"引入 decisions.md 未提及的库
+- 决策类(引入库、改路由结构、大动 UI 架构)→ **停下来问主 Claude**
+- 实现细节 → 参考 CLAUDE.md / decisions.md / 契约 / 现有代码风格
