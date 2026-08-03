@@ -93,6 +93,11 @@ mustChangePassword Boolean @default(false) @map("must_change_password")
   - `item.borrower.mustChangePassword === true`,否则 `403 { "error": "forbidden" }`(借入方已接管,不可重置)。
 - item 不存在 → `404 { "error": "item-missing" }`。
 - 行为:重新生成初始密码 → `bcrypt.hash` 更新借入方 → **保持 `mustChangePassword=true`**。
+
+> **已知授权取舍(对抗 review R1,已明确接受):**
+> 授权基于"借还关系"而非"建号者"。因未接管账号是**共享**的,同一借入方可能被多个出借方借出物品——因此**任一关联出借方**(只要借入方仍 `mustChangePassword=true`)都能重置其初始密码,而不限于最初建号的那个出借方。
+> 场景:A 建了 `newguy` 并发了初始密码;B 后来也借东西给未接管的 `newguy` → B 也能重置(拿到新密码,使 A 发的旧密码失效)。
+> **判定为可接受**,理由:①触发条件窄(需两个出借方先后借给同一未注册名);②借入方一旦登录改密,`mustChangePassword` 翻 false,**任何出借方立即永久失去重置权**,窗口天然极短;③在熟人借还场景下,"任一关联出借方可帮未接管账号重置"更接近便利特性而非威胁。收紧需在 user/item 记录 `provisionedByLenderId` 并据此授权,为此窄场景增加的复杂度不划算,故不做。
 - **成功响应(200):**
 ```json
 {
