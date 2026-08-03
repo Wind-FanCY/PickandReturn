@@ -76,9 +76,11 @@ npx prisma db seed                # 跑 seed 脚本（写 demo 账号 + 示例�
 | `/` | 根路径 | 已登录跳 `/items`，未登录跳 `/login` |
 | `/login` | 登录页 | 否 |
 | `/register` | 注册页 | 否 |
+| `/privacy` | 隐私政策页 | 否 |
 | `/items` | 出借列表页 | 是 |
 | `/return` | 借入列表页 | 是 |
 | `/notifications` | 通知列表页 | 是 |
+| `/change-password` | 修改密码页 | 是 |
 | `*` | 404 页 | - |
 
 ### 全局 State 结构（升级后）
@@ -142,19 +144,25 @@ npx prisma db seed                # 跑 seed 脚本（写 demo 账号 + 示例�
 - **速率限制**：`/api/v1/session` 挂 `express-rate-limit`，15 分钟 10 次上限
 - **禁用用户**：`"dog"` 规则保留
 - **Demo 账号**：`demo` / `demo123`（首页提供 Try Demo 按钮一键登录）
+- **修改密码**：`POST /api/v1/users/me/password`，验旧密码 → 写新哈希 → 清 `mustChangePassword` 标记；入口在 Header 账户下拉菜单
+- **自动创建借入方账号**（feature: auto-create-borrower）：出借方新增物品时借入方不存在，可确认后自动建号（`addItem` 带 `createBorrower:true`，事务建 user+item，返回一次性初始凭证）；`User.mustChangePassword` 标记未接管账号，登录时出强提示横幅（不强制）
+- **出借方受限重置**：`POST /api/v1/items/:id/reset-borrower-password`，双闸（出借方本人 + 借入方 `mustChangePassword=true`）；借入方改密后即失效
+- **session 响应**：GET/POST/PATCH `/api/v1/session` 均含 `mustChangePassword`
 
 ## API 端点速查（升级后）
 
 | 方法 | 路径 | 需认证 | 说明 |
 |------|------|--------|------|
 | POST | `/api/v1/users` | 否 | 注册（含密码） |
+| POST | `/api/v1/users/me/password` | 是 | **修改密码**（新） |
 | GET | `/api/v1/session` | 是 | 检查 session |
 | POST | `/api/v1/session` | 否 | 登录（含密码） |
 | DELETE | `/api/v1/session` | 是 | 登出 |
 | PATCH | `/api/v1/session` | 是 | 更新语言偏好 |
 | GET | `/api/v1/items` | 是 | 获取当前用户所有物品 |
-| POST | `/api/v1/items` | 是 | 新增出借记录 |
+| POST | `/api/v1/items` | 是 | 新增出借记录（可带 `createBorrower` 自动建号） |
 | POST | `/api/v1/items/:id/remind` | 是 | 出借方发送提醒 |
+| POST | `/api/v1/items/:id/reset-borrower-password` | 是 | **出借方重置未接管借入方密码**（新） |
 | POST | `/api/v1/items/:id/request-return` | 是 | **借阅方请求归还**（新） |
 | POST | `/api/v1/items/:id/confirm-return` | 是 | **出借方确认收到**（新） |
 | PUT | `/api/v1/items/:id` | 是 | 编辑物品信息 |
