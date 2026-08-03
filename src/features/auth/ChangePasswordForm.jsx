@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../store/app-context";
-import { fetchChangePassword } from "../../services/services";
+import { fetchChangePassword, fetchLogout } from "../../services/services";
 import { ACTIONS } from "../../store/constant";
 import { t } from "../../store/i18n";
 import Status from "../../components/Status/Status";
@@ -8,13 +9,13 @@ import "./ChangePasswordForm.css";
 
 function ChangePasswordForm() {
     const [state, dispatch] = useContext(AppContext);
+    const navigate = useNavigate();
     const lang = state.language;
 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
-    const [success, setSuccess] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
     function onSubmit(e) {
@@ -25,17 +26,17 @@ function ChangePasswordForm() {
             return;
         }
         setErrors({});
-        setSuccess(false);
         setSubmitting(true);
 
         fetchChangePassword(oldPassword, newPassword)
-            .then(() => {
-                dispatch({ type: ACTIONS.SET_MUST_CHANGE_PASSWORD, value: false });
-                setOldPassword('');
-                setNewPassword('');
-                setConfirmPassword('');
-                setSuccess(true);
-                setSubmitting(false);
+            .then(async () => {
+                // 改密后使当前会话失效并强制用新密码重新登录:
+                // 服务端删 session(fetchLogout)+ 清空客户端登录态 + 跳登录页,
+                // 成功提示在登录页的 Status 区展示。
+                await fetchLogout();
+                dispatch({ type: ACTIONS.LOG_OUT });
+                dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'changePwd.success' });
+                navigate('/login');
             })
             .catch(err => {
                 setSubmitting(false);
@@ -80,7 +81,6 @@ function ChangePasswordForm() {
                     />
                 </label>
                 {errors.mismatch && <p className="change-pwd__field-error">{t(lang, 'changePwd.mismatch')}</p>}
-                {success && <p className="change-pwd__success">{t(lang, 'changePwd.success')}</p>}
                 <button type="submit" className="change-pwd__submit" disabled={submitting}>
                     {t(lang, 'changePwd.submit')}
                 </button>

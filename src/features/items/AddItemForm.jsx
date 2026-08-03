@@ -55,7 +55,9 @@ function AddItemForm() {
 
     function onCancelCreateBorrower() {
         setPendingItemInfo(null);
-        setErrors({ borrower: t(lang, 'userNotExist') });
+        // 取消建号即放弃创建物品:在 Status 区给出明确原因(借入者不在系统),
+        // 而非仅在已清空的表单旁挂一条易被忽略的字段错误。
+        dispatch({ type: 'reportError', error: 'userNotExist' });
     }
 
     function onSubmit(e) {

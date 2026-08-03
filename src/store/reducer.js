@@ -79,12 +79,6 @@ function reducer(state, action) {
                 success: action.message
             };
 
-        case ACTIONS.SET_MUST_CHANGE_PASSWORD:
-            return {
-                ...state,
-                mustChangePassword: action.value
-            };
-
         case ACTIONS.REQUEST_RETURN:
         case ACTIONS.CONFIRM_RETURN:
             return {
