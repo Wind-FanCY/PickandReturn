@@ -78,6 +78,8 @@ const translations = {
         'item.delete': 'Delete',
         'item.confirmDelete': 'Delete this item?',
 
+        'common.close': 'Close',
+
         // Auto-create borrower (feature: auto-create-borrower)
         'borrower.createTitle': 'Create account?',
         'borrower.createPrompt': (name) => `User "${name}" does not exist. Create an account for them?`,
@@ -305,6 +307,8 @@ const translations = {
         'item.remind': '提醒',
         'item.delete': '删除',
         'item.confirmDelete': '确认删除？',
+
+        'common.close': '关闭',
 
         // 自动创建借入方账号(feature: auto-create-borrower)
         'borrower.createTitle': '创建账号？',
