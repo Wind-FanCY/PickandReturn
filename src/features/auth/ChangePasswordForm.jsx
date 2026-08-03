@@ -30,10 +30,15 @@ function ChangePasswordForm() {
 
         fetchChangePassword(oldPassword, newPassword)
             .then(async () => {
-                // 改密后使当前会话失效并强制用新密码重新登录:
-                // 服务端删 session(fetchLogout)+ 清空客户端登录态 + 跳登录页,
-                // 成功提示在登录页的 Status 区展示。
-                await fetchLogout();
+                // 改密已成功。使会话失效并强制用新密码重新登录:服务端删 session +
+                // 清空客户端登录态 + 跳登录页,成功提示在登录页 Status 区展示。
+                // logout 若因网络失败视为非致命——密码已改,仍照常跳转,
+                // 不把用户卡在改密页看到与事实相悖的错误。
+                try {
+                    await fetchLogout();
+                } catch {
+                    // 改密成功后登出失败不阻断跳转
+                }
                 dispatch({ type: ACTIONS.LOG_OUT });
                 dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'changePwd.success' });
                 navigate('/login');
