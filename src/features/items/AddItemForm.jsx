@@ -4,6 +4,8 @@ import { fetchAddItem } from "../../services/services";
 import { t } from "../../store/i18n";
 
 import Status from "../../components/Status/Status";
+import Modal from "../../components/Modal/Modal";
+import BorrowerCredentials from "../borrower/BorrowerCredentials";
 import "./AddItemForm.css";
 import addIcon from "../../assets/add_icon.png";
 
@@ -15,24 +17,47 @@ function AddItemForm() {
     const [backDate, setBackDate] = useState('');
     const [modifyLimit, setModifyLimit] = useState('3');
     const [errors, setErrors] = useState({});
+    const [pendingItemInfo, setPendingItemInfo] = useState(null);
+    const [borrowerCredentials, setBorrowerCredentials] = useState(null);
     const handleInput = (setter) => (e) => setter(e.target.value);
 
     const lang = state.language;
 
-    function onAddItem(itemInfo) {
+    function onAddItem(itemInfo, createBorrower = false) {
         dispatch({ type: 'startLoadingItems' });
-        fetchAddItem(itemInfo)
-            .then(item => {
-                dispatch({ type: 'addItem', item: item });
-                dispatch({ type: 'reportSuccess', message: 'success.itemAdded' });
+        fetchAddItem(itemInfo, createBorrower)
+            .then(result => {
+                if (createBorrower) {
+                    dispatch({ type: 'addItem', item: result.item });
+                    dispatch({ type: 'reportSuccess', message: 'success.itemAdded' });
+                    setPendingItemInfo(null);
+                    setBorrowerCredentials(result.borrowerCredentials);
+                } else {
+                    dispatch({ type: 'addItem', item: result });
+                    dispatch({ type: 'reportSuccess', message: 'success.itemAdded' });
+                }
             })
             .catch(err => {
-                if (err?.error === 'userNotExist') {
-                    setErrors({ borrower: t(lang, 'userNotExist') });
+                if (err?.error === 'userNotExist' && !createBorrower) {
+                    dispatch({ type: 'reportSuccess', message: '' });
+                    setPendingItemInfo(itemInfo);
                 } else {
+                    setPendingItemInfo(null);
                     dispatch({ type: 'reportError', error: err?.error });
                 }
             });
+    }
+
+    function onConfirmCreateBorrower() {
+        if (!pendingItemInfo) return;
+        onAddItem(pendingItemInfo, true);
+    }
+
+    function onCancelCreateBorrower() {
+        setPendingItemInfo(null);
+        // 取消建号即放弃创建物品:在 Status 区给出明确原因(借入者不在系统),
+        // 而非仅在已清空的表单旁挂一条易被忽略的字段错误。
+        dispatch({ type: 'reportError', error: 'userNotExist' });
     }
 
     function onSubmit(e) {
@@ -67,6 +92,7 @@ function AddItemForm() {
     }
 
     return (
+        <>
         <form className="add__form" onSubmit={onSubmit}>
             <label htmlFor="lender" className="add__lender">
                 <span className="lender__title">{t(lang, 'add.lender')}</span>
@@ -112,6 +138,34 @@ function AddItemForm() {
             <button className="add__button" type="submit"><img className="icon" src={addIcon} alt="add button" />{t(lang, 'add.button')}</button>
             <Status error={state.error} success={state.success} />
         </form>
+        {pendingItemInfo && (
+            <Modal dismissOnBackdrop={true} titleId="create-borrower-title" onClose={onCancelCreateBorrower}>
+                <div className="add__confirm-borrower">
+                    <h2 id="create-borrower-title" className="add__confirm-borrower-title">
+                        {t(lang, 'borrower.createTitle')}
+                    </h2>
+                    <p className="add__confirm-borrower-prompt">
+                        {t(lang, 'borrower.createPrompt', pendingItemInfo.borrower)}
+                    </p>
+                    <div className="add__confirm-borrower-actions">
+                        <button type="button" className="add__confirm-borrower-confirm" onClick={onConfirmCreateBorrower}>
+                            {t(lang, 'borrower.confirm')}
+                        </button>
+                        <button type="button" className="add__confirm-borrower-cancel" onClick={onCancelCreateBorrower}>
+                            {t(lang, 'borrower.cancel')}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        )}
+        {borrowerCredentials && (
+            <BorrowerCredentials
+                username={borrowerCredentials.username}
+                initialPassword={borrowerCredentials.initialPassword}
+                onDone={() => setBorrowerCredentials(null)}
+            />
+        )}
+        </>
     );
 }
 

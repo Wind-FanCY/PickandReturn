@@ -41,7 +41,12 @@ function LoginForm() {
         dispatch({ type: ACTIONS.START_LOADING_ITEMS });
         try {
             const session = await fetchLogin(u, p);
-            dispatch({ type: ACTIONS.LOG_IN, username: session.username, language: session.language });
+            dispatch({
+                type: ACTIONS.LOG_IN,
+                username: session.username,
+                language: session.language,
+                mustChangePassword: session.mustChangePassword
+            });
             localPrefs.setLastUsername(session.username);
             await loadUserData(dispatch);
             navigate('/items');

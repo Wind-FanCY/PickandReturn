@@ -2,6 +2,11 @@ import prisma from '../../lib/prisma.js';
 import { serializeItem, formatDateOnly } from '../services/item-presenter.js';
 import { requestReturn as requestReturnService, confirmReturn as confirmReturnService } from '../services/return-flow.js';
 import { containsSensitiveWord } from '../services/content-filter.js';
+import {
+    validateBorrowerUsername,
+    provisionBorrowerAndItem,
+    resetBorrowerPassword as resetBorrowerPasswordService
+} from '../services/borrower-provision.js';
 import { MODIFY_UNLIMITED, DEFAULT_MODIFY_LIMIT, MAX_ITEM_DETAIL_LENGTH, REMIND_COOLDOWN_MS } from '../constants.js';
 
 const ITEM_INCLUDE = { lender: true, borrower: true };
@@ -26,7 +31,7 @@ async function getItemsList(req, res) {
 }
 
 async function addItem(req, res) {
-    const { itemInfo } = req.body || {};
+    const { itemInfo, createBorrower } = req.body || {};
     const { itemDetail, borrower, lentDate, backDate, modifyLimit } = itemInfo || {};
 
     if (!itemDetail || typeof itemDetail !== 'string' || typeof borrower !== 'string' || !borrower || !lentDate || !backDate) {
@@ -61,13 +66,45 @@ async function addItem(req, res) {
         return;
     }
 
+    const limit = modifyLimit !== undefined ? modifyLimit : DEFAULT_MODIFY_LIMIT;
     const borrowerUser = await prisma.user.findUnique({ where: { username: borrower } });
+
     if (!borrowerUser) {
-        res.status(404).json({ error: 'userNotExist' });
+        if (createBorrower !== true) {
+            res.status(404).json({ error: 'userNotExist' });
+            return;
+        }
+
+        const usernameError = validateBorrowerUsername(borrower);
+        if (usernameError) {
+            const status = usernameError === 'auth-insufficient' ? 403 : 400;
+            res.status(status).json({ error: usernameError });
+            return;
+        }
+
+        try {
+            const { item, borrowerCredentials } = await provisionBorrowerAndItem({
+                username: borrower,
+                itemData: {
+                    itemDetail,
+                    lentDate: parsedLentDate,
+                    backDate: parsedBackDate,
+                    modifyLimit: limit,
+                    modifyRemaining: limit,
+                    lenderId: req.userId
+                }
+            });
+            req.log.info({ itemId: item.id }, 'item created with auto-provisioned borrower');
+            res.status(201).json({ item: serializeItem(item), borrowerCredentials });
+        } catch (err) {
+            if (err.code === 'P2002') {
+                res.status(409).json({ error: 'user-already-exists' });
+                return;
+            }
+            throw err;
+        }
         return;
     }
-
-    const limit = modifyLimit !== undefined ? modifyLimit : DEFAULT_MODIFY_LIMIT;
 
     const item = await prisma.item.create({
         data: {
@@ -180,6 +217,26 @@ async function confirmReturn(req, res) {
         return;
     }
     res.json(serializeItem(updated));
+}
+
+// 出借方触发：重置"未接管"借入方账号的初始密码。双闸授权：出借方 + 借入方尚未自助改密。
+async function resetBorrowerPassword(req, res) {
+    const { id } = req.params;
+
+    const item = await prisma.item.findUnique({ where: { id }, include: ITEM_INCLUDE });
+    if (!item) {
+        res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+
+    if (item.lenderId !== req.userId || !item.borrower.mustChangePassword) {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    const borrowerCredentials = await resetBorrowerPasswordService(item);
+    req.log.info({ itemId: item.id }, 'borrower initial password reset');
+    res.json({ borrowerCredentials });
 }
 
 async function editItem(req, res) {
@@ -361,6 +418,7 @@ export default {
     sendNotice,
     requestReturn,
     confirmReturn,
+    resetBorrowerPassword,
     editItem,
     deleteItem,
     modifyDueDate,

@@ -20,6 +20,6 @@ export function serializeItem(item) {
         lastAutoReminderDate: formatDateOnly(item.lastAutoReminderDate),
         createdAt: item.createdAt,
         lender: { username: item.lender.username },
-        borrower: { username: item.borrower.username }
+        borrower: { username: item.borrower.username, mustChangePassword: item.borrower.mustChangePassword }
     };
 }

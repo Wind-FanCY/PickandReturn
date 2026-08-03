@@ -58,7 +58,7 @@ describe('POST /api/v1/session (login)', () => {
         await createUser(app, { username: 'alice', password: 'password1' });
         const { res } = await login(app, { username: 'alice', password: 'password1' });
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ username: 'alice', language: 'zh' });
+        expect(res.body).toEqual({ username: 'alice', language: 'zh', mustChangePassword: false });
         expect(res.headers['set-cookie'][0]).toMatch(/sid=/);
     });
 
@@ -95,7 +95,7 @@ describe('session lifecycle', () => {
         const { agent } = await registerAndLogin(app, { username: 'alice', password: 'password1' });
         const res = await agent.get('/api/v1/session');
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ username: 'alice', language: 'zh' });
+        expect(res.body).toEqual({ username: 'alice', language: 'zh', mustChangePassword: false });
     });
 
     it('PATCH /session rejects invalid languages', async () => {
@@ -109,7 +109,7 @@ describe('session lifecycle', () => {
         const { agent } = await registerAndLogin(app, { username: 'alice', password: 'password1' });
         const patchRes = await agent.patch('/api/v1/session').send({ language: 'en' });
         expect(patchRes.status).toBe(200);
-        expect(patchRes.body).toEqual({ username: 'alice', language: 'en' });
+        expect(patchRes.body).toEqual({ username: 'alice', language: 'en', mustChangePassword: false });
 
         const getRes = await agent.get('/api/v1/session');
         expect(getRes.body.language).toBe('en');

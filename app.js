@@ -56,6 +56,7 @@ app.get('/api/v1/healthz', async (req, res) => {
 });
 
 app.post('/api/v1/users', registerLimiter, userController.register);
+app.post('/api/v1/users/me/password', requireAuth, userController.changePassword);
 
 app.get('/api/v1/session', requireAuth, sessionController.getSession);
 app.post('/api/v1/session', loginLimiter, sessionController.login);
@@ -67,6 +68,7 @@ app.post('/api/v1/items', requireAuth, itemController.addItem);
 app.post('/api/v1/items/:id/remind', requireAuth, itemController.sendNotice);
 app.post('/api/v1/items/:id/request-return', requireAuth, itemController.requestReturn);
 app.post('/api/v1/items/:id/confirm-return', requireAuth, itemController.confirmReturn);
+app.post('/api/v1/items/:id/reset-borrower-password', requireAuth, itemController.resetBorrowerPassword);
 app.put('/api/v1/items/:id', requireAuth, itemController.editItem);
 app.delete('/api/v1/items/:id', requireAuth, itemController.deleteItem);
 app.patch('/api/v1/items/:id/duedate', requireAuth, itemController.modifyDueDate);

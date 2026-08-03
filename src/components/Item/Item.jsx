@@ -7,9 +7,12 @@ import {
     fetchSendNotice,
     fetchEditItem,
     fetchUpdateModifyLimit,
-    fetchConfirmReturn
+    fetchConfirmReturn,
+    fetchResetBorrowerPassword
 } from "../../services/services";
 
+import Modal from "../Modal/Modal";
+import BorrowerCredentials from "../../features/borrower/BorrowerCredentials";
 import reminderIcon from "../../assets/reminder_icon.png";
 import deleteIcon from "../../assets/delete_icon.png";
 import "./Item.css";
@@ -23,6 +26,8 @@ function Item({ item }) {
     const [editLentDate, setEditLentDate] = useState(item.lentDate || '');
     const [editErrors, setEditErrors] = useState({});
     const [moreOpen, setMoreOpen] = useState(false);
+    const [confirmingReset, setConfirmingReset] = useState(false);
+    const [resetCredentials, setResetCredentials] = useState(null);
 
     const lang = state.language;
     const isPending = item.returnStatus === RETURN_STATUS.PENDING;
@@ -49,6 +54,18 @@ function Item({ item }) {
                 dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.returnConfirmed' });
             })
             .catch(err => {
+                dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
+            });
+    }
+
+    function onResetBorrowerPassword() {
+        fetchResetBorrowerPassword(item.id)
+            .then(result => {
+                setConfirmingReset(false);
+                setResetCredentials(result.borrowerCredentials);
+            })
+            .catch(err => {
+                setConfirmingReset(false);
                 dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
             });
     }
@@ -130,6 +147,7 @@ function Item({ item }) {
     }
 
     return (
+        <>
         <div className={`item__content${isOverdue ? ' item__content--overdue' : ''}${isRequested ? ' item__content--requested' : ''}`}>
             {isOverdue && <span className="item__overdue-tag">{t(lang, 'item.overdue')}</span>}
             {isRequested && <span className="item__requested-tag">{t(lang, 'item.requestedTag')}</span>}
@@ -262,7 +280,45 @@ function Item({ item }) {
                     </div>
                 </div>
             )}
+
+            {item.borrower.mustChangePassword === true && (
+                <div className="item__reset-borrower">
+                    <button
+                        type="button"
+                        className="item__reset-entry"
+                        onClick={() => setConfirmingReset(true)}
+                    >
+                        {t(lang, 'borrower.resetEntry')}
+                    </button>
+                </div>
+            )}
         </div>
+        {confirmingReset && (
+            <Modal dismissOnBackdrop={true} titleId={`reset-borrower-title-${item.id}`} onClose={() => setConfirmingReset(false)}>
+                <div className="item__reset-confirm">
+                    <h2 id={`reset-borrower-title-${item.id}`} className="item__reset-confirm-title">
+                        {t(lang, 'borrower.resetEntry')}
+                    </h2>
+                    <p className="item__reset-confirm-prompt">{t(lang, 'borrower.resetConfirm')}</p>
+                    <div className="item__reset-confirm-actions">
+                        <button type="button" className="item__reset-confirm-yes" onClick={onResetBorrowerPassword}>
+                            {t(lang, 'item.confirm')}
+                        </button>
+                        <button type="button" className="item__reset-confirm-no" onClick={() => setConfirmingReset(false)}>
+                            {t(lang, 'item.cancel')}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        )}
+        {resetCredentials && (
+            <BorrowerCredentials
+                username={resetCredentials.username}
+                initialPassword={resetCredentials.initialPassword}
+                onDone={() => setResetCredentials(null)}
+            />
+        )}
+        </>
     );
 }
 

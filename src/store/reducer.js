@@ -14,7 +14,8 @@ export const initialState = {
     lastAddedItemId: '',
     notifications: [],
     unreadCount: 0,
-    language: localPrefs.getLang()
+    language: localPrefs.getLang(),
+    mustChangePassword: false
 };
 
 function reducer(state, action) {
@@ -26,7 +27,8 @@ function reducer(state, action) {
                 success: '',
                 loginStatus: LOGIN_STATUS.IS_LOGGED_IN,
                 username: action.username,
-                language: action.language || state.language
+                language: action.language || state.language,
+                mustChangePassword: action.mustChangePassword ?? false
             };
 
         case ACTIONS.LOG_OUT:
@@ -40,7 +42,8 @@ function reducer(state, action) {
                 items: {},
                 lastAddedItemId: '',
                 notifications: [],
-                unreadCount: 0
+                unreadCount: 0,
+                mustChangePassword: false
             };
 
         case ACTIONS.START_LOADING_ITEMS:
@@ -71,6 +74,7 @@ function reducer(state, action) {
         case ACTIONS.REPORT_SUCCESS:
             return {
                 ...state,
+                isItemsPending: false,
                 error: '',
                 success: action.message
             };
