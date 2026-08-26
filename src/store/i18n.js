@@ -106,6 +106,8 @@ const translations = {
         'changePwd.mismatch': 'Passwords do not match',
         'item.confirm': 'Confirm',
         'item.overdue': 'Overdue',
+        'item.reject': 'Not received',
+        'item.rejectConfirm': 'Mark as not received? The item will return to "to be returned" status.',
         'item.requestedTag': 'Return Requested',
         'item.confirmReturn': 'Confirm Received',
         'item.modifyLimit': 'Modify limit:',
@@ -208,6 +210,7 @@ const translations = {
         'success.accountCreated': 'Account created! You can now log in.',
         'success.returnRequested': 'Return requested!',
         'success.returnConfirmed': 'Return confirmed!',
+        'success.returnRejected': 'Marked as not received.',
 
         // Notifications
         'notif.panelLabel': 'Notifications',
@@ -338,6 +341,8 @@ const translations = {
         'changePwd.mismatch': '两次输入的密码不一致',
         'item.confirm': '确认',
         'item.overdue': '已逾期',
+        'item.reject': '未收到',
+        'item.rejectConfirm': '确认标记为未收到？物品将退回“待归还”状态。',
         'item.requestedTag': '待确认归还',
         'item.confirmReturn': '确认收到',
         'item.modifyLimit': '可修改次数：',
@@ -440,6 +445,7 @@ const translations = {
         'success.accountCreated': '账号创建成功！现在可以登录了。',
         'success.returnRequested': '已请求归还！',
         'success.returnConfirmed': '已确认收到！',
+        'success.returnRejected': '已标记为未收到。',
 
         // Notifications
         'notif.panelLabel': '通知面板',
