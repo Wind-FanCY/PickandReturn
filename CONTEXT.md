@@ -24,18 +24,19 @@
 |------|------|--------|---------|--------|
 | 归还请求 | Return Request | 借阅方 | `pending → requested` | 生成 `return_requested` 通知发给出借方 |
 | 归还确认 | Return Confirmation | 出借方 | `requested → confirmed` | 生成 `return_confirmed` 通知发给借阅方 |
+| 归还驳回 | Return Rejection | 出借方 | `requested → pending` | 出借方表示"未收到";生成 `return_rejected` 通知发给借阅方;`backDate` 不变，若已过期借阅方将重新逾期 |
 
 ### 使用约定
 
 - **禁止**在代码、UI、文档里使用"已归还"（`returned`）这种模糊词
 - **数据库字段**用 `returnStatus`，不用 `returned` 布尔
-- **UI 按钮**：借阅方点的按钮叫"**我已归还**"（触发归还请求），出借方点的按钮叫"**确认收到**"（触发归还确认）
-- **API 端点**：`POST /api/v1/items/:id/request-return` 和 `POST /api/v1/items/:id/confirm-return`
+- **UI 按钮**：借阅方点"**我已归还**"（归还请求）；出借方点"**确认收到**"（归还确认）或"**未收到**"（归还驳回）
+- **API 端点**：见 CLAUDE.md API 速查（request-return / confirm-return / reject-return）
 - **归档规则**：只有 `confirmed` 状态的物品算"已完成一次借还生命周期"，可以从活跃列表归档到"历史记录"
 
 ### 已明确的边界情形
 
-- **借阅方能不能反悔？**（`requested → pending`）v1 MVP **不允许**。将来若引入"驳回"分支再考虑。
+- **`requested → pending` 允许吗？** 允许，但**仅出借方**通过"归还驳回（未收到）"触发；借阅方自己不能反悔。
 - **借阅方列表在 `requested` 状态时显示物品吗？** 显示，状态标签为"待确认"，操作按钮禁用。
 - **统计数据里 `requested` 算不算"归还完成"？** **不算**。只有 `confirmed` 算完成。
 
@@ -106,45 +107,62 @@
 
 ## 逾期（Overdue）——精确定义
 
-**定义**：`today > backDate && returnStatus !== 'confirmed'`
+「逾期」区分**标签**与**提醒触发**两层（二者都以 `backDate` 为界，但作用不同）。
 
-即：**已过应还日期，且这次借还尚未走到 `confirmed`（无论 `pending` 还是 `requested` 都算逾期）**。
+### 逾期标签（UI）
 
-### 关键决策
+**定义**：`returnStatus === 'pending' && today > backDate`
 
-- **`requested` 状态过期也算逾期**：防止借阅方靠"我已归还但对方没确认"钻空子摆脱逾期标签
-- **`confirmed` 状态永远不算逾期**：即便当初拖到了 backDate 之后才 confirmed，历史记录里也不再挂逾期标签
-- **同一天多次访问不重复提醒**：`lastAutoReminderDate` 字段用于防止重复触发
+即：**只有 `pending`（借阅方尚未声明归还）过了应还日才显示逾期标签**。
+- **`requested` 不显示逾期**：借阅方已声明归还，不再罚他挂逾期标签；防赖账改由出借方"归还驳回（未收到）"承担——驳回后打回 `pending`，若仍过期则重新逾期。
+- **`confirmed` 永不逾期**：历史记录不挂逾期标签。
+
+### 提醒触发（后端午夜扫描）
+
+仍以 `backDate` 为界扫描 `today > backDate && returnStatus !== 'confirmed'`，但**提醒发给当前瓶颈方**（见「通知 - 提醒」）：`pending` 催借阅方归还，`requested` 催出借方确认。`lastAutoReminderDate` 防同日重复。
 
 ### 衍生行为
 
-- **逾期 UI**：红色边框 + "已逾期 X 天"标签，双方视图都显示
-- **自动提醒**：每天午夜任务扫描所有 `today > backDate && returnStatus !== 'confirmed'` 的 Item，向借阅方推送提醒
-- **统计维度**：逾期 Item 数 = 上述条件的 Item 计数
+- **逾期 UI**：红色边框 + 逾期标签，仅 `pending` 逾期时显示，双方视图一致。
+- **统计维度**：逾期 Item 数按上方**逾期标签**定义计（只算 pending 过期）。
 
 ---
 
 ## 通知（Notification）
 
-一条通知是**送达给某个 User 的事件记录**，存储在 `notifications` 表。
+一条通知是**送达给某个 User 的记录**，存储在 `notifications` 表。通知分**两类**（处理方式不同）：
 
-### 保留策略
+### 提醒（Reminder）vs 事件通知（Event）
 
-- **现状：通知永久累积，无自动清理**（`notifications` 表只增不减，只能用户手动删单条）。
-- 留存周期尚未落地，属**待决策**（具体周期与清理机制定案后由代码/CLAUDE.md 记录，本词表不写死天数）。
+| 类别 | 语义 | 类型值 | 累积规则 |
+|------|------|--------|---------|
+| **提醒 Reminder** | 对某个**持续状态**的反复催促（还没还 / 还没确认） | `return_reminder` | **收敛**：每 (Item + 接收人) 只保留一条，重新触发时替换为最新（不堆积） |
+| **事件通知 Event** | **一次性发生的离散事实** | `return_requested` / `return_confirmed` / `return_rejected` / `date_modified` | **追加**：每次一条新记录，不合并（可追溯、按时间排序） |
+
+> 切分理由：提醒是"状态的镜像"，一件逾期物品应只对应一条提醒而非天天堆积；事件是独立事实，每条都有意义。
+
+### 提醒接收人（跟随瓶颈方）
+
+| 触发条件（过期时） | 瓶颈方 | 接收人 | 文案要点 |
+|-------------------|--------|--------|---------|
+| `pending` 过期 | 借阅方还没还 | **借阅方** | 请归还 |
+| `requested` 过期 | 出借方还没确认 | **出借方** | 请确认收到 |
+
+手动提醒（出借方点"提醒"）仅在 `pending` 可用（`requested` 时借阅方已声明归还，不再催其归还）。
 
 ### 通知类型（`Notification.type` 值域）
 
 | 值 | 触发场景 | 接收者 |
 |----|---------|--------|
-| `return_reminder` | 出借方主动提醒 / 逾期自动提醒 | 借阅方 |
+| `return_reminder` | 出借方手动提醒 / 逾期自动提醒（按瓶颈方分接收人） | 借阅方或出借方 |
 | `date_modified` | 借阅方修改了应还日期 | 出借方 |
 | `return_requested` | 借阅方触发归还请求 | 出借方 |
 | `return_confirmed` | 出借方触发归还确认 | 借阅方 |
+| `return_rejected` | 出借方"未收到"驳回 | 借阅方 |
 
-### 追加而非合并
+### 保留策略
 
-同一 Item 连续多天触发同类通知 → **每次都追加新记录**，不合并、不更新时间戳。理由：简单、可追溯、天然按时间排序。
+通知有留存周期，超期由定时任务自动清理（具体天数与机制见代码常量 / CLAUDE.md，本词表不写死数字）。
 
 ---
 
