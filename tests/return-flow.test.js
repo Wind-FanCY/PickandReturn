@@ -107,3 +107,65 @@ describe('return flow: pending -> requested -> confirmed', () => {
         expect(confirmed).toHaveLength(1);
     });
 });
+
+describe('reject-return: requested -> pending (出借方"未收到")', () => {
+    it('rejects the return, clears returnedAt, keeps backDate, and notifies the borrower', async () => {
+        const { lender, borrower, id } = await setupItem();
+        await borrower.agent.post(`/api/v1/items/${id}/request-return`);
+
+        const res = await lender.agent.post(`/api/v1/items/${id}/reject-return`);
+        expect(res.status).toBe(200);
+        expect(res.body.returnStatus).toBe('pending');
+        expect(res.body.returnedAt).toBeFalsy();
+        expect(res.body.backDate).toBe(ITEM_INFO.backDate);
+        // 不动 modifyLimit/modifyRemaining
+        expect(res.body.modifyRemaining).toBe(3);
+
+        const borrowerNotifs = await borrower.agent.get('/api/v1/notifications');
+        const rejected = borrowerNotifs.body.notifications.filter((n) => n.type === 'return_rejected');
+        expect(rejected).toHaveLength(1);
+    });
+
+    it('allows a fresh request-return cycle after rejection', async () => {
+        const { lender, borrower, id } = await setupItem();
+        await borrower.agent.post(`/api/v1/items/${id}/request-return`);
+        await lender.agent.post(`/api/v1/items/${id}/reject-return`);
+
+        const res = await borrower.agent.post(`/api/v1/items/${id}/request-return`);
+        expect(res.status).toBe(200);
+        expect(res.body.returnStatus).toBe('requested');
+    });
+
+    it('rejects reject-return from the borrower (only the lender may trigger it)', async () => {
+        const { borrower, id } = await setupItem();
+        await borrower.agent.post(`/api/v1/items/${id}/request-return`);
+
+        const res = await borrower.agent.post(`/api/v1/items/${id}/reject-return`);
+        expect(res.status).toBe(403);
+        expect(res.body).toEqual({ error: 'forbidden' });
+    });
+
+    it('rejects reject-return while the item is still pending', async () => {
+        const { lender, id } = await setupItem();
+        const res = await lender.agent.post(`/api/v1/items/${id}/reject-return`);
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ error: 'invalid-state' });
+    });
+
+    it('rejects reject-return once already confirmed', async () => {
+        const { lender, borrower, id } = await setupItem();
+        await borrower.agent.post(`/api/v1/items/${id}/request-return`);
+        await lender.agent.post(`/api/v1/items/${id}/confirm-return`);
+
+        const res = await lender.agent.post(`/api/v1/items/${id}/reject-return`);
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ error: 'invalid-state' });
+    });
+
+    it('returns 404 for a missing item', async () => {
+        const { lender } = await setupItem();
+        const res = await lender.agent.post('/api/v1/items/does-not-exist/reject-return');
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ error: 'item-missing' });
+    });
+});

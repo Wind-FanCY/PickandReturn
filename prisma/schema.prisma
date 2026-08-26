@@ -67,7 +67,7 @@ model Item {
 model Notification {
   id            String  @id @default(uuid())
   type          String
-  // 值域：return_reminder | date_modified | return_requested | return_confirmed
+  // 值域：return_reminder | date_modified | return_requested | return_confirmed | return_rejected
   message       String
   read          Boolean @default(false)
   userId        String  @map("user_id")

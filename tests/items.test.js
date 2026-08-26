@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { registerAndLogin } from './helpers.js';
 import app from '../app.js';
+import prisma from '../lib/prisma.js';
 
 const ITEM_INFO = {
     itemDetail: 'A used bicycle',
@@ -321,5 +322,43 @@ describe('security hardening (Phase D)', () => {
         const second = await lender.agent.post(`/api/v1/items/${id}/remind`);
         expect(second.status).toBe(429);
         expect(second.body).toEqual({ error: 'rate-limited' });
+    });
+
+    it('rejects manual remind once the borrower has already requested return (only pending allowed)', async () => {
+        const { lender, borrower } = await setupLenderAndBorrower();
+        const createRes = await lender.agent.post('/api/v1/items').send({ itemInfo: ITEM_INFO });
+        const id = createRes.body.id;
+        await borrower.agent.post(`/api/v1/items/${id}/request-return`);
+
+        const res = await lender.agent.post(`/api/v1/items/${id}/remind`);
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ error: 'invalid-state' });
+    });
+
+    it('reminder convergence: a stale return_reminder for the same item+recipient is replaced, not duplicated', async () => {
+        const { lender } = await setupLenderAndBorrower();
+        const createRes = await lender.agent.post('/api/v1/items').send({ itemInfo: ITEM_INFO });
+        const id = createRes.body.id;
+
+        // 手动插入一条"过期"的旧提醒（早于冷却窗口），模拟此前已经提醒过一次
+        const borrowerUser = await prisma.user.findUnique({ where: { username: 'bob' } });
+        await prisma.notification.create({
+            data: {
+                type: 'return_reminder',
+                message: 'stale reminder',
+                userId: borrowerUser.id,
+                relatedItemId: id,
+                createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
+            }
+        });
+
+        const res = await lender.agent.post(`/api/v1/items/${id}/remind`);
+        expect(res.status).toBe(200);
+
+        const notifs = await prisma.notification.findMany({
+            where: { relatedItemId: id, userId: borrowerUser.id, type: 'return_reminder' }
+        });
+        expect(notifs).toHaveLength(1);
+        expect(notifs[0].message).not.toBe('stale reminder');
     });
 });

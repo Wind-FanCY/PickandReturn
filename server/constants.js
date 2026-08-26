@@ -11,3 +11,6 @@ export const MAX_ITEM_DETAIL_LENGTH = 200;
 
 // 同一 item 两次手动提醒之间的最小间隔（毫秒），防止提醒轰炸（M1）。
 export const REMIND_COOLDOWN_MS = 60 * 60 * 1000;
+
+// 通知留存天数：超期通知由午夜任务清理，不分读写。
+export const NOTIFICATION_RETENTION_DAYS = 30;

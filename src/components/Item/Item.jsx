@@ -8,6 +8,7 @@ import {
     fetchEditItem,
     fetchUpdateModifyLimit,
     fetchConfirmReturn,
+    fetchRejectReturn,
     fetchResetBorrowerPassword
 } from "../../services/services";
 
@@ -28,12 +29,13 @@ function Item({ item }) {
     const [moreOpen, setMoreOpen] = useState(false);
     const [confirmingReset, setConfirmingReset] = useState(false);
     const [resetCredentials, setResetCredentials] = useState(null);
+    const [confirmingReject, setConfirmingReject] = useState(false);
 
     const lang = state.language;
     const isPending = item.returnStatus === RETURN_STATUS.PENDING;
     const isRequested = item.returnStatus === RETURN_STATUS.REQUESTED;
     const isConfirmed = item.returnStatus === RETURN_STATUS.CONFIRMED;
-    const isOverdue = !isConfirmed && new Date(item.backDate) < new Date();
+    const isOverdue = isPending && new Date(item.backDate) < new Date();
 
     function onDeleteItem(id) {
         dispatch({ type: ACTIONS.START_LOADING_ITEMS });
@@ -54,6 +56,19 @@ function Item({ item }) {
                 dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.returnConfirmed' });
             })
             .catch(err => {
+                dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
+            });
+    }
+
+    function onRejectReturn(id) {
+        fetchRejectReturn(id)
+            .then(updatedItem => {
+                setConfirmingReject(false);
+                dispatch({ type: ACTIONS.REJECT_RETURN, item: updatedItem });
+                dispatch({ type: ACTIONS.REPORT_SUCCESS, message: 'success.returnRejected' });
+            })
+            .catch(err => {
+                setConfirmingReject(false);
                 dispatch({ type: ACTIONS.REPORT_ERROR, error: err?.error });
             });
     }
@@ -217,12 +232,20 @@ function Item({ item }) {
             )}
 
             {isRequested && (
-                <button
-                    className="item__confirm-return"
-                    onClick={() => onConfirmReturn(item.id)}
-                >
-                    {t(lang, 'item.confirmReturn')}
-                </button>
+                <div className="item__return-decision">
+                    <button
+                        className="item__confirm-return"
+                        onClick={() => onConfirmReturn(item.id)}
+                    >
+                        {t(lang, 'item.confirmReturn')}
+                    </button>
+                    <button
+                        className="item__reject-return"
+                        onClick={() => setConfirmingReject(true)}
+                    >
+                        {t(lang, 'item.reject')}
+                    </button>
+                </div>
             )}
 
             {isPending && (
@@ -305,6 +328,24 @@ function Item({ item }) {
                             {t(lang, 'item.confirm')}
                         </button>
                         <button type="button" className="item__reset-confirm-no" onClick={() => setConfirmingReset(false)}>
+                            {t(lang, 'item.cancel')}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        )}
+        {confirmingReject && (
+            <Modal dismissOnBackdrop={true} titleId={`reject-return-title-${item.id}`} onClose={() => setConfirmingReject(false)}>
+                <div className="item__reject-confirm">
+                    <h2 id={`reject-return-title-${item.id}`} className="item__reject-confirm-title">
+                        {t(lang, 'item.reject')}
+                    </h2>
+                    <p className="item__reject-confirm-prompt">{t(lang, 'item.rejectConfirm')}</p>
+                    <div className="item__reject-confirm-actions">
+                        <button type="button" className="item__reject-confirm-yes" onClick={() => onRejectReturn(item.id)}>
+                            {t(lang, 'item.confirm')}
+                        </button>
+                        <button type="button" className="item__reject-confirm-no" onClick={() => setConfirmingReject(false)}>
                             {t(lang, 'item.cancel')}
                         </button>
                     </div>

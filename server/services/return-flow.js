@@ -1,4 +1,4 @@
-// 归还三态流程的事务逻辑：pending -> requested -> confirmed。
+// 归还流程的事务逻辑：pending -> requested -> confirmed，requested 可被出借方驳回退回 pending。
 // 状态守卫下推到 SQL：在同一事务内用条件 updateMany（where 带上当前应有状态），
 // 只有 count === 1 才创建通知，否则视为竞态/非法转移，返回 null（controller 转 409）。
 // 这样"读+判断+写"合并成一次原子的条件更新，杜绝并发双击产生重复通知。
@@ -44,6 +44,28 @@ export async function confirmReturn(item) {
             data: {
                 type: 'return_confirmed',
                 message: `${item.lender.username} 已确认收到归还：${item.itemDetail}`,
+                userId: item.borrowerId,
+                relatedItemId: item.id
+            }
+        });
+        return tx.item.findUnique({ where: { id: item.id }, include: ITEM_INCLUDE });
+    });
+}
+
+// 出借方触发（"未收到"）：requested -> pending，通知借阅方重新核实。
+// 不重置 backDate、不动 modifyLimit/modifyRemaining（保留原应还日，打回后若已过期会重新逾期并被提醒）。
+export async function rejectReturn(item) {
+    return prisma.$transaction(async (tx) => {
+        const { count } = await tx.item.updateMany({
+            where: { id: item.id, returnStatus: 'requested' },
+            data: { returnStatus: 'pending', returnedAt: null }
+        });
+        if (count === 0) return null;
+
+        await tx.notification.create({
+            data: {
+                type: 'return_rejected',
+                message: `${item.lender.username} 表示未收到《${item.itemDetail}》，请核实并重新归还`,
                 userId: item.borrowerId,
                 relatedItemId: item.id
             }

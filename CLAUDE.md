@@ -107,6 +107,9 @@ npx prisma db seed                # 跑 seed 脚本（写 demo 账号 + 示例�
 - 归还流程使用 `returnStatus` 三态字段：`pending | requested | confirmed`
   - 借阅方点"我已归还" → `pending → requested`，通知出借方
   - 出借方点"确认收到" → `requested → confirmed`，通知借阅方
+  - 出借方点"未收到" → `requested → pending`（归还驳回），通知借阅方；`backDate` 不变
+- 通知分**提醒（收敛为一条）**与**事件（追加）**两类；提醒接收人跟随瓶颈方（`pending` 催借阅方、`requested` 催出借方）。详见 `CONTEXT.md` 通知章节
+- 午夜定时任务（`server.js`）：自动提醒扫描、过期 session 清理、**通知清理（留存 `NOTIFICATION_RETENTION_DAYS=30` 天）**
 
 ## 项目约束（升级后）
 
@@ -163,8 +166,9 @@ npx prisma db seed                # 跑 seed 脚本（写 demo 账号 + 示例�
 | POST | `/api/v1/items` | 是 | 新增出借记录（可带 `createBorrower` 自动建号） |
 | POST | `/api/v1/items/:id/remind` | 是 | 出借方发送提醒 |
 | POST | `/api/v1/items/:id/reset-borrower-password` | 是 | **出借方重置未接管借入方密码**（新） |
-| POST | `/api/v1/items/:id/request-return` | 是 | **借阅方请求归还**（新） |
-| POST | `/api/v1/items/:id/confirm-return` | 是 | **出借方确认收到**（新） |
+| POST | `/api/v1/items/:id/request-return` | 是 | **借阅方请求归还** |
+| POST | `/api/v1/items/:id/confirm-return` | 是 | **出借方确认收到** |
+| POST | `/api/v1/items/:id/reject-return` | 是 | **出借方"未收到"驳回**（`requested→pending`） |
 | PUT | `/api/v1/items/:id` | 是 | 编辑物品信息 |
 | DELETE | `/api/v1/items/:id` | 是 | 删除物品（仅出借方） |
 | PATCH | `/api/v1/items/:id/duedate` | 是 | 修改归还期限（借阅方） |

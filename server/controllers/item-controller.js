@@ -1,6 +1,10 @@
 import prisma from '../../lib/prisma.js';
 import { serializeItem, formatDateOnly } from '../services/item-presenter.js';
-import { requestReturn as requestReturnService, confirmReturn as confirmReturnService } from '../services/return-flow.js';
+import {
+    requestReturn as requestReturnService,
+    confirmReturn as confirmReturnService,
+    rejectReturn as rejectReturnService
+} from '../services/return-flow.js';
 import { containsSensitiveWord } from '../services/content-filter.js';
 import {
     validateBorrowerUsername,
@@ -137,6 +141,12 @@ async function sendNotice(req, res) {
         return;
     }
 
+    // 仅 pending 允许手动提醒：requested 时借阅方已声明归还，不应再催其归还
+    if (item.returnStatus !== 'pending') {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+
     // 提醒冷却：同一 item 一小时内只允许一次手动提醒，防止提醒轰炸（M1）
     const recentReminder = await prisma.notification.findFirst({
         where: {
@@ -151,14 +161,20 @@ async function sendNotice(req, res) {
     }
 
     const message = `${item.lender.username} 提醒您归还物品：${item.itemDetail}，应还日期 ${formatDateOnly(item.backDate)}`;
-    const notification = await prisma.notification.create({
-        data: {
-            type: 'return_reminder',
-            message,
-            userId: item.borrowerId,
-            relatedItemId: item.id
-        }
-    });
+    // 提醒收敛：同一 item + 接收人只保留最新一条 return_reminder（先删后建）
+    const [, notification] = await prisma.$transaction([
+        prisma.notification.deleteMany({
+            where: { relatedItemId: item.id, userId: item.borrowerId, type: 'return_reminder' }
+        }),
+        prisma.notification.create({
+            data: {
+                type: 'return_reminder',
+                message,
+                userId: item.borrowerId,
+                relatedItemId: item.id
+            }
+        })
+    ]);
 
     res.json({ notification });
 }
@@ -212,6 +228,34 @@ async function confirmReturn(req, res) {
     }
 
     const updated = await confirmReturnService(item);
+    if (!updated) {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+    res.json(serializeItem(updated));
+}
+
+// 出借方触发（"未收到"）：requested -> pending
+async function rejectReturn(req, res) {
+    const { id } = req.params;
+
+    const item = await prisma.item.findUnique({ where: { id }, include: ITEM_INCLUDE });
+    if (!item) {
+        res.status(404).json({ error: 'item-missing' });
+        return;
+    }
+
+    if (item.lenderId !== req.userId) {
+        res.status(403).json({ error: 'forbidden' });
+        return;
+    }
+
+    if (item.returnStatus !== 'requested') {
+        res.status(409).json({ error: 'invalid-state' });
+        return;
+    }
+
+    const updated = await rejectReturnService(item);
     if (!updated) {
         res.status(409).json({ error: 'invalid-state' });
         return;
@@ -418,6 +462,7 @@ export default {
     sendNotice,
     requestReturn,
     confirmReturn,
+    rejectReturn,
     resetBorrowerPassword,
     editItem,
     deleteItem,

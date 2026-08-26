@@ -68,6 +68,7 @@ app.post('/api/v1/items', requireAuth, itemController.addItem);
 app.post('/api/v1/items/:id/remind', requireAuth, itemController.sendNotice);
 app.post('/api/v1/items/:id/request-return', requireAuth, itemController.requestReturn);
 app.post('/api/v1/items/:id/confirm-return', requireAuth, itemController.confirmReturn);
+app.post('/api/v1/items/:id/reject-return', requireAuth, itemController.rejectReturn);
 app.post('/api/v1/items/:id/reset-borrower-password', requireAuth, itemController.resetBorrowerPassword);
 app.put('/api/v1/items/:id', requireAuth, itemController.editItem);
 app.delete('/api/v1/items/:id', requireAuth, itemController.deleteItem);
