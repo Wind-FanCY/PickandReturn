@@ -3,6 +3,7 @@ import app from './app.js';
 import logger from './lib/logger.js';
 import { runAutoReminder } from './server/services/reminder.js';
 import { cleanupExpiredSessions } from './server/services/session-cleanup.js';
+import { cleanupOldNotifications } from './server/services/notification-cleanup.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -12,6 +13,9 @@ function runMidnightJobsSafely() {
     });
     cleanupExpiredSessions().catch((err) => {
         logger.error({ err }, 'session cleanup job failed');
+    });
+    cleanupOldNotifications().catch((err) => {
+        logger.error({ err }, 'notification cleanup job failed');
     });
 }
 
