@@ -81,6 +81,7 @@ function reducer(state, action) {
 
         case ACTIONS.REQUEST_RETURN:
         case ACTIONS.CONFIRM_RETURN:
+        case ACTIONS.REJECT_RETURN:
             return {
                 ...state,
                 error: '',

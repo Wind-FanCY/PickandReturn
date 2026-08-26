@@ -68,6 +68,10 @@ export async function fetchConfirmReturn(id) {
     return apiFetch(`api/v1/items/${id}/confirm-return`, { method: 'POST' });
 }
 
+export async function fetchRejectReturn(id) {
+    return apiFetch(`api/v1/items/${id}/reject-return`, { method: 'POST' });
+}
+
 export async function fetchRegister(username, password) {
     return apiFetch('api/v1/users', {
         method: 'POST',

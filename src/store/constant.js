@@ -43,6 +43,7 @@ export const ACTIONS = {
     REPORT_SUCCESS: 'reportSuccess',
     REQUEST_RETURN: 'requestReturn',
     CONFIRM_RETURN: 'confirmReturn',
+    REJECT_RETURN: 'rejectReturn',
     DELETE_ITEM: 'deleteItem',
     ADD_ITEM: 'addItem',
     SEND_NOTICE: 'sendNotice',

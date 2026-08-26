@@ -79,6 +79,95 @@
     transform: translateY(-1px);
 }
 
+.item__return-decision {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.item__reject-return {
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    width: fit-content;
+}
+
+.item__reject-return:hover {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+    border-color: var(--color-danger-border);
+    transform: translateY(-1px);
+}
+
+/* ── Reject return confirmation (modal) ── */
+
+.item__reject-confirm-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.item__reject-confirm-prompt {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md);
+}
+
+.item__reject-confirm-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.item__reject-confirm-yes {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background: var(--color-danger);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.item__reject-confirm-yes:hover {
+    background: var(--color-danger-dark);
+}
+
+.item__reject-confirm-no {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.item__reject-confirm-no:hover {
+    background: var(--color-bg-alt);
+    border-color: var(--color-border-strong);
+}
+
 /* ── Confirmed card (read-only history row) ── */
 
 .item__content--confirmed {
@@ -504,20 +593,24 @@
     .item__send,
     .item__delete,
     .item__confirm-return,
+    .item__reject-return,
     .item__edit-save,
     .item__edit-cancel,
     .item__confirm-yes,
     .item__confirm-no,
     .item__reset-entry,
     .item__reset-confirm-yes,
-    .item__reset-confirm-no {
+    .item__reset-confirm-no,
+    .item__reject-confirm-yes,
+    .item__reject-confirm-no {
         min-height: var(--touch-target);
         padding: 0.6rem 0.9rem;
         font-size: var(--font-size-sm);
     }
 
     .item__edit-actions,
-    .item__confirm-delete {
+    .item__confirm-delete,
+    .item__return-decision {
         gap: var(--tap-gap);
     }
 

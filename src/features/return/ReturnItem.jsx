@@ -19,7 +19,7 @@ function ReturnItem({ item }) {
     const isPending = item.returnStatus === RETURN_STATUS.PENDING;
     const isRequested = item.returnStatus === RETURN_STATUS.REQUESTED;
     const isConfirmed = item.returnStatus === RETURN_STATUS.CONFIRMED;
-    const isOverdue = !isConfirmed && item.backDate && item.backDate < today;
+    const isOverdue = isPending && item.backDate && item.backDate < today;
 
     const modifyRemaining = item.modifyRemaining !== undefined ? item.modifyRemaining : -1;
 
